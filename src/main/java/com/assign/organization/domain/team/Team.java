@@ -20,6 +20,8 @@ public class Team {
 
     private String name;
 
+    private Member teamLeader;
+
     @OneToMany(mappedBy = "team", fetch = FetchType.LAZY)
     private Set<Member> members = new HashSet<>();
 
@@ -30,6 +32,10 @@ public class Team {
 
     public void updateTeamName(String name) {
         this.name = name;
+    }
+
+    public void changeTeamLeader(Member member) {
+        this.teamLeader = member;
     }
 
     @Override

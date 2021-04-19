@@ -19,6 +19,10 @@ public class Ranked {
 
     private String name;
 
+    public void updateRankedName(String name) {
+        this.name = name;
+    }
+
     @Builder
     public Ranked(String name) {
         this.name = name;
