@@ -185,4 +185,42 @@ class MemberRepositoryTest {
         assertTrue(deletedMember.isEmpty());
     }
 
+    @Test
+    public void testDeleteByName() {
+
+        //given
+        Address address = Address
+                .builder()
+                .businessCall("1101")
+                .cellPhone("010-3358-9731")
+                .build();
+
+
+        Member member = Member
+                .builder()
+                .address(address)
+                .name("홍길동")
+                .position(Position.INTERN)
+                .build();
+
+        memberRepository.save(member);
+
+        // when
+        int deletedCount = memberRepository.deleteByName(member.getName());
+
+        // then
+        assertEquals(1, deletedCount);
+
+        // when
+        deletedCount = memberRepository.deleteByName(member.getName());
+
+        // then
+        assertEquals(0, deletedCount);
+
+        Optional<Member> findMember = memberRepository.findById(member.getId());
+
+        assertTrue(findMember.isEmpty());
+
+    }
+
 }

@@ -4,11 +4,13 @@ import com.assign.organization.domain.ranked.Ranked;
 import com.assign.organization.domain.team.Team;
 import lombok.Builder;
 import lombok.Getter;
+import lombok.NoArgsConstructor;
 
 import javax.persistence.*;
 
 @Getter
 @Entity
+@NoArgsConstructor
 public class Member {
 
     @Id
@@ -37,6 +39,10 @@ public class Member {
         this.name = name;
         this.address = address;
         this.position = position;
+    }
+
+    public void changeRanked(Ranked ranked) {
+        this.ranked = ranked;
     }
 
     public void changeTeam(Team team) {

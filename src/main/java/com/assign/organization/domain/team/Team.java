@@ -3,6 +3,7 @@ package com.assign.organization.domain.team;
 import com.assign.organization.domain.member.Member;
 import lombok.Builder;
 import lombok.Getter;
+import lombok.NoArgsConstructor;
 
 import javax.persistence.*;
 import java.util.HashSet;
@@ -11,6 +12,7 @@ import java.util.Set;
 
 @Getter
 @Entity
+@NoArgsConstructor
 public class Team {
 
     @Id
@@ -20,6 +22,8 @@ public class Team {
 
     private String name;
 
+    @OneToOne(cascade = CascadeType.PERSIST)
+    @JoinColumn(name = "MEMBER_ID")
     private Member teamLeader;
 
     @OneToMany(mappedBy = "team", fetch = FetchType.LAZY)

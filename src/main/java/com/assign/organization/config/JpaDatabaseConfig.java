@@ -28,11 +28,11 @@ public class JpaDatabaseConfig {
 
         return
                 DataSourceBuilder.create()
-                .driverClassName("org.mariadb.jdbc.Driver")
-                .username("test")
-                .password("1234")
-                .url("jdbc:mariadb://localhost:3306/assign")
-                .build();
+                        .driverClassName("org.mariadb.jdbc.Driver")
+                        .username("test")
+                        .password("1234")
+                        .url("jdbc:mariadb://localhost:3306/assign")
+                        .build();
     }
 
     @Bean
@@ -54,7 +54,6 @@ public class JpaDatabaseConfig {
         factory.setDataSource(getDataSource());
         factory.setJpaProperties(properties());
         factory.setPackagesToScan(PATH_OF_PACKAGES_TO_SCAN);
-        factory.setPersistenceUnitName("mariadb");
         factory.setJpaVendorAdapter(jpaVendorAdapter());
 
         return factory;
