@@ -9,25 +9,30 @@ import org.springframework.orm.jpa.JpaVendorAdapter;
 import org.springframework.orm.jpa.LocalContainerEntityManagerFactoryBean;
 import org.springframework.orm.jpa.vendor.HibernateJpaVendorAdapter;
 import org.springframework.transaction.PlatformTransactionManager;
+import org.springframework.transaction.annotation.EnableTransactionManagement;
 
 import javax.persistence.EntityManagerFactory;
 import javax.sql.DataSource;
 import java.util.Properties;
 
 @Configuration
-@EnableJpaRepositories(basePackages = {"com.assign.organization.domain"})
+@EnableTransactionManagement
+@EnableJpaRepositories
 public class JpaDatabaseConfig {
+
+    private static final String PATH_OF_PACKAGES_TO_SCAN = "com.assign.organization.domain";
+    private static final String JPA_DIALECT = "org.hibernate.dialect.MariaDBDialect";
 
     @Bean
     public DataSource getDataSource() {
-        DataSourceBuilder<?> dataSourceBuilder = DataSourceBuilder.create();
 
-        dataSourceBuilder.driverClassName("org.mariadb.jdbc.Driver");
-        dataSourceBuilder.username("test");
-        dataSourceBuilder.password("1234");
-        dataSourceBuilder.url("jdbc:mariadb://localhost:3306/assign");
-
-        return dataSourceBuilder.build();
+        return
+                DataSourceBuilder.create()
+                .driverClassName("org.mariadb.jdbc.Driver")
+                .username("test")
+                .password("1234")
+                .url("jdbc:mariadb://localhost:3306/assign")
+                .build();
     }
 
     @Bean
@@ -41,20 +46,18 @@ public class JpaDatabaseConfig {
     }
 
     @Bean
-    public EntityManagerFactory entityManagerFactory(DataSource dataSource,
-                                                     JpaVendorAdapter jpaVendorAdapter,
-                                                     Properties properties) {
+    public LocalContainerEntityManagerFactoryBean entityManagerFactory() {
 
         LocalContainerEntityManagerFactoryBean factory =
                 new LocalContainerEntityManagerFactoryBean();
 
-        factory.setJpaVendorAdapter(jpaVendorAdapter);
-        factory.setJpaProperties(properties);
-//        factoryBean.setPackagesToScan("");
-        factory.setDataSource(dataSource);
-        factory.afterPropertiesSet();
+        factory.setDataSource(getDataSource());
+        factory.setJpaProperties(properties());
+        factory.setPackagesToScan(PATH_OF_PACKAGES_TO_SCAN);
+        factory.setPersistenceUnitName("mariadb");
+        factory.setJpaVendorAdapter(jpaVendorAdapter());
 
-        return factory.getObject();
+        return factory;
     }
 
     @Bean
@@ -68,7 +71,7 @@ public class JpaDatabaseConfig {
     public Properties properties() {
         Properties properties = new Properties();
 
-        properties.put("hibernate.dialect", "org.hibernate.dialect.MariaDBDialect");
+        properties.put("hibernate.dialect", JPA_DIALECT);
         properties.put("hibernate.show_sql", "true");
         properties.put("hibernate.hbm2ddl.auto", "create");
         properties.put("hibernate.format_sql", "true");

@@ -1,4 +1,4 @@
-package com.assign.organization.domain.rank;
+package com.assign.organization.domain.ranked;
 
 import lombok.Builder;
 import lombok.Getter;
@@ -10,17 +10,17 @@ import javax.persistence.Id;
 
 @Getter
 @Entity
-public class Rank {
+public class Ranked {
 
     @Id
     @GeneratedValue
-    @Column(name = "RANK_ID")
+    @Column(name = "RANKED_ID")
     private Long id;
 
     private String name;
 
     @Builder
-    public Rank(String name) {
+    public Ranked(String name) {
         this.name = name;
     }
 }
