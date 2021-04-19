@@ -22,6 +22,29 @@ class MemberRepositoryTest {
     private MemberRepository memberRepository;
 
     @Test
+    public void testRead() {
+
+        // given
+        Member member = Member
+                .builder()
+                .address(null)
+                .name("홍길동")
+                .position(Position.INTERN)
+                .build();
+
+        // when
+        memberRepository.save(member);
+        memberRepository.flush();
+
+        Optional<Member> findMember = memberRepository.findById(member.getId());
+
+        // then
+        assertFalse(findMember.isEmpty());
+        assertEquals(member, findMember.get());
+
+    }
+
+    @Test
     public void testInsert() {
 
         //given

@@ -14,6 +14,7 @@ import java.util.Set;
 public class Team {
 
     @Id
+    @GeneratedValue(strategy = GenerationType.AUTO)
     @Column(name = "TEAM_ID")
     private Long id;
 
@@ -24,6 +25,10 @@ public class Team {
 
     @Builder
     public Team(String name) {
+        this.name = name;
+    }
+
+    public void updateTeamName(String name) {
         this.name = name;
     }
 
