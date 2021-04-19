@@ -12,6 +12,7 @@ import javax.persistence.*;
 public class Member {
 
     @Id
+    @GeneratedValue(strategy = GenerationType.AUTO)
     @Column(name = "MEMBER_ID")
     private Long id;
 
@@ -24,6 +25,7 @@ public class Member {
     @Embedded
     private Address address;
 
+    @Enumerated(EnumType.STRING)
     private Position position;
 
     @OneToOne
@@ -31,8 +33,7 @@ public class Member {
     private Ranked ranked;
 
     @Builder
-    public Member(Long id, String name, Address address, Position position) {
-        this.id = id;
+    public Member(String name, Address address, Position position) {
         this.name = name;
         this.address = address;
         this.position = position;
@@ -41,5 +42,14 @@ public class Member {
     public void changeTeam(Team team) {
         this.team = team;
         team.getMembers().add(this);
+    }
+
+    public void updateAddress(Address address) {
+        this.address = address;
+    }
+
+    public void update(String name, Position position) {
+        this.name = name;
+        this.position = position;
     }
 }

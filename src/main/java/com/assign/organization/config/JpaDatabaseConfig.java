@@ -17,7 +17,7 @@ import java.util.Properties;
 
 @Configuration
 @EnableTransactionManagement
-@EnableJpaRepositories
+@EnableJpaRepositories(basePackages = {"com.assign.organization.domain"})
 public class JpaDatabaseConfig {
 
     private static final String PATH_OF_PACKAGES_TO_SCAN = "com.assign.organization.domain";
