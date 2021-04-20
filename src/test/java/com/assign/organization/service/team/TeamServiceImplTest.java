@@ -81,8 +81,8 @@ class TeamServiceImplTest {
         Mockito.when(teamRepository.deleteByName(TEAM_NAME)).thenReturn(1);
         Mockito.when(teamRepository.deleteByName(NOT_EXIST_TEAM_NAME)).thenReturn(0);
 
-        Mockito.when(teamRepository.findNameExist(ALREADY_EXIST_TEAM_NAME)).thenReturn(true);
-        Mockito.when(teamRepository.findNameExist(NOT_EXIST_TEAM_NAME)).thenReturn(false);
+        Mockito.when(teamRepository.findNameExist(ALREADY_EXIST_TEAM_NAME)).thenReturn(1);
+        Mockito.when(teamRepository.findNameExist(NOT_EXIST_TEAM_NAME)).thenReturn(0);
 
         Mockito.when(memberService.findMemberByIdEntity(MEMBER_ID)).thenReturn(Optional.of(member));
 

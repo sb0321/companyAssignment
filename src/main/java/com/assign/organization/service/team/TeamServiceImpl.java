@@ -52,9 +52,9 @@ public class TeamServiceImpl implements TeamService {
     @Override
     public boolean updateTeamName(Long id, String name) {
 
-        boolean exist = teamRepository.findNameExist(name);
+        int exist = teamRepository.findNameExist(name);
 
-        if (exist) {
+        if (exist != 0) {
             return false;
         }
 
