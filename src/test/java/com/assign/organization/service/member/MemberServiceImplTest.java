@@ -1,7 +1,6 @@
 package com.assign.organization.service.member;
 
 import com.assign.organization.domain.member.*;
-import com.assign.organization.domain.ranked.Ranked;
 import com.assign.organization.domain.team.Team;
 import lombok.extern.slf4j.Slf4j;
 import org.junit.jupiter.api.BeforeEach;
@@ -32,6 +31,8 @@ class MemberServiceImplTest {
     private Long MEMBER_ID;
     private String MEMBER_NAME;
 
+    private Member MEMBER;
+
     @BeforeEach
     public void init() {
         Address address = Address
@@ -47,18 +48,16 @@ class MemberServiceImplTest {
                 .address(address)
                 .build();
 
+        MEMBER = member;
+
         Team team = Team
                 .builder()
                 .name("testTeam")
                 .build();
 
-        Ranked ranked = Ranked
-                .builder()
-                .name("superRank")
-                .build();
 
         member.changeTeam(team);
-        member.changeRanked(ranked);
+        member.changeRanked("팀장");
 
         MEMBER_ID = member.getId();
         MEMBER_NAME = member.getName();
@@ -116,6 +115,19 @@ class MemberServiceImplTest {
         // then
         assertEquals(newName, memberDTO.getName());
         assertEquals(newPosition, memberDTO.getPosition());
+
+    }
+
+    @Test
+    public void testFindMemberByIdEntity() {
+
+        // when
+        Optional<Member> findMember = memberService.findMemberByIdEntity(MEMBER_ID);
+
+        // then
+        assertFalse(findMember.isEmpty());
+
+        assertEquals(MEMBER, findMember.get());
 
     }
 

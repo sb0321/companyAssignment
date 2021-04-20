@@ -108,4 +108,30 @@ class TeamRepositoryTest {
         assertTrue(deletedTeam.isEmpty());
     }
 
+    @Test
+    public void testDeleteByName() {
+
+        // given
+        Team team = Team
+                .builder()
+                .name("test")
+                .build();
+
+        teamRepository.save(team);
+        teamRepository.flush();
+
+        // when
+        int deleteCount = teamRepository.deleteByName(team.getName());
+
+        // then
+        assertEquals(1, deleteCount);
+
+        // when
+        deleteCount = teamRepository.deleteByName(team.getName());
+
+        // then
+        assertEquals(0, deleteCount);
+
+    }
+
 }

@@ -1,6 +1,5 @@
 package com.assign.organization.domain.member;
 
-import com.assign.organization.domain.ranked.Ranked;
 import com.assign.organization.domain.team.Team;
 import lombok.Builder;
 import lombok.Getter;
@@ -30,24 +29,23 @@ public class Member {
     @Enumerated(EnumType.STRING)
     private Position position;
 
-    @OneToOne
-    @JoinColumn(name = "RANKED_ID")
-    private Ranked ranked;
+    private String ranked;
 
     @Builder
-    public Member(String name, Address address, Position position) {
+    public Member(String name, Address address, Position position, String ranked) {
         this.name = name;
         this.address = address;
         this.position = position;
-    }
-
-    public void changeRanked(Ranked ranked) {
         this.ranked = ranked;
     }
 
     public void changeTeam(Team team) {
         this.team = team;
         team.getMembers().add(this);
+    }
+
+    public void changeRanked(String ranked) {
+        this.ranked = ranked;
     }
 
     public void updateAddress(Address address) {

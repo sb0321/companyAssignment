@@ -1,6 +1,7 @@
 package com.assign.organization.domain.team;
 
 import com.assign.organization.domain.member.Member;
+import com.assign.organization.domain.member.MemberDTO;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -20,13 +21,14 @@ public class Team {
     @Column(name = "TEAM_ID")
     private Long id;
 
+    @Column(unique = true)
     private String name;
 
     @OneToOne(cascade = CascadeType.PERSIST)
     @JoinColumn(name = "MEMBER_ID")
     private Member teamLeader;
 
-    @OneToMany(mappedBy = "team", fetch = FetchType.LAZY)
+    @OneToMany(mappedBy = "team", fetch = FetchType.LAZY, cascade = CascadeType.ALL)
     private Set<Member> members = new HashSet<>();
 
     @Builder
@@ -40,6 +42,36 @@ public class Team {
 
     public void changeTeamLeader(Member member) {
         this.teamLeader = member;
+    }
+
+    public MemberDTO getTeamLeaderDTO() {
+
+        return MemberDTO
+                .builder()
+                .name(teamLeader.getName())
+                .address(teamLeader.getAddress())
+                .teamId(teamLeader.getId())
+                .ranked(teamLeader.getRanked())
+                .build();
+    }
+
+    public Set<MemberDTO> getTeamMembersDTO() {
+
+        Set<MemberDTO> teamMembers = new HashSet<>();
+
+        for (Member member : this.members) {
+            MemberDTO dto = MemberDTO
+                    .builder()
+                    .name(teamLeader.getName())
+                    .address(teamLeader.getAddress())
+                    .teamId(teamLeader.getId())
+                    .ranked(teamLeader.getRanked())
+                    .build();
+
+            teamMembers.add(dto);
+        }
+
+        return teamMembers;
     }
 
     @Override

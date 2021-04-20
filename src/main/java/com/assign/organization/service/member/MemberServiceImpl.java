@@ -29,7 +29,7 @@ public class MemberServiceImpl implements MemberService {
         return MemberDTO
                 .builder()
                 .name(member.getName())
-                .ranked(member.getRanked().getName())
+                .ranked(member.getRanked())
                 .position(member.getPosition())
                 .teamId(member.getTeam().getId())
                 .build();
@@ -60,7 +60,7 @@ public class MemberServiceImpl implements MemberService {
                 .builder()
                 .name(member.getName())
                 .position(member.getPosition())
-                .ranked(member.getRanked() == null ? null : member.getRanked().getName())
+                .ranked(member.getRanked())
                 .teamId(member.getTeam() == null ? null : member.getTeam().getId())
                 .address(member.getAddress())
                 .build();
@@ -84,9 +84,14 @@ public class MemberServiceImpl implements MemberService {
                 .builder()
                 .name(member.getName())
                 .position(member.getPosition())
-                .ranked(member.getRanked() == null ? null : member.getRanked().getName())
+                .ranked(member.getRanked() == null ? null : member.getRanked())
                 .teamId(member.getTeam() == null ? null : member.getTeam().getId())
                 .address(member.getAddress())
                 .build();
+    }
+
+    @Override
+    public Optional<Member> findMemberByIdEntity(Long id) {
+        return memberRepository.findById(id);
     }
 }
