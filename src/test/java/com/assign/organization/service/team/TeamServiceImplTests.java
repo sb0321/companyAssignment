@@ -2,11 +2,11 @@ package com.assign.organization.service.team;
 
 import com.assign.organization.domain.member.Address;
 import com.assign.organization.domain.member.Member;
-import com.assign.organization.domain.member.MemberRepository;
 import com.assign.organization.domain.member.Position;
 import com.assign.organization.domain.team.Team;
 import com.assign.organization.domain.team.TeamDTO;
 import com.assign.organization.domain.team.TeamRepository;
+import com.assign.organization.domain.team.TeamVO;
 import com.assign.organization.service.member.MemberService;
 import lombok.extern.slf4j.Slf4j;
 import org.junit.jupiter.api.BeforeEach;
@@ -23,11 +23,12 @@ import javax.persistence.NoResultException;
 import java.util.Optional;
 
 import static org.junit.jupiter.api.Assertions.*;
+import static org.mockito.ArgumentMatchers.any;
 
 @Slf4j
 @ExtendWith({MockitoExtension.class})
 @MockitoSettings(strictness = Strictness.LENIENT)
-class TeamServiceImplTest {
+class TeamServiceImplTests {
 
     @Mock
     private TeamRepository teamRepository;
@@ -47,8 +48,6 @@ class TeamServiceImplTest {
     private static final Long MEMBER_ID = 1L;
 
     private static final String RANKED = "팀장";
-
-    private Member MEMEBER;
 
     @BeforeEach
     public void init() {
@@ -71,8 +70,6 @@ class TeamServiceImplTest {
                 .ranked(RANKED)
                 .address(address)
                 .build();
-
-        MEMEBER = member;
 
         team.changeTeamLeader(member);
 
@@ -148,6 +145,31 @@ class TeamServiceImplTest {
 
         // when
         teamService.updateTeamLeader(TEAM_ID, MEMBER_ID);
+    }
+
+    @Test
+    public void testCreateTeam() {
+
+        // given
+        String teamName = "testTeam";
+
+        TeamVO vo = TeamVO
+                .builder()
+                .name(teamName)
+                .build();
+
+        Team team = Team
+                .builder()
+                .name(vo.getName())
+                .build();
+
+        // when
+        Mockito.when(teamRepository.save(any())).thenReturn(team);
+
+        TeamDTO savedTeam = teamService.createTeam(vo);
+
+        // then
+        assertEquals(teamName, savedTeam.getName());
     }
 
 }

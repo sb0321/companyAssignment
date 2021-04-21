@@ -1,10 +1,13 @@
 package com.assign.organization.service.team;
 
 import com.assign.organization.domain.team.TeamDTO;
+import com.assign.organization.domain.team.TeamVO;
 
 public interface TeamService {
 
     TeamDTO findTeamById(Long id);
+
+    TeamDTO createTeam(TeamVO newTeam);
 
     boolean deleteTeamByName(String name);
 

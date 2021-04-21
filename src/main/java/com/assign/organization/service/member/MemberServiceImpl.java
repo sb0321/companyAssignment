@@ -44,9 +44,14 @@ public class MemberServiceImpl implements MemberService {
     }
 
     @Override
-    public MemberDTO updateMemberAddress(Long id, Address address) {
+    public void deleteMemberById(Long id) {
+        memberRepository.deleteById(id);
+    }
 
-        Optional<Member> findMember = memberRepository.findById(id);
+    @Override
+    public void updateMember(MemberVO update) {
+
+        Optional<Member> findMember = memberRepository.findById(update.getId());
 
         if (findMember.isEmpty()) {
             throw new NoResultException();
@@ -54,39 +59,51 @@ public class MemberServiceImpl implements MemberService {
 
         Member member = findMember.get();
 
-        member.updateAddress(address);
-
-        return MemberDTO
+        Address newAddress = Address
                 .builder()
-                .name(member.getName())
-                .position(member.getPosition())
-                .ranked(member.getRanked())
-                .teamId(member.getTeam() == null ? null : member.getTeam().getId())
-                .address(member.getAddress())
+                .cellPhone(update.getCellPhone() == null ?
+                        member.getAddress().getCellPhone() : update.getCellPhone())
+                .businessCall(update.getBusinessCall() == null ?
+                        member.getAddress().getCellPhone() : update.getBusinessCall())
                 .build();
+
+        MemberDTO dto = MemberDTO
+                .builder()
+                .name(update.getName() == null ? member.getName() : update.getName())
+                .ranked(update.getRanked() == null ? member.getRanked() : update.getRanked())
+                .address(newAddress)
+                .position(member.getPosition())
+                .build();
+
+        member.update(dto);
 
     }
 
     @Override
-    public MemberDTO updateMember(Long id, Position position, String name) {
+    public MemberDTO createMember(MemberVO newMember) {
 
-        Optional<Member> findMember = memberRepository.findById(id);
+        Address address = Address
+                .builder()
+                .businessCall(newMember.getBusinessCall())
+                .cellPhone(newMember.getCellPhone())
+                .build();
 
-        if (findMember.isEmpty()) {
-            throw new NoResultException();
-        }
+        Member member = Member
+                .builder()
+                .name(newMember.getName())
+                .ranked(newMember.getRanked())
+                .address(address)
+                .build();
 
-        Member member = findMember.get();
-
-        member.update(name, position);
+        Member savedMember = memberRepository.save(member);
 
         return MemberDTO
                 .builder()
-                .name(member.getName())
-                .position(member.getPosition())
-                .ranked(member.getRanked() == null ? null : member.getRanked())
-                .teamId(member.getTeam() == null ? null : member.getTeam().getId())
-                .address(member.getAddress())
+                .name(savedMember.getName())
+                .teamId(savedMember.getTeam() == null ? null : savedMember.getTeam().getId())
+                .ranked(savedMember.getRanked())
+                .address(savedMember.getAddress())
+                .position(savedMember.getPosition())
                 .build();
     }
 

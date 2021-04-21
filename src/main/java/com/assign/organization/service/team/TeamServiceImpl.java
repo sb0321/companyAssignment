@@ -4,6 +4,7 @@ import com.assign.organization.domain.member.Member;
 import com.assign.organization.domain.team.Team;
 import com.assign.organization.domain.team.TeamDTO;
 import com.assign.organization.domain.team.TeamRepository;
+import com.assign.organization.domain.team.TeamVO;
 import com.assign.organization.service.member.MemberService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
@@ -39,6 +40,22 @@ public class TeamServiceImpl implements TeamService {
                 .members(team.getTeamMembersDTO())
                 .build();
 
+    }
+
+    @Override
+    public TeamDTO createTeam(TeamVO newTeam) {
+
+        Team team = Team
+                .builder()
+                .name(newTeam.getName())
+                .build();
+
+        Team savedTeam = teamRepository.save(team);
+
+        return TeamDTO
+                .builder()
+                .name(savedTeam.getName())
+                .build();
     }
 
     @Override

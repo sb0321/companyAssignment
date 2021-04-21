@@ -16,7 +16,7 @@ import static org.junit.jupiter.api.Assertions.*;
 @DataJpaTest
 @Import(JpaDatabaseConfig.class)
 @AutoConfigureTestDatabase(replace = AutoConfigureTestDatabase.Replace.NONE)
-class MemberRepositoryTest {
+class MemberRepositoryTests {
 
     @Autowired
     private MemberRepository memberRepository;
@@ -90,63 +90,34 @@ class MemberRepositoryTest {
                 .build();
 
         memberRepository.save(member);
-
-        String afterName = "홍길이";
-        Position afterPosition = Position.CHAIRMAN;
-
-        member.update(afterName, afterPosition);
-
-        Member findMember = memberRepository.getOne(member.getId());
-
-        // then
-        assertEquals(afterName, findMember.getName());
-        assertEquals(afterPosition, findMember.getPosition());
-
-    }
-
-    @Test
-    public void testAddressUpdate() {
-
-        //given
-        Address address = Address
-                .builder()
-                .businessCall("1101")
-                .cellPhone("010-3358-9731")
-                .build();
-
-
-        Member member = Member
-                .builder()
-                .address(address)
-                .name("홍길동")
-                .position(Position.INTERN)
-                .build();
-
+        memberRepository.flush();
 
         // when
-        memberRepository.save(member);
 
-        Address beforeAddress = member.getAddress();
+        String afterName = "홍길이";
+        Position newPosition = Position.CHAIRMAN;
 
         Address newAddress = Address
                 .builder()
-                .cellPhone("010-3333-3333")
-                .businessCall("1000")
+                .businessCall("0000")
+                .cellPhone("010-2222-2222")
                 .build();
 
-        member.updateAddress(newAddress);
-
-        memberRepository.flush();
+        MemberDTO dto = MemberDTO
+                .builder()
+                .address(newAddress)
+                .position(newPosition)
+                .ranked("사원")
+                .name(afterName)
+                .build();
 
         Member findMember = memberRepository.getOne(member.getId());
+        findMember.update(dto);
 
         // then
-        assertNotEquals(beforeAddress, findMember.getAddress());
-
-        log.info(beforeAddress.getBusinessCall() + " || " + findMember.getAddress().getBusinessCall());
-
-        assertNotEquals(beforeAddress.getBusinessCall(), findMember.getAddress().getBusinessCall());
-        assertNotEquals(beforeAddress.getCellPhone(), findMember.getAddress().getCellPhone());
+        assertEquals(afterName, findMember.getName());
+        assertEquals(newPosition, findMember.getPosition());
+        assertEquals(newAddress, findMember.getAddress());
 
     }
 

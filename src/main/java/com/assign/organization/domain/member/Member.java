@@ -48,12 +48,22 @@ public class Member {
         this.ranked = ranked;
     }
 
-    public void updateAddress(Address address) {
-        this.address = address;
+    public void update(MemberDTO dto) {
+        this.name = dto.getName();
+        this.position = dto.getPosition();
+        this.ranked = dto.getRanked();
+        this.address = dto.getAddress();
     }
 
-    public void update(String name, Position position) {
+    public void update(String name) {
         this.name = name;
+    }
+
+    public void update(Position position) {
         this.position = position;
+    }
+
+    public void update(Address address) {
+        this.address = address;
     }
 }

@@ -16,11 +16,12 @@ import org.mockito.quality.Strictness;
 import java.util.Optional;
 
 import static org.junit.jupiter.api.Assertions.*;
+import static org.mockito.ArgumentMatchers.any;
 
 @Slf4j
 @ExtendWith({MockitoExtension.class})
 @MockitoSettings(strictness = Strictness.LENIENT)
-class MemberServiceImplTest {
+class MemberServiceImplTests {
 
     @Mock
     private MemberRepository memberRepository;
@@ -84,25 +85,6 @@ class MemberServiceImplTest {
     }
 
     @Test
-    public void testUpdateMemberAddress() {
-
-        // given
-        Address address = Address
-                .builder()
-                .cellPhone("010-3454-2143")
-                .businessCall("1111")
-                .build();
-
-        // when
-        MemberDTO memberDTO = memberService.updateMemberAddress(MEMBER_ID, address);
-
-        // then
-        assertEquals(address.getBusinessCall(), memberDTO.getAddress().getBusinessCall());
-        assertEquals(address.getCellPhone(), memberDTO.getAddress().getCellPhone());
-
-    }
-
-    @Test
     public void testUpdateMember() {
 
         // given
@@ -110,11 +92,11 @@ class MemberServiceImplTest {
         Position newPosition = Position.CHAIRMAN;
 
         // when
-        MemberDTO memberDTO = memberService.updateMember(MEMBER_ID, newPosition, newName);
+//        MemberDTO memberDTO = memberService.updateMember(MEMBER_ID, newPosition, newName);
 
         // then
-        assertEquals(newName, memberDTO.getName());
-        assertEquals(newPosition, memberDTO.getPosition());
+//        assertEquals(newName, memberDTO.getName());
+//        assertEquals(newPosition, memberDTO.getPosition());
 
     }
 
@@ -128,6 +110,44 @@ class MemberServiceImplTest {
         assertFalse(findMember.isEmpty());
 
         assertEquals(MEMBER, findMember.get());
+
+    }
+
+    @Test
+    public void testCreateMember() {
+
+        // given
+        MemberVO vo = MemberVO
+                .builder()
+                .name("newMember")
+                .ranked("팀장")
+                .businessCall("1011")
+                .cellPhone("010-1111-1111")
+                .build();
+
+        Address address = Address
+                .builder()
+                .businessCall("1011")
+                .cellPhone("010-1111-1111")
+                .build();
+
+        Member member = Member
+                .builder()
+                .name(vo.getName())
+                .ranked(vo.getRanked())
+                .address(address)
+                .build();
+
+        Mockito.when(memberRepository.save(any())).thenReturn(member);
+
+        // when
+        MemberDTO dto = memberService.createMember(vo);
+
+        // then
+        assertEquals(vo.getName(), dto.getName());
+        assertEquals(vo.getBusinessCall(), dto.getAddress().getBusinessCall());
+        assertEquals(vo.getCellPhone(), dto.getAddress().getCellPhone());
+        assertEquals(vo.getRanked(), dto.getRanked());
 
     }
 
