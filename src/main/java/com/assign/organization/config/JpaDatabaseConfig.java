@@ -46,15 +46,18 @@ public class JpaDatabaseConfig {
     }
 
     @Bean
-    public LocalContainerEntityManagerFactoryBean entityManagerFactory() {
+    public LocalContainerEntityManagerFactoryBean entityManagerFactory(
+            JpaVendorAdapter jpaVendorAdapter,
+            Properties properties,
+            DataSource dataSource) {
 
         LocalContainerEntityManagerFactoryBean factory =
                 new LocalContainerEntityManagerFactoryBean();
 
-        factory.setDataSource(getDataSource());
-        factory.setJpaProperties(properties());
+        factory.setDataSource(dataSource);
+        factory.setJpaProperties(properties);
         factory.setPackagesToScan(PATH_OF_PACKAGES_TO_SCAN);
-        factory.setJpaVendorAdapter(jpaVendorAdapter());
+        factory.setJpaVendorAdapter(jpaVendorAdapter);
 
         return factory;
     }
