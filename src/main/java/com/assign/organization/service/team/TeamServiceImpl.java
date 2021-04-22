@@ -43,7 +43,7 @@ public class TeamServiceImpl implements TeamService {
     }
 
     @Override
-    public TeamDTO createTeam(TeamVO newTeam) {
+    public Team createTeam(TeamVO newTeam) {
 
         Team team = Team
                 .builder()
@@ -52,10 +52,7 @@ public class TeamServiceImpl implements TeamService {
 
         Team savedTeam = teamRepository.save(team);
 
-        return TeamDTO
-                .builder()
-                .name(savedTeam.getName())
-                .build();
+        return savedTeam;
     }
 
     @Override

@@ -47,7 +47,7 @@ class TeamServiceImplTests {
 
     private static final Long MEMBER_ID = 1L;
 
-    private static final String RANKED = "팀장";
+    private static final String DUTY = "팀장";
 
     @BeforeEach
     public void init() {
@@ -67,7 +67,7 @@ class TeamServiceImplTests {
                 .builder()
                 .name("member")
                 .position(Position.ADMINISTRATIVE_MANAGER)
-                .ranked(RANKED)
+                .duty(DUTY)
                 .address(address)
                 .build();
 
@@ -94,7 +94,7 @@ class TeamServiceImplTests {
         log.info(findTeam.toString());
 
         assertEquals(TEAM_NAME, findTeam.getName());
-        assertEquals(RANKED, findTeam.getTeamLeader().getRanked());
+        assertEquals(DUTY, findTeam.getTeamLeader().getRanked());
 
     }
 
@@ -166,7 +166,7 @@ class TeamServiceImplTests {
         // when
         Mockito.when(teamRepository.save(any())).thenReturn(team);
 
-        TeamDTO savedTeam = teamService.createTeam(vo);
+        Team savedTeam = teamService.createTeam(vo);
 
         // then
         assertEquals(teamName, savedTeam.getName());

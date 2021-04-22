@@ -29,7 +29,7 @@ public class Team {
     private Member teamLeader;
 
     @OneToMany(mappedBy = "team", fetch = FetchType.LAZY, cascade = CascadeType.ALL)
-    private Set<Member> members = new HashSet<>();
+    private final Set<Member> members = new HashSet<>();
 
     @Builder
     public Team(String name) {
@@ -51,8 +51,18 @@ public class Team {
                 .name(teamLeader.getName())
                 .address(teamLeader.getAddress())
                 .teamId(teamLeader.getId())
-                .ranked(teamLeader.getRanked())
+                .ranked(teamLeader.getDuty())
                 .build();
+    }
+
+    public void addMember(Member member) {
+        this.members.add(member);
+        member.changeTeam(this);
+    }
+
+    public void removeMember(Member member) {
+        this.members.removeIf(m -> Objects.equals(m, member));
+        member.changeTeam(null);
     }
 
     public Set<MemberDTO> getTeamMembersDTO() {
@@ -65,7 +75,7 @@ public class Team {
                     .name(teamLeader.getName())
                     .address(teamLeader.getAddress())
                     .teamId(teamLeader.getId())
-                    .ranked(teamLeader.getRanked())
+                    .ranked(teamLeader.getDuty())
                     .build();
 
             teamMembers.add(dto);

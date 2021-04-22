@@ -27,6 +27,7 @@ class MemberRepositoryTests {
         // given
         Member member = Member
                 .builder()
+                .id(1L)
                 .address(null)
                 .name("홍길동")
                 .position(Position.INTERN)
@@ -40,7 +41,7 @@ class MemberRepositoryTests {
 
         // then
         assertFalse(findMember.isEmpty());
-        assertEquals(member, findMember.get());
+        assertEquals(member.getName(), findMember.get().getName());
 
     }
 
@@ -57,6 +58,7 @@ class MemberRepositoryTests {
 
         Member member = Member
                 .builder()
+                .id(1L)
                 .address(address)
                 .name("홍길동")
                 .position(Position.INTERN)
@@ -66,7 +68,7 @@ class MemberRepositoryTests {
         memberRepository.save(member);
 
         // then
-        assertEquals(member, memberRepository.getOne(member.getId()));
+        assertEquals(member.getName(), memberRepository.getOne(member.getId()).getName());
     }
 
     @Test
@@ -84,6 +86,7 @@ class MemberRepositoryTests {
 
         Member member = Member
                 .builder()
+                .id(1L)
                 .address(address)
                 .name(beforeName)
                 .position(beforePosition)
@@ -134,6 +137,7 @@ class MemberRepositoryTests {
 
         Member member = Member
                 .builder()
+                .id(1L)
                 .address(address)
                 .name("홍길동")
                 .position(Position.INTERN)
@@ -169,6 +173,7 @@ class MemberRepositoryTests {
 
         Member member = Member
                 .builder()
+                .id(1L)
                 .address(address)
                 .name("홍길동")
                 .position(Position.INTERN)

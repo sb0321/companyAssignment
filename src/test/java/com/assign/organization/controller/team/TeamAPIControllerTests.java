@@ -3,6 +3,7 @@ package com.assign.organization.controller.team;
 import com.assign.organization.domain.member.Address;
 import com.assign.organization.domain.member.MemberDTO;
 import com.assign.organization.domain.member.Position;
+import com.assign.organization.domain.team.Team;
 import com.assign.organization.domain.team.TeamDTO;
 import com.assign.organization.domain.team.TeamVO;
 import com.assign.organization.service.team.TeamService;
@@ -61,7 +62,7 @@ class TeamAPIControllerTests {
 
         params.add("name", "testTeam");
 
-        Mockito.when(teamService.createTeam(any())).thenReturn(TeamDTO.builder().build());
+        Mockito.when(teamService.createTeam(any())).thenReturn(new Team());
 
         // when
         mockMvc.perform(post("/team")
