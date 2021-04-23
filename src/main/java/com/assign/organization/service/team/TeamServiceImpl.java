@@ -1,6 +1,7 @@
 package com.assign.organization.service.team;
 
 import com.assign.organization.domain.member.Member;
+import com.assign.organization.domain.member.MemberVO;
 import com.assign.organization.domain.team.Team;
 import com.assign.organization.domain.team.TeamDTO;
 import com.assign.organization.domain.team.TeamRepository;
@@ -11,7 +12,7 @@ import org.springframework.stereotype.Service;
 
 import javax.persistence.NoResultException;
 import javax.transaction.Transactional;
-import java.util.Optional;
+import java.util.*;
 
 @Service
 @Transactional
@@ -50,9 +51,65 @@ public class TeamServiceImpl implements TeamService {
                 .name(newTeam.getName())
                 .build();
 
-        Team savedTeam = teamRepository.save(team);
+        return teamRepository.save(team);
+    }
 
-        return savedTeam;
+    @Override
+    public List<TeamVO> getTeamList() {
+
+        List<Team> allTeam = teamRepository.findAll();
+
+        List<TeamVO> teamVOList = new ArrayList<>();
+
+        for (Team team : allTeam) {
+
+            Member teamLeaderEntity = team.getTeamLeader();
+
+            MemberVO leader;
+
+            if(teamLeaderEntity == null) {
+                leader = null;
+            } else {
+                leader = MemberVO
+                        .builder()
+                        .id(teamLeaderEntity.getId())
+                        .businessCall(teamLeaderEntity.getAddress().getBusinessCall())
+                        .cellPhone(teamLeaderEntity.getAddress().getCellPhone())
+                        .name(teamLeaderEntity.getName())
+                        .duty(teamLeaderEntity.getDuty())
+                        .position(teamLeaderEntity.getPosition())
+                        .build();
+            }
+
+            Set<MemberVO> teamMembers = new HashSet<>();
+
+            for (Member member : team.getMembers()) {
+                MemberVO vo = MemberVO
+                        .builder()
+                        .id(member.getId())
+                        .businessCall(member.getAddress().getBusinessCall())
+                        .cellPhone(member.getAddress().getCellPhone())
+                        .name(member.getName())
+                        .duty(member.getDuty())
+                        .position(member.getPosition())
+                        .build();
+
+                teamMembers.add(vo);
+            }
+
+
+            TeamVO vo = TeamVO
+                    .builder()
+                    .id(team.getId())
+                    .teamLeader(leader)
+                    .members(teamMembers)
+                    .name(team.getName())
+                    .build();
+
+            teamVOList.add(vo);
+        }
+
+        return teamVOList;
     }
 
     @Override
