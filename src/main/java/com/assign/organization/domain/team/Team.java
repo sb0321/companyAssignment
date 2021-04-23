@@ -51,7 +51,7 @@ public class Team {
                 .name(teamLeader.getName())
                 .address(teamLeader.getAddress())
                 .teamId(teamLeader.getId())
-                .ranked(teamLeader.getDuty())
+                .duty(teamLeader.getDuty())
                 .build();
     }
 
@@ -75,7 +75,7 @@ public class Team {
                     .name(teamLeader.getName())
                     .address(teamLeader.getAddress())
                     .teamId(teamLeader.getId())
-                    .ranked(teamLeader.getDuty())
+                    .duty(teamLeader.getDuty())
                     .build();
 
             teamMembers.add(dto);

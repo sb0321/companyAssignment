@@ -2,7 +2,6 @@ package com.assign.organization.service.team;
 
 import com.assign.organization.domain.member.Address;
 import com.assign.organization.domain.member.Member;
-import com.assign.organization.domain.member.Position;
 import com.assign.organization.domain.team.Team;
 import com.assign.organization.domain.team.TeamDTO;
 import com.assign.organization.domain.team.TeamRepository;
@@ -66,7 +65,7 @@ class TeamServiceImplTests {
         Member member = Member
                 .builder()
                 .name("member")
-                .position(Position.ADMINISTRATIVE_MANAGER)
+                .position("매니저")
                 .duty(DUTY)
                 .address(address)
                 .build();
@@ -94,7 +93,7 @@ class TeamServiceImplTests {
         log.info(findTeam.toString());
 
         assertEquals(TEAM_NAME, findTeam.getName());
-        assertEquals(DUTY, findTeam.getTeamLeader().getRanked());
+        assertEquals(DUTY, findTeam.getTeamLeader().getDuty());
 
     }
 

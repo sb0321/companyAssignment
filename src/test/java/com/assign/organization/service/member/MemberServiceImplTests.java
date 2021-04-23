@@ -45,7 +45,7 @@ class MemberServiceImplTests {
         Member member = Member
                 .builder()
                 .name("test")
-                .position(Position.INTERN)
+                .position("인턴")
                 .address(address)
                 .build();
 
@@ -89,7 +89,7 @@ class MemberServiceImplTests {
 
         // given
         String newName = "newName";
-        Position newPosition = Position.CHAIRMAN;
+        String newString = "사장";
 
         // when
 //        MemberDTO memberDTO = memberService.updateMember(MEMBER_ID, newPosition, newName);
@@ -147,7 +147,7 @@ class MemberServiceImplTests {
         assertEquals(vo.getName(), dto.getName());
         assertEquals(vo.getBusinessCall(), dto.getAddress().getBusinessCall());
         assertEquals(vo.getCellPhone(), dto.getAddress().getCellPhone());
-        assertEquals(vo.getDuty(), dto.getRanked());
+        assertEquals(vo.getDuty(), dto.getDuty());
 
     }
 

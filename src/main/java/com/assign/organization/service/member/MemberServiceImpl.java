@@ -29,7 +29,7 @@ public class MemberServiceImpl implements MemberService {
         return MemberDTO
                 .builder()
                 .name(member.getName())
-                .ranked(member.getDuty())
+                .duty(member.getDuty())
                 .position(member.getPosition())
                 .teamId(member.getTeam().getId())
                 .build();
@@ -70,7 +70,7 @@ public class MemberServiceImpl implements MemberService {
         MemberDTO dto = MemberDTO
                 .builder()
                 .name(update.getName() == null ? member.getName() : update.getName())
-                .ranked(update.getDuty() == null ? member.getDuty() : update.getDuty())
+                .duty(update.getDuty() == null ? member.getDuty() : update.getDuty())
                 .address(newAddress)
                 .position(member.getPosition())
                 .build();
@@ -93,6 +93,7 @@ public class MemberServiceImpl implements MemberService {
                 .id(newMember.getId())
                 .name(newMember.getName())
                 .duty(newMember.getDuty())
+                .position(newMember.getPosition())
                 .address(address)
                 .build();
 
@@ -102,7 +103,7 @@ public class MemberServiceImpl implements MemberService {
                 .builder()
                 .name(savedMember.getName())
                 .teamId(savedMember.getTeam() == null ? null : savedMember.getTeam().getId())
-                .ranked(savedMember.getDuty())
+                .duty(savedMember.getDuty())
                 .address(savedMember.getAddress())
                 .position(savedMember.getPosition())
                 .build();

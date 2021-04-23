@@ -2,7 +2,6 @@ package com.assign.organization.controller.member;
 
 import com.assign.organization.domain.member.Address;
 import com.assign.organization.domain.member.MemberDTO;
-import com.assign.organization.domain.member.Position;
 import com.assign.organization.service.member.MemberService;
 import lombok.extern.slf4j.Slf4j;
 import org.junit.jupiter.api.BeforeEach;
@@ -66,7 +65,7 @@ class MemberAPIControllerTests {
                 .name("testName")
                 .address(address)
                 .id(1L)
-                .ranked("팀장")
+                .duty("팀장")
                 .build();
 
         Mockito.when(memberService.createMember(any())).thenReturn(dto);
@@ -124,9 +123,9 @@ class MemberAPIControllerTests {
         MemberDTO dto = MemberDTO
                 .builder()
                 .id(1L)
-                .position(Position.INTERN)
+                .position("인턴")
                 .address(null)
-                .ranked("팀장")
+                .duty("팀장")
                 .teamId(2L)
                 .name("testMember")
                 .address(address)

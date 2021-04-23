@@ -34,7 +34,7 @@ public class MemberAPIController {
                 .id(id)
                 .businessCall(findMember.getAddress().getBusinessCall())
                 .cellPhone(findMember.getAddress().getCellPhone())
-                .duty(findMember.getRanked())
+                .duty(findMember.getDuty())
                 .build();
 
         return vo;

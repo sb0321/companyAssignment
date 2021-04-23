@@ -30,7 +30,7 @@ class MemberRepositoryTests {
                 .id(1L)
                 .address(null)
                 .name("홍길동")
-                .position(Position.INTERN)
+                .position("인턴")
                 .build();
 
         // when
@@ -61,7 +61,7 @@ class MemberRepositoryTests {
                 .id(1L)
                 .address(address)
                 .name("홍길동")
-                .position(Position.INTERN)
+                .position("인턴")
                 .build();
 
         // when
@@ -82,7 +82,7 @@ class MemberRepositoryTests {
                 .build();
 
         String beforeName = "홍길동";
-        Position beforePosition = Position.INTERN;
+        String beforePosition = "인턴";
 
         Member member = Member
                 .builder()
@@ -98,7 +98,7 @@ class MemberRepositoryTests {
         // when
 
         String afterName = "홍길이";
-        Position newPosition = Position.CHAIRMAN;
+        String afterPosition = "사장";
 
         Address newAddress = Address
                 .builder()
@@ -109,8 +109,8 @@ class MemberRepositoryTests {
         MemberDTO dto = MemberDTO
                 .builder()
                 .address(newAddress)
-                .position(newPosition)
-                .ranked("사원")
+                .position(afterPosition)
+                .duty("사원")
                 .name(afterName)
                 .build();
 
@@ -119,7 +119,7 @@ class MemberRepositoryTests {
 
         // then
         assertEquals(afterName, findMember.getName());
-        assertEquals(newPosition, findMember.getPosition());
+        assertEquals(afterPosition, findMember.getPosition());
         assertEquals(newAddress, findMember.getAddress());
 
     }
@@ -140,7 +140,7 @@ class MemberRepositoryTests {
                 .id(1L)
                 .address(address)
                 .name("홍길동")
-                .position(Position.INTERN)
+                .position("인턴")
                 .build();
 
         // when
@@ -176,7 +176,7 @@ class MemberRepositoryTests {
                 .id(1L)
                 .address(address)
                 .name("홍길동")
-                .position(Position.INTERN)
+                .position("인턴")
                 .build();
 
         memberRepository.save(member);

@@ -2,7 +2,6 @@ package com.assign.organization.controller.team;
 
 import com.assign.organization.domain.member.Address;
 import com.assign.organization.domain.member.MemberDTO;
-import com.assign.organization.domain.member.Position;
 import com.assign.organization.domain.team.Team;
 import com.assign.organization.domain.team.TeamDTO;
 import com.assign.organization.domain.team.TeamVO;
@@ -88,8 +87,8 @@ class TeamAPIControllerTests {
                 .teamId(1L)
                 .address(teamLeaderAddress)
                 .name("teamLeader")
-                .position(Position.CHAIRMAN)
-                .ranked("팀장")
+                .position("사장")
+                .duty("팀장")
                 .build();
 
         Set<MemberDTO> teamMembers = new HashSet<>();
@@ -106,7 +105,7 @@ class TeamAPIControllerTests {
                     .builder()
                     .name(String.valueOf(memberIndex))
                     .address(memberAddress)
-                    .position(Position.INTERN)
+                    .position("인턴")
                     .build();
 
             teamMembers.add(m);

@@ -60,6 +60,7 @@ public class InitController {
                     .id(csvMember.getId())
                     .name(csvMember.getName())
                     .duty(csvMember.getDuty())
+                    .position(csvMember.getPosition())
                     .businessCall(csvMember.getBusinessCall())
                     .cellPhone(csvMember.getCellPhone())
                     .build();
