@@ -28,7 +28,7 @@ public class TeamServiceImpl implements TeamService {
 
         Optional<Team> findTeam = teamRepository.findById(id);
 
-        if (findTeam.isEmpty()) {
+        if (!findTeam.isPresent()) {
             throw new NoResultException();
         }
 
@@ -81,7 +81,7 @@ public class TeamServiceImpl implements TeamService {
                         .build();
             }
 
-            Set<MemberVO> teamMembers = new HashSet<>();
+            List<MemberVO> teamMembers = new ArrayList<>();
 
             for (Member member : team.getMembers()) {
                 MemberVO vo = MemberVO
@@ -131,7 +131,7 @@ public class TeamServiceImpl implements TeamService {
 
         Optional<Team> findTeam = teamRepository.findById(id);
 
-        if (findTeam.isEmpty()) {
+        if (!findTeam.isPresent()) {
             throw new NoResultException();
         }
 
@@ -147,7 +147,7 @@ public class TeamServiceImpl implements TeamService {
 
         Optional<Member> findMember = memberService.findMemberByIdEntity(teamLeaderId);
 
-        if(findMember.isEmpty()) {
+        if(!findMember.isPresent()) {
             throw new NoResultException();
         }
 
@@ -155,7 +155,7 @@ public class TeamServiceImpl implements TeamService {
 
         Optional<Team> findTeam = teamRepository.findById(teamId);
 
-        if(findTeam.isEmpty()) {
+        if(!findTeam.isPresent()) {
             throw new NoResultException();
         }
 

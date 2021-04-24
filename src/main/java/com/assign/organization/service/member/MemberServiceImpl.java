@@ -2,10 +2,15 @@ package com.assign.organization.service.member;
 
 import com.assign.organization.domain.member.*;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageImpl;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 
 import javax.persistence.NoResultException;
 import javax.transaction.Transactional;
+import java.util.List;
 import java.util.Optional;
 
 @Service
@@ -20,7 +25,7 @@ public class MemberServiceImpl implements MemberService {
 
         Optional<Member> findMember = memberRepository.findById(id);
 
-        if (findMember.isEmpty()) {
+        if (!findMember.isPresent()) {
             return null;
         }
 
@@ -53,7 +58,7 @@ public class MemberServiceImpl implements MemberService {
 
         Optional<Member> findMember = memberRepository.findById(update.getId());
 
-        if (findMember.isEmpty()) {
+        if (!findMember.isPresent()) {
             throw new NoResultException();
         }
 

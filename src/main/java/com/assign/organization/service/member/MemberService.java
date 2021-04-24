@@ -1,6 +1,9 @@
 package com.assign.organization.service.member;
 
-import com.assign.organization.domain.member.*;
+import com.assign.organization.domain.member.Member;
+import com.assign.organization.domain.member.MemberDTO;
+import com.assign.organization.domain.member.MemberVO;
+import org.springframework.data.domain.Page;
 
 import java.util.Optional;
 

@@ -107,7 +107,7 @@ class MemberServiceImplTests {
         Optional<Member> findMember = memberService.findMemberByIdEntity(MEMBER_ID);
 
         // then
-        assertFalse(findMember.isEmpty());
+        assertTrue(findMember.isPresent());
 
         assertEquals(MEMBER, findMember.get());
 

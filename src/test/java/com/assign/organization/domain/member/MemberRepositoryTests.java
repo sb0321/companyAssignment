@@ -7,8 +7,11 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.jdbc.AutoConfigureTestDatabase;
 import org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest;
 import org.springframework.context.annotation.Import;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 
 import java.util.Optional;
+import java.util.stream.Collectors;
 
 import static org.junit.jupiter.api.Assertions.*;
 
@@ -40,7 +43,7 @@ class MemberRepositoryTests {
         Optional<Member> findMember = memberRepository.findById(member.getId());
 
         // then
-        assertFalse(findMember.isEmpty());
+        assertTrue(findMember.isPresent());
         assertEquals(member.getName(), findMember.get().getName());
 
     }
@@ -157,7 +160,7 @@ class MemberRepositoryTests {
         Optional<Member> deletedMember = memberRepository.findById(member.getId());
 
         // then
-        assertTrue(deletedMember.isEmpty());
+        assertFalse(deletedMember.isPresent());
     }
 
     @Test
@@ -195,7 +198,7 @@ class MemberRepositoryTests {
 
         Optional<Member> findMember = memberRepository.findById(member.getId());
 
-        assertTrue(findMember.isEmpty());
+        assertFalse(findMember.isPresent());
 
     }
 

@@ -37,7 +37,7 @@ class TeamRepositoryTest {
         Optional<Team> findTeam = teamRepository.findById(team.getId());
 
         // then
-        assertFalse(findTeam.isEmpty());
+        assertTrue(findTeam.isPresent());
         assertEquals(team, findTeam.get());
 
     }
@@ -105,7 +105,7 @@ class TeamRepositoryTest {
         // then
         Optional<Team> deletedTeam = teamRepository.findById(team.getId());
 
-        assertTrue(deletedTeam.isEmpty());
+        assertFalse(deletedTeam.isPresent());
     }
 
     @Test

@@ -9,7 +9,9 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.ArrayList;
 import java.util.HashSet;
+import java.util.List;
 import java.util.Set;
 
 @Slf4j
@@ -46,7 +48,7 @@ public class TeamAPIController {
 
         log.info(teamLeaderVO.toString());
 
-        Set<MemberVO> members = new HashSet<>();
+        List<MemberVO> members = new ArrayList<>();
 
         for (MemberDTO member : findTeam.getMembers()) {
 
