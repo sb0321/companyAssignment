@@ -10,8 +10,10 @@
 <form id="searchForm">
 
     <label for="search"></label>
-    <input type="text" id="search"/>
-    <button type="submit">검색</button>
+    <form id="search-form">
+        <input type="text" id="search"/>
+        <button type="submit">검색</button>
+    </form>
 </form>
 <table>
     <thead>
@@ -23,9 +25,9 @@
     <tr>직급</tr>
     </thead>
     <tbody>
-<!--    <tr th:each="member : ${memberList}">-->
-<!--        <td th:text="${member.getName()}"></td>-->
-<!--    </tr>-->
+        <tr th:each="member : ${memberList}">
+            <td th:text="${member.getName()}"></td>
+        </tr>
     </tbody>
 </table>
 </body>

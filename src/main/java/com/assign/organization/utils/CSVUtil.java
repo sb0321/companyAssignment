@@ -2,12 +2,14 @@ package com.assign.organization.utils;
 
 import com.assign.organization.domain.member.CSVMemberDTO;
 import com.opencsv.CSVReader;
+import lombok.extern.slf4j.Slf4j;
 
 import java.io.FileReader;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 
+@Slf4j
 public class CSVUtil {
 
     public static List<CSVMemberDTO> getCSVData(String path) {

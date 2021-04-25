@@ -19,7 +19,7 @@ public class ContactController {
     @GetMapping("")
     public String contact(Model model, HttpServletRequest request) {
 
-        String part = request.getParameter("name");
+        String part = request.getParameter("keyword");
 
 
         return "contact";

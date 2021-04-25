@@ -8,7 +8,9 @@
 <body>
     <div th:each="team : ${teamList}">
         <div>
+            <label>팀 이름: </label>
             <p th:text="${team.getName()}"></p>
+            <label>팀장: </label>
             <p th:text="${team.getTeamLeader()?.getName()}">없음</p>
             <br>
             <div th:each="member : ${team.getMembers()}">

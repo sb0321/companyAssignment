@@ -8,6 +8,7 @@ import com.assign.organization.domain.team.TeamRepository;
 import com.assign.organization.domain.team.TeamVO;
 import com.assign.organization.service.member.MemberService;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 
 import javax.persistence.NoResultException;
@@ -57,7 +58,7 @@ public class TeamServiceImpl implements TeamService {
     @Override
     public List<TeamVO> getTeamList() {
 
-        List<Team> allTeam = teamRepository.findAll();
+        List<Team> allTeam = teamRepository.findAll(Sort.by(Sort.Direction.DESC, "name"));
 
         List<TeamVO> teamVOList = new ArrayList<>();
 
@@ -84,6 +85,11 @@ public class TeamServiceImpl implements TeamService {
             List<MemberVO> teamMembers = new ArrayList<>();
 
             for (Member member : team.getMembers()) {
+
+                if(leader != null && member.getId().equals(leader.getId())) {
+                    continue;
+                }
+
                 MemberVO vo = MemberVO
                         .builder()
                         .id(member.getId())
@@ -96,7 +102,6 @@ public class TeamServiceImpl implements TeamService {
 
                 teamMembers.add(vo);
             }
-
 
             TeamVO vo = TeamVO
                     .builder()
