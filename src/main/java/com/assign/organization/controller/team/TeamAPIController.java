@@ -10,9 +10,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.ArrayList;
-import java.util.HashSet;
 import java.util.List;
-import java.util.Set;
 
 @Slf4j
 @RestController
@@ -42,8 +40,8 @@ public class TeamAPIController {
                 .builder()
                 .id(teamLeaderDTO.getId())
                 .name(teamLeaderDTO.getName())
-                .businessCall(teamLeaderDTO.getAddress().getBusinessCall())
-                .cellPhone(teamLeaderDTO.getAddress().getCellPhone())
+                .businessCall(teamLeaderDTO.getContact().getBusinessCall())
+                .cellPhone(teamLeaderDTO.getContact().getCellPhone())
                 .build();
 
         log.info(teamLeaderVO.toString());
@@ -58,8 +56,8 @@ public class TeamAPIController {
                     .builder()
                     .id(member.getId())
                     .name(member.getName())
-                    .businessCall(member.getAddress().getBusinessCall())
-                    .cellPhone(member.getAddress().getCellPhone())
+                    .businessCall(member.getContact().getBusinessCall())
+                    .cellPhone(member.getContact().getCellPhone())
                     .build();
 
             members.add(m);

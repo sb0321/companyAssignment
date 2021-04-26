@@ -10,4 +10,7 @@ public interface MemberRepository extends JpaRepository<Member, Long> {
 
     int deleteByName(String name);
 
+    @Query("SELECT m FROM Member as m WHERE m.name LIKE '%:keyword%' OR m.contact.businessCall = '%:keyword%' OR m.contact.cellPhone = '%:keyword%' ORDER BY m.name ASC")
+    List<Member> findByLikeAllField(@Param("keyword") String keyword);
+
 }

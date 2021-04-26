@@ -7,11 +7,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.jdbc.AutoConfigureTestDatabase;
 import org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest;
 import org.springframework.context.annotation.Import;
-import org.springframework.data.domain.Page;
-import org.springframework.data.domain.Pageable;
 
 import java.util.Optional;
-import java.util.stream.Collectors;
 
 import static org.junit.jupiter.api.Assertions.*;
 
@@ -31,7 +28,7 @@ class MemberRepositoryTests {
         Member member = Member
                 .builder()
                 .id(1L)
-                .address(null)
+                .contact(null)
                 .name("홍길동")
                 .position("인턴")
                 .build();
@@ -52,7 +49,7 @@ class MemberRepositoryTests {
     public void testInsert() {
 
         //given
-        Address address = Address
+        Contact address = Contact
                 .builder()
                 .businessCall("1101")
                 .cellPhone("010-3358-9731")
@@ -62,7 +59,7 @@ class MemberRepositoryTests {
         Member member = Member
                 .builder()
                 .id(1L)
-                .address(address)
+                .contact(address)
                 .name("홍길동")
                 .position("인턴")
                 .build();
@@ -78,7 +75,7 @@ class MemberRepositoryTests {
     public void testUpdate() {
 
         // given
-        Address address = Address
+        Contact address = Contact
                 .builder()
                 .businessCall("1101")
                 .cellPhone("010-3358-9731")
@@ -90,7 +87,7 @@ class MemberRepositoryTests {
         Member member = Member
                 .builder()
                 .id(1L)
-                .address(address)
+                .contact(address)
                 .name(beforeName)
                 .position(beforePosition)
                 .build();
@@ -103,7 +100,7 @@ class MemberRepositoryTests {
         String afterName = "홍길이";
         String afterPosition = "사장";
 
-        Address newAddress = Address
+        Contact newAddress = Contact
                 .builder()
                 .businessCall("0000")
                 .cellPhone("010-2222-2222")
@@ -111,7 +108,7 @@ class MemberRepositoryTests {
 
         MemberDTO dto = MemberDTO
                 .builder()
-                .address(newAddress)
+                .contact(newAddress)
                 .position(afterPosition)
                 .duty("사원")
                 .name(afterName)
@@ -123,7 +120,7 @@ class MemberRepositoryTests {
         // then
         assertEquals(afterName, findMember.getName());
         assertEquals(afterPosition, findMember.getPosition());
-        assertEquals(newAddress, findMember.getAddress());
+        assertEquals(newAddress, findMember.getContact());
 
     }
 
@@ -131,7 +128,7 @@ class MemberRepositoryTests {
     public void testDeleteById() {
 
         //given
-        Address address = Address
+        Contact address = Contact
                 .builder()
                 .businessCall("1101")
                 .cellPhone("010-3358-9731")
@@ -141,7 +138,7 @@ class MemberRepositoryTests {
         Member member = Member
                 .builder()
                 .id(1L)
-                .address(address)
+                .contact(address)
                 .name("홍길동")
                 .position("인턴")
                 .build();
@@ -167,7 +164,7 @@ class MemberRepositoryTests {
     public void testDeleteByName() {
 
         //given
-        Address address = Address
+        Contact address = Contact
                 .builder()
                 .businessCall("1101")
                 .cellPhone("010-3358-9731")
@@ -177,7 +174,7 @@ class MemberRepositoryTests {
         Member member = Member
                 .builder()
                 .id(1L)
-                .address(address)
+                .contact(address)
                 .name("홍길동")
                 .position("인턴")
                 .build();

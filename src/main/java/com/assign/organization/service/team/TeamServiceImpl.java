@@ -58,7 +58,7 @@ public class TeamServiceImpl implements TeamService {
     @Override
     public List<TeamVO> getTeamList() {
 
-        List<Team> allTeam = teamRepository.findAll(Sort.by(Sort.Direction.DESC, "name"));
+        List<Team> allTeam = teamRepository.findAll(Sort.by(Sort.Direction.ASC, "name"));
 
         List<TeamVO> teamVOList = new ArrayList<>();
 
@@ -74,8 +74,8 @@ public class TeamServiceImpl implements TeamService {
                 leader = MemberVO
                         .builder()
                         .id(teamLeaderEntity.getId())
-                        .businessCall(teamLeaderEntity.getAddress().getBusinessCall())
-                        .cellPhone(teamLeaderEntity.getAddress().getCellPhone())
+                        .businessCall(teamLeaderEntity.getContact().getBusinessCall())
+                        .cellPhone(teamLeaderEntity.getContact().getCellPhone())
                         .name(teamLeaderEntity.getName())
                         .duty(teamLeaderEntity.getDuty())
                         .position(teamLeaderEntity.getPosition())
@@ -93,8 +93,8 @@ public class TeamServiceImpl implements TeamService {
                 MemberVO vo = MemberVO
                         .builder()
                         .id(member.getId())
-                        .businessCall(member.getAddress().getBusinessCall())
-                        .cellPhone(member.getAddress().getCellPhone())
+                        .businessCall(member.getContact().getBusinessCall())
+                        .cellPhone(member.getContact().getCellPhone())
                         .name(member.getName())
                         .duty(member.getDuty())
                         .position(member.getPosition())
@@ -102,6 +102,8 @@ public class TeamServiceImpl implements TeamService {
 
                 teamMembers.add(vo);
             }
+
+            teamMembers.sort(Comparator.comparing(MemberVO::getName));
 
             TeamVO vo = TeamVO
                     .builder()

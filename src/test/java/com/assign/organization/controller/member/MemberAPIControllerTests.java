@@ -1,6 +1,6 @@
 package com.assign.organization.controller.member;
 
-import com.assign.organization.domain.member.Address;
+import com.assign.organization.domain.member.Contact;
 import com.assign.organization.domain.member.MemberDTO;
 import com.assign.organization.service.member.MemberService;
 import lombok.extern.slf4j.Slf4j;
@@ -54,7 +54,7 @@ class MemberAPIControllerTests {
         params.add("businessCall", "1101");
         params.add("ranked", "팀장");
 
-        Address address = Address
+        Contact contact = Contact
                 .builder()
                 .cellPhone("010-1111-1111")
                 .businessCall("1011")
@@ -63,7 +63,7 @@ class MemberAPIControllerTests {
         MemberDTO dto = MemberDTO
                 .builder()
                 .name("testName")
-                .address(address)
+                .contact(contact)
                 .id(1L)
                 .duty("팀장")
                 .build();
@@ -114,7 +114,7 @@ class MemberAPIControllerTests {
     public void testGetMember() throws Exception {
 
         // given
-        Address address = Address
+        Contact contact = Contact
                 .builder()
                 .businessCall("1111")
                 .cellPhone("010-1111-1111")
@@ -124,11 +124,11 @@ class MemberAPIControllerTests {
                 .builder()
                 .id(1L)
                 .position("인턴")
-                .address(null)
+                .contact(null)
                 .duty("팀장")
                 .teamId(2L)
                 .name("testMember")
-                .address(address)
+                .contact(contact)
                 .build();
 
         Mockito.when(memberService.findMemberById(1L)).thenReturn(dto);

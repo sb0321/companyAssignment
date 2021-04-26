@@ -9,13 +9,13 @@ import javax.persistence.Embeddable;
 @Getter
 @Embeddable
 @NoArgsConstructor
-public class Address {
+public class Contact {
 
     private String cellPhone;
     private String businessCall;
 
     @Builder
-    public Address(String cellPhone, String businessCall) {
+    public Contact(String cellPhone, String businessCall) {
         this.cellPhone = cellPhone;
         this.businessCall = businessCall;
     }

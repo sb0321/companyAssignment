@@ -21,7 +21,7 @@ import java.util.*;
 @RequiredArgsConstructor
 public class InitController {
 
-    private final static String DATA_PATH = "D:\\download\\data.csv";
+    private final static String DATA_PATH = "/Users/sbkim/Downloads/data.csv";
 
     private final static String TEAM_LEADER_DUTY = "팀장";
 
@@ -30,7 +30,7 @@ public class InitController {
 
     @Transactional
     @GetMapping("/init")
-    public String init() {
+    public void init() {
         List<CSVMemberDTO> csvData = CSVUtil.getCSVData(DATA_PATH);
 
         log.info(csvData.toString());
@@ -92,8 +92,6 @@ public class InitController {
         log.info(members.toString());
         log.info(teamNames.toString());
         log.info(teamLeader.toString());
-
-        return "hello";
     }
 
 }

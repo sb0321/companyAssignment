@@ -32,8 +32,8 @@ public class MemberAPIController {
         MemberVO vo = MemberVO
                 .builder()
                 .id(id)
-                .businessCall(findMember.getAddress().getBusinessCall())
-                .cellPhone(findMember.getAddress().getCellPhone())
+                .businessCall(findMember.getContact().getBusinessCall())
+                .cellPhone(findMember.getContact().getCellPhone())
                 .duty(findMember.getDuty())
                 .build();
 

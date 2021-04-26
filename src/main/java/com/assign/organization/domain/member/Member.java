@@ -27,7 +27,7 @@ public class Member {
     private Team team;
 
     @Embedded
-    private Address address;
+    private Contact contact;
 
     @ColumnDefault(value = DEFAULT_POSITION)
     private String position;
@@ -36,10 +36,10 @@ public class Member {
     private String duty;
 
     @Builder
-    public Member(Long id, String name, Address address, String position, String duty) {
+    public Member(Long id, String name, Contact contact, String position, String duty) {
         this.id = id;
         this.name = name;
-        this.address = address;
+        this.contact = contact;
         this.position = position;
         this.duty = duty;
     }
@@ -57,10 +57,10 @@ public class Member {
         this.name = dto.getName();
         this.position = dto.getPosition();
         this.duty = dto.getDuty();
-        this.address = dto.getAddress();
+        this.contact = dto.getContact();
     }
 
-    public void update(Address address) {
-        this.address = address;
+    public void update(Contact contact) {
+        this.contact = contact;
     }
 }

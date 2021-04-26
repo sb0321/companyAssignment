@@ -36,7 +36,7 @@ class MemberServiceImplTests {
 
     @BeforeEach
     public void init() {
-        Address address = Address
+        Contact contact = Contact
                 .builder()
                 .cellPhone("010-1111-1111")
                 .businessCall("1101")
@@ -46,7 +46,7 @@ class MemberServiceImplTests {
                 .builder()
                 .name("test")
                 .position("인턴")
-                .address(address)
+                .contact(contact)
                 .build();
 
         MEMBER = member;
@@ -125,7 +125,7 @@ class MemberServiceImplTests {
                 .cellPhone("010-1111-1111")
                 .build();
 
-        Address address = Address
+        Contact contact = Contact
                 .builder()
                 .businessCall("1011")
                 .cellPhone("010-1111-1111")
@@ -135,7 +135,7 @@ class MemberServiceImplTests {
                 .builder()
                 .name(vo.getName())
                 .duty(vo.getDuty())
-                .address(address)
+                .contact(contact)
                 .build();
 
         Mockito.when(memberRepository.save(any())).thenReturn(member);
@@ -145,8 +145,8 @@ class MemberServiceImplTests {
 
         // then
         assertEquals(vo.getName(), dto.getName());
-        assertEquals(vo.getBusinessCall(), dto.getAddress().getBusinessCall());
-        assertEquals(vo.getCellPhone(), dto.getAddress().getCellPhone());
+        assertEquals(vo.getBusinessCall(), dto.getContact().getBusinessCall());
+        assertEquals(vo.getCellPhone(), dto.getContact().getCellPhone());
         assertEquals(vo.getDuty(), dto.getDuty());
 
     }

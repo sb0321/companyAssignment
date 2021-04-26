@@ -49,7 +49,7 @@ public class Team {
         return MemberDTO
                 .builder()
                 .name(teamLeader.getName())
-                .address(teamLeader.getAddress())
+                .contact(teamLeader.getContact())
                 .teamId(teamLeader.getId())
                 .duty(teamLeader.getDuty())
                 .build();
@@ -73,7 +73,7 @@ public class Team {
             MemberDTO dto = MemberDTO
                     .builder()
                     .name(teamLeader.getName())
-                    .address(teamLeader.getAddress())
+                    .contact(teamLeader.getContact())
                     .teamId(teamLeader.getId())
                     .duty(teamLeader.getDuty())
                     .build();

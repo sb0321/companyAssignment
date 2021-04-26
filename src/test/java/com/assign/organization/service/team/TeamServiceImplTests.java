@@ -1,6 +1,6 @@
 package com.assign.organization.service.team;
 
-import com.assign.organization.domain.member.Address;
+import com.assign.organization.domain.member.Contact;
 import com.assign.organization.domain.member.Member;
 import com.assign.organization.domain.team.Team;
 import com.assign.organization.domain.team.TeamDTO;
@@ -56,7 +56,7 @@ class TeamServiceImplTests {
                 .name(TEAM_NAME)
                 .build();
 
-        Address address = Address
+        Contact contact = Contact
                 .builder()
                 .cellPhone("010-1111-1111")
                 .businessCall("1111")
@@ -67,7 +67,7 @@ class TeamServiceImplTests {
                 .name("member")
                 .position("매니저")
                 .duty(DUTY)
-                .address(address)
+                .contact(contact)
                 .build();
 
         team.changeTeamLeader(member);

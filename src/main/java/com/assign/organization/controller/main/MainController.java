@@ -31,12 +31,4 @@ public class MainController {
         return "hello";
     }
 
-    @GetMapping("/address")
-    public String address(Model model) {
-
-
-
-        return "contact";
-    }
-
 }

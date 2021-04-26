@@ -5,6 +5,7 @@ import com.assign.organization.domain.member.MemberDTO;
 import com.assign.organization.domain.member.MemberVO;
 import org.springframework.data.domain.Page;
 
+import java.util.List;
 import java.util.Optional;
 
 public interface MemberService {
@@ -16,6 +17,8 @@ public interface MemberService {
     void deleteMemberById(Long id);
 
     void updateMember(MemberVO update);
+
+    List<MemberVO> findMemberByKeyword(String keyword);
 
     MemberDTO createMember(MemberVO newMember);
 

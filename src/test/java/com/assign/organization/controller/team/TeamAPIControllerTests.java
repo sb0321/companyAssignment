@@ -1,6 +1,6 @@
 package com.assign.organization.controller.team;
 
-import com.assign.organization.domain.member.Address;
+import com.assign.organization.domain.member.Contact;
 import com.assign.organization.domain.member.MemberDTO;
 import com.assign.organization.domain.team.Team;
 import com.assign.organization.domain.team.TeamDTO;
@@ -76,7 +76,7 @@ class TeamAPIControllerTests {
         // given
         String teamName = "testTeam";
 
-        Address teamLeaderAddress = Address
+        Contact teamLeaderContact = Contact
                 .builder()
                 .businessCall("1111")
                 .cellPhone("010-1111-1111")
@@ -85,7 +85,7 @@ class TeamAPIControllerTests {
         MemberDTO teamLeader = MemberDTO
                 .builder()
                 .teamId(1L)
-                .address(teamLeaderAddress)
+                .contact(teamLeaderContact)
                 .name("teamLeader")
                 .position("사장")
                 .duty("팀장")
@@ -95,7 +95,7 @@ class TeamAPIControllerTests {
 
         for (int memberIndex = 0; memberIndex < 10; memberIndex++) {
 
-            Address memberAddress = Address
+            Contact memberContact = Contact
                     .builder()
                     .businessCall(memberIndex + "000")
                     .cellPhone("010-1111-000" + memberIndex)
@@ -104,7 +104,7 @@ class TeamAPIControllerTests {
             MemberDTO m = MemberDTO
                     .builder()
                     .name(String.valueOf(memberIndex))
-                    .address(memberAddress)
+                    .contact(memberContact)
                     .position("인턴")
                     .build();
 
