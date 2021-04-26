@@ -1,14 +1,15 @@
 package com.assign.organization.service.member;
 
 import com.assign.organization.domain.member.*;
+import com.assign.organization.service.team.TeamService;
+import com.assign.organization.utils.NameGenerator;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 
 import javax.persistence.NoResultException;
 import javax.transaction.Transactional;
-import java.util.List;
-import java.util.Optional;
+import java.util.*;
 import java.util.stream.Collectors;
 
 @Slf4j
@@ -84,6 +85,42 @@ public class MemberServiceImpl implements MemberService {
     }
 
     @Override
+    public List<Member> initMembers(List<CSVMemberDTO> csvMemberDTOList) {
+
+        List<Member> newMembers = new ArrayList<>();
+        Map<String, Integer> nameDuplication = new HashMap<>();
+
+        for (CSVMemberDTO csvMember : csvMemberDTOList) {
+
+            Contact contact = Contact
+                    .builder()
+                    .businessCall(csvMember.getBusinessCall())
+                    .cellPhone(csvMember.getCellPhone())
+                    .build();
+
+            nameDuplication.putIfAbsent(csvMember.getName(), -1);
+            nameDuplication.replace(csvMember.getName(), nameDuplication.get(csvMember.getName()) + 1);
+
+            String memberName = NameGenerator.generate(csvMember.getName(), nameDuplication.get(csvMember.getName()));
+
+            log.info(memberName);
+
+            Member newMember = Member
+                    .builder()
+                    .id(csvMember.getId())
+                    .name(memberName)
+                    .duty(csvMember.getDuty())
+                    .position(csvMember.getPosition())
+                    .contact(contact)
+                    .build();
+
+            newMembers.add(newMember);
+        }
+
+        return memberRepository.saveAll(newMembers);
+    }
+
+    @Override
     public List<MemberVO> findMemberByKeyword(String keyword) {
         List<Member> findMembers = memberRepository.findByLikeAllField(keyword);
 
@@ -96,6 +133,7 @@ public class MemberServiceImpl implements MemberService {
                 .id(m.getId())
                 .businessCall(m.getContact().getBusinessCall())
                 .cellPhone(m.getContact().getCellPhone())
+                .teamName(m.getTeam().getName())
                 .build()).collect(Collectors.toList());
     }
 
@@ -108,10 +146,14 @@ public class MemberServiceImpl implements MemberService {
                 .cellPhone(newMember.getCellPhone())
                 .build();
 
+
+        int duplicated = memberRepository.findByNameContaining(newMember.getName()).size();
+        String newMemberName = NameGenerator.generate(newMember.getName(), duplicated);
+
         Member member = Member
                 .builder()
                 .id(newMember.getId())
-                .name(newMember.getName())
+                .name(newMemberName)
                 .duty(newMember.getDuty())
                 .position(newMember.getPosition())
                 .contact(contact)

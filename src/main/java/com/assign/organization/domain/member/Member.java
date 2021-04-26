@@ -22,7 +22,7 @@ public class Member {
 
     private String name;
 
-    @ManyToOne
+    @ManyToOne(cascade = CascadeType.PERSIST)
     @JoinColumn(name = "TEAM_ID")
     private Team team;
 
@@ -49,7 +49,7 @@ public class Member {
         team.getMembers().add(this);
     }
 
-    public void changeRanked(String duty) {
+    public void changeDuty(String duty) {
         this.duty = duty;
     }
 

@@ -2,7 +2,6 @@ package com.assign.organization.controller;
 
 import com.assign.organization.domain.member.CSVMemberDTO;
 import com.assign.organization.domain.member.Member;
-import com.assign.organization.domain.member.MemberVO;
 import com.assign.organization.domain.team.Team;
 import com.assign.organization.domain.team.TeamVO;
 import com.assign.organization.service.member.MemberService;
@@ -14,7 +13,9 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 import javax.transaction.Transactional;
-import java.util.*;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 
 @Slf4j
 @RestController
@@ -30,68 +31,44 @@ public class InitController {
 
     @Transactional
     @GetMapping("/init")
-    public void init() {
+    public void initTest() {
+
         List<CSVMemberDTO> csvData = CSVUtil.getCSVData(DATA_PATH);
 
-        log.info(csvData.toString());
+        if (csvData == null) {
+            return;
+        }
 
-        Set<String> teamNames = new HashSet<>();
-        Map<String, Long> teamLeader = new HashMap<>();
-        Map<String, Set<Long>> members = new HashMap<>();
+        List<Member> memberList = memberService.initMembers(csvData);
 
-        for (CSVMemberDTO csvMember : csvData) {
+        Map<String, Team> teams = new HashMap<>();
 
-            teamNames.add(csvMember.getTeamName());
+        for (int i = 0; i < csvData.size(); i++) {
 
-            if(csvMember.getDuty().equals(TEAM_LEADER_DUTY)) {
-                teamLeader.putIfAbsent(csvMember.getTeamName(), csvMember.getId());
-            }
+            CSVMemberDTO now = csvData.get(i);
 
-            if(members.containsKey(csvMember.getTeamName())) {
-                members.get(csvMember.getTeamName()).add(csvMember.getId());
+            Team nowTeam;
+
+            if (teams.containsKey(now.getTeamName())) {
+                nowTeam = teams.get(now.getTeamName());
             } else {
-                Set<Long> temp = new HashSet<>();
-                temp.add(csvMember.getId());
-                members.put(csvMember.getTeamName(), temp);
+                nowTeam = teamService.createTeam(TeamVO
+                        .builder()
+                        .name(now.getTeamName())
+                        .build());
+
+                teams.put(now.getTeamName(), nowTeam);
             }
 
-            MemberVO newMember = MemberVO
-                    .builder()
-                    .id(csvMember.getId())
-                    .name(csvMember.getName())
-                    .duty(csvMember.getDuty())
-                    .position(csvMember.getPosition())
-                    .businessCall(csvMember.getBusinessCall())
-                    .cellPhone(csvMember.getCellPhone())
-                    .build();
+            Member member = memberList.get(i);
 
-            memberService.createMember(newMember);
+            member.changeTeam(nowTeam);
+
+            if(now.getDuty().equals(TEAM_LEADER_DUTY)) {
+                nowTeam.changeTeamLeader(member);
+            }
+
         }
 
-        for (String teamName : teamNames) {
-
-            TeamVO newTeam = TeamVO
-                    .builder()
-                    .name(teamName)
-                    .build();
-
-            Team team = teamService.createTeam(newTeam);
-
-            Set<Long> teamMembers = members.get(teamName);
-
-            for (Long memberId : teamMembers) {
-                log.info(memberId + " " + teamName);
-                Member member = memberService.findMemberByIdEntity(memberId).get();
-                team.addMember(member);
-            }
-
-            if(teamLeader.getOrDefault(teamName, null) != null) {
-                team.changeTeamLeader(memberService.findMemberByIdEntity(teamLeader.get(teamName)).get());
-            }
-        }
-        log.info(members.toString());
-        log.info(teamNames.toString());
-        log.info(teamLeader.toString());
     }
-
 }

@@ -8,7 +8,11 @@ import org.springframework.boot.test.autoconfigure.jdbc.AutoConfigureTestDatabas
 import org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest;
 import org.springframework.context.annotation.Import;
 
+import java.util.HashSet;
+import java.util.List;
 import java.util.Optional;
+import java.util.Set;
+import java.util.stream.Collectors;
 
 import static org.junit.jupiter.api.Assertions.*;
 
@@ -196,6 +200,63 @@ class MemberRepositoryTests {
         Optional<Member> findMember = memberRepository.findById(member.getId());
 
         assertFalse(findMember.isPresent());
+
+    }
+
+    @Test
+    public void testFindByLikeAllField() {
+
+        // given
+        Set<Member> members = new HashSet<>();
+
+        for(int i = 0; i < 10; i++) {
+            Contact address = Contact
+                    .builder()
+                    .businessCall("100" + i)
+                    .cellPhone("010-0000-000" + i)
+                    .build();
+
+
+            Member member = Member
+                    .builder()
+                    .id((long) i)
+                    .contact(address)
+                    .name("사원" + i)
+                    .position("인턴")
+                    .duty("사원")
+                    .build();
+
+            members.add(member);
+        }
+
+        memberRepository.saveAll(members);
+
+        // when
+        String nameKeyword = "";
+
+        List<Member> findMembers = memberRepository.findByLikeAllField(nameKeyword);
+        log.info(findMembers.stream().map(Member::getName).collect(Collectors.toList()).toString());
+
+        // then
+        assertEquals(10, findMembers.size());
+
+        // when
+        String businessCallKeyword = "100";
+
+        findMembers = memberRepository.findByLikeAllField(businessCallKeyword);
+        log.info(findMembers.stream().map(m -> m.getContact().getBusinessCall()).collect(Collectors.toList()).toString());
+
+        // then
+        assertEquals(10, findMembers.size());
+
+        // when
+        String cellPhoneKeyword = "010-0000-000";
+
+        findMembers = memberRepository.findByLikeAllField(cellPhoneKeyword);
+        log.info(findMembers.stream().map(m -> m.getContact().getCellPhone()).collect(Collectors.toList()).toString());
+
+        // then
+        assertEquals(10, findMembers.size());
 
     }
 

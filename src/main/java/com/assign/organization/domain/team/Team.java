@@ -24,11 +24,11 @@ public class Team {
     @Column(unique = true)
     private String name;
 
-    @OneToOne(cascade = CascadeType.PERSIST)
+    @OneToOne
     @JoinColumn(name = "MEMBER_ID")
     private Member teamLeader;
 
-    @OneToMany(mappedBy = "team", fetch = FetchType.LAZY, cascade = CascadeType.ALL)
+    @OneToMany(mappedBy = "team", fetch = FetchType.LAZY)
     private final Set<Member> members = new HashSet<>();
 
     @Builder
@@ -55,11 +55,6 @@ public class Team {
                 .build();
     }
 
-    public void addMember(Member member) {
-        this.members.add(member);
-        member.changeTeam(this);
-    }
-
     public void removeMember(Member member) {
         this.members.removeIf(m -> Objects.equals(m, member));
         member.changeTeam(null);
@@ -72,10 +67,10 @@ public class Team {
         for (Member member : this.members) {
             MemberDTO dto = MemberDTO
                     .builder()
-                    .name(teamLeader.getName())
-                    .contact(teamLeader.getContact())
-                    .teamId(teamLeader.getId())
-                    .duty(teamLeader.getDuty())
+                    .name(member.getName())
+                    .contact(member.getContact())
+                    .teamId(member.getId())
+                    .duty(member.getDuty())
                     .build();
 
             teamMembers.add(dto);

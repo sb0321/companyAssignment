@@ -14,6 +14,7 @@ import org.springframework.stereotype.Service;
 import javax.persistence.NoResultException;
 import javax.transaction.Transactional;
 import java.util.*;
+import java.util.stream.Collectors;
 
 @Service
 @Transactional
@@ -21,8 +22,6 @@ import java.util.*;
 public class TeamServiceImpl implements TeamService {
 
     private final TeamRepository teamRepository;
-
-    private final MemberService memberService;
 
     @Override
     public TeamDTO findTeamById(Long id) {
@@ -56,6 +55,16 @@ public class TeamServiceImpl implements TeamService {
     }
 
     @Override
+    public List<Team> initTeams(Set<String> teamNames) {
+        Set<Team> teams = teamNames.stream().map(name -> Team
+                .builder()
+                .name(name)
+                .build()).collect(Collectors.toSet());
+
+        return teamRepository.saveAll(teams);
+    }
+
+    @Override
     public List<TeamVO> getTeamList() {
 
         List<Team> allTeam = teamRepository.findAll(Sort.by(Sort.Direction.ASC, "name"));
@@ -68,7 +77,7 @@ public class TeamServiceImpl implements TeamService {
 
             MemberVO leader;
 
-            if(teamLeaderEntity == null) {
+            if (teamLeaderEntity == null) {
                 leader = null;
             } else {
                 leader = MemberVO
@@ -86,7 +95,7 @@ public class TeamServiceImpl implements TeamService {
 
             for (Member member : team.getMembers()) {
 
-                if(leader != null && member.getId().equals(leader.getId())) {
+                if (leader != null && member.getId().equals(leader.getId())) {
                     continue;
                 }
 
@@ -125,49 +134,5 @@ public class TeamServiceImpl implements TeamService {
         int deleteCount = teamRepository.deleteByName(name);
 
         return deleteCount > 0;
-    }
-
-    @Override
-    public boolean updateTeamName(Long id, String name) {
-
-        int exist = teamRepository.findNameExist(name);
-
-        if (exist != 0) {
-            return false;
-        }
-
-        Optional<Team> findTeam = teamRepository.findById(id);
-
-        if (!findTeam.isPresent()) {
-            throw new NoResultException();
-        }
-
-        Team team = findTeam.get();
-
-        team.updateTeamName(name);
-
-        return true;
-    }
-
-    @Override
-    public void updateTeamLeader(Long teamId, Long teamLeaderId) {
-
-        Optional<Member> findMember = memberService.findMemberByIdEntity(teamLeaderId);
-
-        if(!findMember.isPresent()) {
-            throw new NoResultException();
-        }
-
-        Member member = findMember.get();
-
-        Optional<Team> findTeam = teamRepository.findById(teamId);
-
-        if(!findTeam.isPresent()) {
-            throw new NoResultException();
-        }
-
-        Team team = findTeam.get();
-
-        team.changeTeamLeader(member);
     }
 }

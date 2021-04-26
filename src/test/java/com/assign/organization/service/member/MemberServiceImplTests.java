@@ -58,7 +58,7 @@ class MemberServiceImplTests {
 
 
         member.changeTeam(team);
-        member.changeRanked("팀장");
+        member.changeDuty("팀장");
 
         MEMBER_ID = member.getId();
         MEMBER_NAME = member.getName();
@@ -82,22 +82,6 @@ class MemberServiceImplTests {
     public void testDeleteMemberByName() {
 
         assertTrue(memberService.deleteMemberByName(MEMBER_NAME));
-    }
-
-    @Test
-    public void testUpdateMember() {
-
-        // given
-        String newName = "newName";
-        String newString = "사장";
-
-        // when
-//        MemberDTO memberDTO = memberService.updateMember(MEMBER_ID, newPosition, newName);
-
-        // then
-//        assertEquals(newName, memberDTO.getName());
-//        assertEquals(newPosition, memberDTO.getPosition());
-
     }
 
     @Test

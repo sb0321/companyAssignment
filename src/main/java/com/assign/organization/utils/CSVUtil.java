@@ -16,8 +16,7 @@ public class CSVUtil {
 
         List<CSVMemberDTO> csvData = new ArrayList<>();
 
-        try {
-            CSVReader reader = new CSVReader(new FileReader(path));
+        try (CSVReader reader = new CSVReader(new FileReader(path))) {
 
             String[] line;
 

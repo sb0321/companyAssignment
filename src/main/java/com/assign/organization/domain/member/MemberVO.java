@@ -9,6 +9,7 @@ import lombok.*;
 public class MemberVO {
 
     private Long id;
+    private String teamName;
     private String name;
     private String cellPhone;
     private String businessCall;
@@ -16,8 +17,9 @@ public class MemberVO {
     private String duty;
 
     @Builder
-    public MemberVO(Long id, String name, String cellPhone, String businessCall, String position, String duty) {
+    public MemberVO(Long id, String teamName, String name, String cellPhone, String businessCall, String position, String duty) {
         this.id = id;
+        this.teamName = teamName;
         this.name = name;
         this.cellPhone = cellPhone;
         this.businessCall = businessCall;

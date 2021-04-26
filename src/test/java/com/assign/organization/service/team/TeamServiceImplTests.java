@@ -115,38 +115,6 @@ class TeamServiceImplTests {
     }
 
     @Test
-    public void testUpdateTeamName() {
-
-        // when
-        boolean changed = teamService.updateTeamName(TEAM_ID, ALREADY_EXIST_TEAM_NAME);
-
-        // then
-        assertFalse(changed);
-
-        // when
-        changed = teamService.updateTeamName(TEAM_ID, NOT_EXIST_TEAM_NAME);
-
-        // then
-        assertTrue(changed);
-    }
-
-    @Test
-    public void testUpdateTeamLeader() {
-
-        try {
-            // when
-            teamService.updateTeamLeader(TEAM_ID, -1L);
-            fail("supposed to be failed");
-        } catch (Exception e) {
-            // then
-            assertEquals(NoResultException.class, e.getClass());
-        }
-
-        // when
-        teamService.updateTeamLeader(TEAM_ID, MEMBER_ID);
-    }
-
-    @Test
     public void testCreateTeam() {
 
         // given

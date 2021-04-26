@@ -1,5 +1,6 @@
 package com.assign.organization.service.member;
 
+import com.assign.organization.domain.member.CSVMemberDTO;
 import com.assign.organization.domain.member.Member;
 import com.assign.organization.domain.member.MemberDTO;
 import com.assign.organization.domain.member.MemberVO;
@@ -17,6 +18,8 @@ public interface MemberService {
     void deleteMemberById(Long id);
 
     void updateMember(MemberVO update);
+
+    List<Member> initMembers(List<CSVMemberDTO> csvMemberDTOList);
 
     List<MemberVO> findMemberByKeyword(String keyword);
 
