@@ -3,7 +3,6 @@ package com.assign.organization.service.team;
 import com.assign.organization.domain.member.Contact;
 import com.assign.organization.domain.member.Member;
 import com.assign.organization.domain.team.Team;
-import com.assign.organization.domain.team.TeamDTO;
 import com.assign.organization.domain.team.TeamRepository;
 import com.assign.organization.domain.team.TeamVO;
 import com.assign.organization.service.member.MemberService;
@@ -18,7 +17,6 @@ import org.mockito.junit.jupiter.MockitoExtension;
 import org.mockito.junit.jupiter.MockitoSettings;
 import org.mockito.quality.Strictness;
 
-import javax.persistence.NoResultException;
 import java.util.Optional;
 
 import static org.junit.jupiter.api.Assertions.*;
@@ -31,9 +29,6 @@ class TeamServiceImplTests {
 
     @Mock
     private TeamRepository teamRepository;
-
-    @Mock
-    private MemberService memberService;
 
     @InjectMocks
     private TeamServiceImpl teamService;
@@ -79,39 +74,6 @@ class TeamServiceImplTests {
 
         Mockito.when(teamRepository.findNameExist(ALREADY_EXIST_TEAM_NAME)).thenReturn(1);
         Mockito.when(teamRepository.findNameExist(NOT_EXIST_TEAM_NAME)).thenReturn(0);
-
-        Mockito.when(memberService.findMemberByIdEntity(MEMBER_ID)).thenReturn(Optional.of(member));
-
-    }
-
-    @Test
-    public void testFindTeamById() {
-
-        // when
-        TeamDTO findTeam = teamService.findTeamById(TEAM_ID);
-
-        log.info(findTeam.toString());
-
-        assertEquals(TEAM_NAME, findTeam.getName());
-        assertEquals(DUTY, findTeam.getTeamLeader().getDuty());
-
-    }
-
-    @Test
-    public void testDeleteTeamByName() {
-
-        // when
-        boolean deleted = teamService.deleteTeamByName(TEAM_NAME);
-
-        // then
-        assertTrue(deleted);
-
-        // when
-        boolean notDeleted = teamService.deleteTeamByName(NOT_EXIST_TEAM_NAME);
-
-        // then
-        assertFalse(notDeleted);
-
     }
 
     @Test

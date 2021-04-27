@@ -1,7 +1,6 @@
 package com.assign.organization.domain.team;
 
 import com.assign.organization.domain.member.Member;
-import com.assign.organization.domain.member.MemberDTO;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -44,39 +43,9 @@ public class Team {
         this.teamLeader = member;
     }
 
-    public MemberDTO getTeamLeaderDTO() {
-
-        return MemberDTO
-                .builder()
-                .name(teamLeader.getName())
-                .contact(teamLeader.getContact())
-                .teamId(teamLeader.getId())
-                .duty(teamLeader.getDuty())
-                .build();
-    }
-
     public void removeMember(Member member) {
         this.members.removeIf(m -> Objects.equals(m, member));
         member.changeTeam(null);
-    }
-
-    public Set<MemberDTO> getTeamMembersDTO() {
-
-        Set<MemberDTO> teamMembers = new HashSet<>();
-
-        for (Member member : this.members) {
-            MemberDTO dto = MemberDTO
-                    .builder()
-                    .name(member.getName())
-                    .contact(member.getContact())
-                    .teamId(member.getId())
-                    .duty(member.getDuty())
-                    .build();
-
-            teamMembers.add(dto);
-        }
-
-        return teamMembers;
     }
 
     @Override

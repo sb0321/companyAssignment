@@ -76,59 +76,6 @@ class MemberRepositoryTests {
     }
 
     @Test
-    public void testUpdate() {
-
-        // given
-        Contact address = Contact
-                .builder()
-                .businessCall("1101")
-                .cellPhone("010-3358-9731")
-                .build();
-
-        String beforeName = "홍길동";
-        String beforePosition = "인턴";
-
-        Member member = Member
-                .builder()
-                .id(1L)
-                .contact(address)
-                .name(beforeName)
-                .position(beforePosition)
-                .build();
-
-        memberRepository.save(member);
-        memberRepository.flush();
-
-        // when
-
-        String afterName = "홍길이";
-        String afterPosition = "사장";
-
-        Contact newAddress = Contact
-                .builder()
-                .businessCall("0000")
-                .cellPhone("010-2222-2222")
-                .build();
-
-        MemberDTO dto = MemberDTO
-                .builder()
-                .contact(newAddress)
-                .position(afterPosition)
-                .duty("사원")
-                .name(afterName)
-                .build();
-
-        Member findMember = memberRepository.getOne(member.getId());
-        findMember.update(dto);
-
-        // then
-        assertEquals(afterName, findMember.getName());
-        assertEquals(afterPosition, findMember.getPosition());
-        assertEquals(newAddress, findMember.getContact());
-
-    }
-
-    @Test
     public void testDeleteById() {
 
         //given

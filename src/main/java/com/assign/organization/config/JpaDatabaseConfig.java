@@ -29,7 +29,7 @@ public class JpaDatabaseConfig {
         return
                 DataSourceBuilder.create()
                         .driverClassName("org.mariadb.jdbc.Driver")
-                        .username("test")
+                        .username("root")
                         .password("1234")
                         .url("jdbc:mariadb://localhost:3306/assign")
                         .build();

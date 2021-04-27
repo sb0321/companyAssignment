@@ -1,7 +1,5 @@
 package com.assign.organization.controller.member;
 
-import com.assign.organization.domain.member.Contact;
-import com.assign.organization.domain.member.MemberDTO;
 import com.assign.organization.service.member.MemberService;
 import lombok.extern.slf4j.Slf4j;
 import org.junit.jupiter.api.BeforeEach;
@@ -9,17 +7,14 @@ import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
-import org.mockito.Mockito;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.test.web.servlet.MockMvc;
-import org.springframework.test.web.servlet.MvcResult;
 import org.springframework.test.web.servlet.setup.MockMvcBuilders;
 import org.springframework.util.LinkedMultiValueMap;
 import org.springframework.util.MultiValueMap;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.mockito.ArgumentMatchers.any;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.delete;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.put;
 import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
@@ -41,48 +36,6 @@ class MemberAPIControllerTests {
         mockMvc = MockMvcBuilders
                 .standaloneSetup(controller)
                 .build();
-    }
-
-    @Test
-    public void testCreateMember() throws Exception {
-
-        // given
-        MultiValueMap<String, String> params = new LinkedMultiValueMap<>();
-
-        params.add("name", "testName");
-        params.add("cellPhone", "010-1111-1111");
-        params.add("businessCall", "1101");
-        params.add("ranked", "팀장");
-
-        Contact contact = Contact
-                .builder()
-                .cellPhone("010-1111-1111")
-                .businessCall("1011")
-                .build();
-
-        MemberDTO dto = MemberDTO
-                .builder()
-                .name("testName")
-                .contact(contact)
-                .id(1L)
-                .duty("팀장")
-                .build();
-
-        Mockito.when(memberService.createMember(any())).thenReturn(dto);
-
-        // when
-        MvcResult mvcResult = mockMvc.perform(post("/member")
-                .params(params))
-                .andExpect(status().isOk())
-                .andDo(print())
-                .andReturn();
-
-        log.info(mvcResult.toString());
-
-        String memberId = mvcResult.getResponse().getContentAsString();
-
-        // then
-        assertEquals(1L, Long.parseLong(memberId));
     }
 
     @Test
@@ -108,36 +61,5 @@ class MemberAPIControllerTests {
                 .andExpect(status().isOk())
                 .andDo(print());
 
-    }
-
-    @Test
-    public void testGetMember() throws Exception {
-
-        // given
-        Contact contact = Contact
-                .builder()
-                .businessCall("1111")
-                .cellPhone("010-1111-1111")
-                .build();
-
-        MemberDTO dto = MemberDTO
-                .builder()
-                .id(1L)
-                .position("인턴")
-                .contact(null)
-                .duty("팀장")
-                .teamId(2L)
-                .name("testMember")
-                .contact(contact)
-                .build();
-
-        Mockito.when(memberService.findMemberById(1L)).thenReturn(dto);
-
-        MvcResult mvcResult = mockMvc.perform(get("/member/1"))
-                .andExpect(status().isOk())
-                .andDo(print())
-                .andReturn();
-
-        log.info(mvcResult.getResponse().getContentAsString());
     }
 }
