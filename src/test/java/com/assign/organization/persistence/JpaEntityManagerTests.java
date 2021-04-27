@@ -1,6 +1,5 @@
 package com.assign.organization.persistence;
 
-import com.assign.organization.config.JpaDatabaseConfig;
 import lombok.extern.slf4j.Slf4j;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -16,7 +15,6 @@ import static org.junit.jupiter.api.Assertions.assertNotNull;
 
 @Slf4j
 @DataJpaTest
-@Import(JpaDatabaseConfig.class)
 @ExtendWith(SpringExtension.class)
 @AutoConfigureTestDatabase(replace = AutoConfigureTestDatabase.Replace.NONE)
 public class JpaEntityManagerTests {

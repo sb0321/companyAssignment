@@ -53,13 +53,6 @@ public class Member {
         this.duty = duty;
     }
 
-    public void update(MemberDTO dto) {
-        this.name = dto.getName();
-        this.position = dto.getPosition();
-        this.duty = dto.getDuty();
-        this.contact = dto.getContact();
-    }
-
     public void update(Contact contact) {
         this.contact = contact;
     }
