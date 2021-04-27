@@ -8,8 +8,6 @@ import java.util.List;
 
 public interface MemberRepository extends JpaRepository<Member, Long> {
 
-    int deleteByName(String name);
-
     @Query("SELECT m FROM Member as m LEFT OUTER JOIN m.team as t " +
             "WHERE m.name LIKE concat('%', :keyword, '%') " +
             "OR m.contact.businessCall LIKE concat('%', :keyword, '%') " +

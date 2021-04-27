@@ -43,11 +43,6 @@ public class Team {
         this.teamLeader = member;
     }
 
-    public void removeMember(Member member) {
-        this.members.removeIf(m -> Objects.equals(m, member));
-        member.changeTeam(null);
-    }
-
     @Override
     public boolean equals(Object o) {
         if (this == o) return true;

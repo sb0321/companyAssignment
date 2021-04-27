@@ -6,8 +6,6 @@ import java.util.List;
 
 public interface MemberService {
 
-    void deleteMemberById(Long id);
-
     List<MemberVO> findMemberByKeyword(String keyword);
 
 }

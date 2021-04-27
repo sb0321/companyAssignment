@@ -1,13 +1,10 @@
 package com.assign.organization.service.member;
 
 import com.assign.organization.domain.member.*;
-import com.assign.organization.service.team.TeamService;
-import com.assign.organization.utils.NameGenerator;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 
-import javax.persistence.NoResultException;
 import javax.transaction.Transactional;
 import java.util.*;
 import java.util.stream.Collectors;
@@ -19,11 +16,6 @@ import java.util.stream.Collectors;
 public class MemberServiceImpl implements MemberService {
 
     private final MemberRepository memberRepository;
-
-    @Override
-    public void deleteMemberById(Long id) {
-        memberRepository.deleteById(id);
-    }
 
     @Override
     public List<MemberVO> findMemberByKeyword(String keyword) {

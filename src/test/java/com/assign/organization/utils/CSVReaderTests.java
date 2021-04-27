@@ -11,6 +11,8 @@ import org.springframework.test.context.junit.jupiter.SpringExtension;
 import java.io.IOException;
 import java.util.List;
 
+import static org.junit.jupiter.api.Assertions.fail;
+
 @Slf4j
 @ExtendWith({SpringExtension.class})
 @TestPropertySource(value = "classpath:application.properties")
@@ -27,6 +29,14 @@ class CSVReaderTests {
         List<CSVMemberVO> csvMemberVOList = CSVReader.readCSVFile(CSV_FILE_PATH);
 
         log.info(csvMemberVOList.toString());
+
+        // fail
+        try {
+            List<CSVMemberVO> failed = CSVReader.readCSVFile("failedPath");
+            fail("파일이 존재하지 않는데 IOException이 발생하지 않았습니다.");
+        } catch (IOException e) {
+
+        }
     }
 
 }

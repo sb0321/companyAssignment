@@ -48,12 +48,4 @@ public class Member {
         this.team = team;
         team.getMembers().add(this);
     }
-
-    public void changeDuty(String duty) {
-        this.duty = duty;
-    }
-
-    public void update(Contact contact) {
-        this.contact = contact;
-    }
 }
