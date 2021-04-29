@@ -20,14 +20,14 @@ public class Team {
     @Column(name = "TEAM_ID")
     private Long id;
 
-    @Column(unique = true)
+    @Column(unique = true, nullable = false)
     private String name;
 
     @OneToOne
     @JoinColumn(name = "MEMBER_ID")
     private Member teamLeader;
 
-    @OneToMany(mappedBy = "team", fetch = FetchType.LAZY)
+    @OneToMany(mappedBy = "team", fetch = FetchType.LAZY, cascade = CascadeType.PERSIST)
     private final Set<Member> members = new HashSet<>();
 
     @Builder
@@ -35,24 +35,12 @@ public class Team {
         this.name = name;
     }
 
-    public void updateTeamName(String name) {
-        this.name = name;
-    }
-
     public void changeTeamLeader(Member member) {
         this.teamLeader = member;
     }
 
-    @Override
-    public boolean equals(Object o) {
-        if (this == o) return true;
-        if (o == null || getClass() != o.getClass()) return false;
-        Team team = (Team) o;
-        return Objects.equals(getId(), team.getId()) && Objects.equals(getName(), team.getName()) && Objects.equals(getMembers(), team.getMembers());
-    }
-
-    @Override
-    public int hashCode() {
-        return Objects.hash(getId(), getName(), getMembers());
+    public void addTeamMember(Member member) {
+        this.members.add(member);
+        member.changeTeam(this);
     }
 }

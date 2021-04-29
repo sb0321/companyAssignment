@@ -7,32 +7,33 @@ import lombok.NoArgsConstructor;
 import org.hibernate.annotations.ColumnDefault;
 
 import javax.persistence.*;
+import java.util.Objects;
 
 @Getter
 @Entity
 @NoArgsConstructor
 public class Member {
 
-    private static final String DEFAULT_DUTY = "'없음'";
-    private static final String DEFAULT_POSITION = "'사원'";
+    private static final String LEADER = "팀장";
 
     @Id
     @Column(name = "MEMBER_ID")
     private Long id;
 
+    @Column(nullable = false)
     private String name;
 
-    @ManyToOne(cascade = CascadeType.PERSIST)
+    @ManyToOne(fetch = FetchType.LAZY, cascade = CascadeType.PERSIST)
     @JoinColumn(name = "TEAM_ID")
     private Team team;
 
     @Embedded
     private Contact contact;
 
-    @ColumnDefault(value = DEFAULT_POSITION)
+    @Column(nullable = false)
     private String position;
 
-    @ColumnDefault(value = DEFAULT_DUTY)
+    @Column(nullable = false)
     private String duty;
 
     @Builder
@@ -46,6 +47,9 @@ public class Member {
 
     public void changeTeam(Team team) {
         this.team = team;
-        team.getMembers().add(this);
+    }
+
+    public boolean isLeader() {
+        return this.duty.equals(LEADER);
     }
 }

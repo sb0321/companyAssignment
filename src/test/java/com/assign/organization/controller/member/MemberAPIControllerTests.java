@@ -1,6 +1,5 @@
 package com.assign.organization.controller.member;
 
-import com.assign.organization.service.member.MemberService;
 import lombok.extern.slf4j.Slf4j;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -22,44 +21,4 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 @ExtendWith({MockitoExtension.class})
 class MemberAPIControllerTests {
 
-    @Mock
-    private MemberService memberService;
-
-    @InjectMocks
-    private MemberAPIController controller;
-
-    private MockMvc mockMvc;
-
-    @BeforeEach
-    public void init() {
-
-        mockMvc = MockMvcBuilders
-                .standaloneSetup(controller)
-                .build();
-    }
-
-    @Test
-    public void testUpdateMember() throws Exception {
-
-        MultiValueMap<String, String> params = new LinkedMultiValueMap<>();
-
-        params.add("name", "newMember");
-        params.add("cellPhone", "010-2222-2222");
-        params.add("businessCall", "0000");
-        params.add("ranked", "팀장");
-
-        mockMvc.perform(put("/member/1")
-                .params(params))
-                .andExpect(status().isOk())
-                .andDo(print());
-    }
-
-    @Test
-    public void testDeleteMember() throws Exception {
-
-        mockMvc.perform(delete("/member/1"))
-                .andExpect(status().isOk())
-                .andDo(print());
-
-    }
 }

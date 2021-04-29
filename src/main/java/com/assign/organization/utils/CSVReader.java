@@ -1,28 +1,33 @@
 package com.assign.organization.utils;
 
 import com.assign.organization.domain.member.CSVMemberVO;
-import lombok.extern.slf4j.Slf4j;
 
-import java.io.*;
+import java.io.BufferedReader;
+import java.io.FileNotFoundException;
+import java.io.FileReader;
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 
-@Slf4j
+
 public class CSVReader {
 
     private static final String SEPARATOR = ",";
     private static final String FOLLOWER = "팀원";
+    private static final int DUTY_CONTAIN_ARRAY_LENGTH = 7;
 
     public static List<CSVMemberVO> readCSVFile(String csvFilePath) throws IOException {
         BufferedReader csvFileBufferedReader = getFileBufferedReader(csvFilePath);
-        return getCSVMemberVOFromFileStream(csvFileBufferedReader);
+        List<CSVMemberVO> csvMemberVOListFromReader = getCSVMemberVOListFromReader(csvFileBufferedReader);
+        csvFileBufferedReader.close();
+        return csvMemberVOListFromReader;
     }
 
     private static BufferedReader getFileBufferedReader(String filePath) throws FileNotFoundException {
         return new BufferedReader(new FileReader(filePath));
     }
 
-    private static List<CSVMemberVO> getCSVMemberVOFromFileStream(BufferedReader bufferedReader) throws IOException {
+    private static List<CSVMemberVO> getCSVMemberVOListFromReader(BufferedReader bufferedReader) throws IOException {
         List<CSVMemberVO> csvMemberVOList = new ArrayList<>();
 
         String line;
@@ -53,12 +58,11 @@ public class CSVReader {
         if(checkDutyContains(info)) {
             return info[6];
         }
-
         return FOLLOWER;
     }
 
     private static boolean checkDutyContains(String[] info) {
-        return info.length == 7;
+        return info.length == DUTY_CONTAIN_ARRAY_LENGTH;
     }
 
 }

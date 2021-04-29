@@ -14,14 +14,12 @@ public class TeamVO {
 
     private Long id;
     private String name;
-    private MemberVO teamLeader;
     private List<MemberVO> members;
 
     @Builder
-    public TeamVO(Long id, String name, MemberVO teamLeader, List<MemberVO> members) {
+    public TeamVO(Long id, String name, List<MemberVO> members) {
         this.id = id;
         this.name = name;
-        this.teamLeader = teamLeader;
         this.members = members;
     }
 }

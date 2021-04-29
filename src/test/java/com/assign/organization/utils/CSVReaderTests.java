@@ -32,10 +32,10 @@ class CSVReaderTests {
 
         // fail
         try {
-            List<CSVMemberVO> failed = CSVReader.readCSVFile("failedPath");
+            CSVReader.readCSVFile("failedPath");
             fail("파일이 존재하지 않는데 IOException이 발생하지 않았습니다.");
         } catch (IOException e) {
-
+            // PASS
         }
     }
 
