@@ -12,7 +12,7 @@ import java.util.List;
 
 public class CSVReader {
 
-    private static final String SEPARATOR = ",";
+    private static final String CSV_SEPARATOR = ",";
     private static final String FOLLOWER = "팀원";
     private static final int DUTY_CONTAIN_ARRAY_LENGTH = 7;
 
@@ -41,7 +41,7 @@ public class CSVReader {
     }
 
     private static CSVMemberVO convertStringInfoToCSVMemberVO(String info) {
-        String[] splitInfo = info.split(SEPARATOR);
+        String[] splitInfo = info.split(CSV_SEPARATOR);
 
         Long id = Long.parseLong(splitInfo[0]);
         String name = splitInfo[1];

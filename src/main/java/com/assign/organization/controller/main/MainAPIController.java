@@ -8,6 +8,7 @@ import com.assign.organization.domain.team.TeamVO;
 import com.assign.organization.service.member.MemberService;
 import com.assign.organization.service.team.TeamService;
 import com.assign.organization.utils.CSVReader;
+import com.assign.organization.utils.NameGenerator;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
@@ -43,7 +44,6 @@ public class MainAPIController {
     }
 
 
-
     private void makeConnectionBetweenMemberAndTeamWithList(List<CSVMemberVO> csvMemberVOList) {
         csvMemberVOList.forEach(this::makeConnectionBetweenMemberAndTeam);
     }
@@ -68,7 +68,20 @@ public class MainAPIController {
     }
 
     private void createMembersFromMemberVOList(List<MemberVO> memberVOList) {
-        memberVOList.forEach(memberService::createMemberFromMemberVO);
+        for (MemberVO memberVO : memberVOList) {
+            String convertedName = gernerateNewMemberNameIfDuplicated(memberVO.getName());
+            memberVO.setName(convertedName);
+            memberService.createMemberFromMemberVO(memberVO);
+        }
+    }
+
+    private String gernerateNewMemberNameIfDuplicated(String name) {
+        long nameDuplicationCount = countNameDuplication(name);
+        return NameGenerator.generateNameWhenDuplication(name, nameDuplicationCount);
+    }
+
+    private Long countNameDuplication(String name) {
+        return memberService.countMemberNameDuplication(name);
     }
 
     private List<MemberVO> convertCSVMemberVOListToMemberVOList(List<CSVMemberVO> csvMemberVOList) {
@@ -106,7 +119,7 @@ public class MainAPIController {
 
     private void createTeamsFromTeamVOList(List<TeamVO> teamVOList) {
         for (TeamVO teamVO : teamVOList) {
-            if(checkTeamNameDuplication(teamVO.getName())) {
+            if (checkTeamNameDuplication(teamVO.getName())) {
                 continue;
             }
             teamService.createTeamWhenTeamNameNotDuplicated(teamVO);

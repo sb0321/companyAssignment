@@ -2,6 +2,7 @@ package com.assign.organization.service.member;
 
 import com.assign.organization.domain.member.*;
 import com.querydsl.core.types.Predicate;
+import com.querydsl.core.types.dsl.NumberExpression;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
@@ -16,6 +17,16 @@ import java.util.Optional;
 public class MemberService {
 
     private final MemberRepository memberRepository;
+
+    public Long countMemberNameDuplication(String name) {
+        Predicate predicate = makeNameContainsPredicate(name);
+        return memberRepository.count(predicate);
+    }
+
+    private Predicate makeNameContainsPredicate(String name) {
+        QMember member = QMember.member;
+        return member.name.like(name + "%");
+    }
 
     public Member findMemberById(Long id) {
         Predicate predicate = makeMemberIdSearchPredicate(id);
