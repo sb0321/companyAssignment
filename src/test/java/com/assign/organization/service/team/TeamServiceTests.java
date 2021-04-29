@@ -1,7 +1,6 @@
 package com.assign.organization.service.team;
 
 import com.assign.organization.domain.member.Member;
-import com.assign.organization.domain.member.MemberRepository;
 import com.assign.organization.domain.team.QTeam;
 import com.assign.organization.domain.team.Team;
 import com.assign.organization.domain.team.TeamRepository;
@@ -15,7 +14,7 @@ import org.springframework.boot.test.autoconfigure.jdbc.AutoConfigureTestDatabas
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.util.Optional;
+import java.util.*;
 
 import static org.junit.jupiter.api.Assertions.*;
 
@@ -33,6 +32,48 @@ class TeamServiceTests {
     @AfterEach
     public void tearDown() {
         teamRepository.deleteAll();
+    }
+
+    @Test
+    @Transactional
+    public void testFindAllTeamListOrderByTeamNameDesc() {
+        List<Team> teamList = new ArrayList<>();
+        for (int i = 0; i < 5; i++) {
+            Team team = Team
+                    .builder()
+                    .name("team" + i)
+                    .build();
+            List<Member> memberList = makeMemberList(i);
+            addMembersToTeam(team, memberList);
+            teamList.add(team);
+        }
+
+        teamRepository.saveAll(teamList);
+
+        List<Team> teams = teamService.findAllTeamListOrderByTeamNameDesc();
+        log.info(teams.toString());
+    }
+
+    private void addMembersToTeam(Team team, List<Member> memberList) {
+        memberList.forEach(team::addTeamMember);
+    }
+
+    private List<Member> makeMemberList(int startIdIdx) {
+        List<Member> memberList = new ArrayList<>();
+
+        for (int i = startIdIdx * 4; i < startIdIdx + 4; i++) {
+            Member member = Member
+                    .builder()
+                    .id((long) i)
+                    .name("member" + i)
+                    .duty("사원")
+                    .position("팀원")
+                    .build();
+
+            memberList.add(member);
+        }
+
+        return memberList;
     }
 
     @Test

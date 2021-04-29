@@ -53,10 +53,6 @@ public class MainAPIController {
         Team findTeam = teamService.findTeamByTeamName(csvMemberVO.getTeamName());
 
         teamService.addMemberToTeam(findTeam, findMember);
-
-        if(findMember.isLeader()) {
-            teamService.changeTeamLeader(findTeam, findMember);
-        }
     }
 
     private void createMembersFromCSVMemberVOList(List<CSVMemberVO> csvMemberVOList) {

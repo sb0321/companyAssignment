@@ -14,8 +14,6 @@ import java.util.Objects;
 @NoArgsConstructor
 public class Member {
 
-    private static final String LEADER = "팀장";
-
     @Id
     @Column(name = "MEMBER_ID")
     private Long id;
@@ -47,9 +45,6 @@ public class Member {
 
     public void changeTeam(Team team) {
         this.team = team;
-    }
-
-    public boolean isLeader() {
-        return this.duty.equals(LEADER);
+        team.getMembers().removeIf(m -> Objects.equals(m, this));
     }
 }

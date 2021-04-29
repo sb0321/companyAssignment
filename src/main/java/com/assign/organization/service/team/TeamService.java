@@ -47,11 +47,6 @@ public class TeamService {
         team.addTeamMember(member);
     }
 
-    @Transactional
-    public void changeTeamLeader(Team team, Member member) {
-        team.changeTeamLeader(member);
-    }
-
     public boolean checkExistWithTeamName(String teamName) {
         Predicate predicate = makeTeamNameDuplicationCheckPredicate(teamName);
         return teamRepository.exists(predicate);
