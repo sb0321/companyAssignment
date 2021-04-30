@@ -3,7 +3,7 @@ package com.assign.organization.service.team;
 import com.assign.organization.domain.member.Member;
 import com.assign.organization.domain.team.QTeam;
 import com.assign.organization.domain.team.Team;
-import com.assign.organization.domain.team.TeamRepository;
+import com.assign.organization.domain.team.repository.TeamRepository;
 import com.assign.organization.domain.team.TeamVO;
 import com.querydsl.core.types.Predicate;
 import lombok.extern.slf4j.Slf4j;
@@ -160,7 +160,7 @@ class TeamServiceTests {
         // ok
         teamService.createTeamWhenTeamNameNotDuplicated(teamVO);
 
-        Team team = findTeamByTeamNameOrGetNull(teamVO.getName());
+        Team team = teamService.findTeamByTeamName(teamVO.getName());
 
         assertEquals(teamVO.getName(), team.getName());
 
@@ -172,16 +172,6 @@ class TeamServiceTests {
             // PASS
         }
 
-    }
-
-    private Team findTeamByTeamNameOrGetNull(String teamName) {
-        Predicate predicate = makeTeamNameLikePredicate(teamName);
-        Optional<Team> findTeam = teamRepository.findOne(predicate);
-        return findTeam.orElse(null);
-    }
-
-    private Predicate makeTeamNameLikePredicate(String teamName) {
-        return QTeam.team.name.like(teamName);
     }
 
 }

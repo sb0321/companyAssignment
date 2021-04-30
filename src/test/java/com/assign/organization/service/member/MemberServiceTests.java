@@ -1,7 +1,7 @@
 package com.assign.organization.service.member;
 
 import com.assign.organization.domain.member.Member;
-import com.assign.organization.domain.member.MemberRepository;
+import com.assign.organization.domain.member.repository.MemberRepository;
 import com.assign.organization.domain.member.MemberVO;
 import lombok.extern.slf4j.Slf4j;
 import org.junit.jupiter.api.Test;

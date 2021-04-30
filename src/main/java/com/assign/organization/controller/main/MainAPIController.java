@@ -69,13 +69,13 @@ public class MainAPIController {
 
     private void createMembersFromMemberVOList(List<MemberVO> memberVOList) {
         for (MemberVO memberVO : memberVOList) {
-            String convertedName = gernerateNewMemberNameIfDuplicated(memberVO.getName());
+            String convertedName = generateNewMemberNameIfDuplicated(memberVO.getName());
             memberVO.setName(convertedName);
             memberService.createMemberFromMemberVO(memberVO);
         }
     }
 
-    private String gernerateNewMemberNameIfDuplicated(String name) {
+    private String generateNewMemberNameIfDuplicated(String name) {
         long nameDuplicationCount = countNameDuplication(name);
         return NameGenerator.generateNameWhenDuplication(name, nameDuplicationCount);
     }

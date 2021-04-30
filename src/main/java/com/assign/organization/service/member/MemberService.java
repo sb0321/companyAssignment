@@ -1,8 +1,9 @@
 package com.assign.organization.service.member;
 
 import com.assign.organization.domain.member.*;
-import com.querydsl.core.types.Predicate;
-import com.querydsl.core.types.dsl.NumberExpression;
+import com.assign.organization.domain.member.repository.MemberRepository;
+import com.querydsl.jpa.impl.JPAQuery;
+import com.querydsl.jpa.impl.JPAQueryFactory;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
@@ -19,28 +20,19 @@ public class MemberService {
     private final MemberRepository memberRepository;
 
     public Long countMemberNameDuplication(String name) {
-        Predicate predicate = makeNameContainsPredicate(name);
-        return memberRepository.count(predicate);
+        return memberRepository.countNameContains(name);
     }
 
-    private Predicate makeNameContainsPredicate(String name) {
-        QMember member = QMember.member;
-        return member.name.like(name + "%");
-    }
 
     public Member findMemberById(Long id) {
-        Predicate predicate = makeMemberIdSearchPredicate(id);
-        Optional<Member> findMember = memberRepository.findOne(predicate);
 
-        if(!findMember.isPresent()) {
+        Optional<Member> findMember = memberRepository.findById(id);
+
+        if (!findMember.isPresent()) {
             throw new NoResultException();
         }
 
         return findMember.get();
-    }
-
-    private Predicate makeMemberIdSearchPredicate(Long id) {
-        return QMember.member.id.eq(id);
     }
 
     @Transactional
@@ -55,13 +47,13 @@ public class MemberService {
 
         return
                 Member
-                .builder()
-                .id(memberVO.getId())
-                .name(memberVO.getName())
-                .duty(memberVO.getDuty())
-                .position(memberVO.getPosition())
-                .contact(contact)
-                .build();
+                        .builder()
+                        .id(memberVO.getId())
+                        .name(memberVO.getName())
+                        .duty(memberVO.getDuty())
+                        .position(memberVO.getPosition())
+                        .contact(contact)
+                        .build();
     }
 
     private Contact makeContactFromMemberVO(MemberVO vo) {
