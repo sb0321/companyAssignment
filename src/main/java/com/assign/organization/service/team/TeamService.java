@@ -1,5 +1,6 @@
 package com.assign.organization.service.team;
 
+import com.assign.organization.domain.member.CSVMemberVO;
 import com.assign.organization.domain.member.Member;
 import com.assign.organization.domain.team.Team;
 import com.assign.organization.domain.team.TeamVO;
@@ -10,6 +11,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import javax.persistence.NoResultException;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 
@@ -21,7 +23,7 @@ public class TeamService {
     private final TeamRepository teamRepository;
 
     public List<Team> findAllTeamListOrderByTeamNameDesc() {
-        return teamRepository.findAllOrderByTeamNameAndMemberNameAndDuty();
+        return teamRepository.findAllTeams();
     }
 
     @Transactional
@@ -29,9 +31,25 @@ public class TeamService {
         team.addTeamMember(member);
     }
 
-    public boolean checkExistWithTeamName(String teamName) {
-        long duplication = teamRepository.countTeamNameDuplication(teamName);
-        return duplication != 0;
+    public List<TeamVO> extractTeamVOListFromCSVMemberVOList(List<CSVMemberVO> csvMemberVOList) {
+        List<TeamVO> teamVOList = new ArrayList<>();
+
+        for (CSVMemberVO csvMemberVO : csvMemberVOList) {
+            TeamVO teamVO = extractTeamVOFromCSVMemberVO(csvMemberVO);
+            teamVOList.add(teamVO);
+        }
+
+        return teamVOList;
+    }
+
+    @Transactional
+    public void insertTeamsFromTeamVOList(List<TeamVO> teamVOList) {
+        for (TeamVO teamVO : teamVOList) {
+            if (checkExistWithTeamName(teamVO.getName())) {
+                continue;
+            }
+            createTeamWhenTeamNameNotDuplicated(teamVO);
+        }
     }
 
     public Team findTeamByTeamName(String teamName) {
@@ -44,8 +62,19 @@ public class TeamService {
         return findTeam.get();
     }
 
-    @Transactional
-    public void createTeamWhenTeamNameNotDuplicated(TeamVO teamVO) {
+    private Team convertTeamVOToEntity(TeamVO teamVO) {
+        return Team
+                .builder()
+                .name(teamVO.getName())
+                .build();
+    }
+
+    private boolean checkExistWithTeamName(String teamName) {
+        long duplication = teamRepository.countTeamNameDuplication(teamName);
+        return duplication != 0;
+    }
+
+    private void createTeamWhenTeamNameNotDuplicated(TeamVO teamVO) {
         Team newTeam = convertTeamVOToEntity(teamVO);
 
         try {
@@ -55,11 +84,10 @@ public class TeamService {
         }
     }
 
-    private Team convertTeamVOToEntity(TeamVO teamVO) {
-        return Team
+    private TeamVO extractTeamVOFromCSVMemberVO(CSVMemberVO csvMemberVO) {
+        return TeamVO
                 .builder()
-                .name(teamVO.getName())
+                .name(csvMemberVO.getTeamName())
                 .build();
     }
-
 }

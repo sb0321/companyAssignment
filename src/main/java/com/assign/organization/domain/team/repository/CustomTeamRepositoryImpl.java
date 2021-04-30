@@ -3,6 +3,9 @@ package com.assign.organization.domain.team.repository;
 import com.assign.organization.domain.member.QMember;
 import com.assign.organization.domain.team.QTeam;
 import com.assign.organization.domain.team.Team;
+import com.querydsl.core.types.Expression;
+import com.querydsl.core.types.dsl.CaseBuilder;
+import com.querydsl.core.types.dsl.NumberExpression;
 import com.querydsl.jpa.impl.JPAQueryFactory;
 import lombok.RequiredArgsConstructor;
 
@@ -15,32 +18,42 @@ public class CustomTeamRepositoryImpl implements CustomTeamRepository {
     private final JPAQueryFactory queryFactory;
 
     @Override
-    public List<Team> findAllOrderByTeamNameAndMemberNameAndDuty() {
+    public List<Team> findAllTeams() {
+
+        QTeam team = QTeam.team;
+        QMember member = QMember.member;
+
         return queryFactory
-                .select(QTeam.team)
-                .from(QTeam.team, QMember.member)
-                .orderBy(QTeam.team.name.desc())
-                .orderBy(QMember.member.name.desc())
-                .orderBy(QMember.member.duty.desc())
+                .select(team)
+                .from(team, member)
+                .groupBy(team)
+                .orderBy(team.name.asc())
+                .orderBy(member.name.asc())
                 .fetch();
     }
 
     @Override
     public long countTeamNameDuplication(String teamName) {
+
+        QTeam team = QTeam.team;
+
         return queryFactory
-                .select(QTeam.team.name)
-                .from(QTeam.team)
-                .where(QTeam.team.name.eq(teamName))
+                .select(team.name)
+                .from(team)
+                .where(team.name.eq(teamName))
                 .fetchCount();
     }
 
     @Override
     public Optional<Team> findByTeamName(String teamName) {
-        Team team = queryFactory
-                .selectFrom(QTeam.team)
-                .where(QTeam.team.name.eq(teamName))
+
+        QTeam team = QTeam.team;
+
+        Team findTeam = queryFactory
+                .selectFrom(team)
+                .where(team.name.eq(teamName))
                 .fetchOne();
 
-        return Optional.ofNullable(team);
+        return Optional.ofNullable(findTeam);
     }
 }

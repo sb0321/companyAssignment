@@ -100,28 +100,6 @@ class TeamServiceTests {
     }
 
     @Test
-    public void testCheckExistWithTeamName() {
-
-        final String teamName = "testTeam";
-
-        // given
-        Team team = Team
-                .builder()
-                .name(teamName)
-                .build();
-
-        // when
-        teamRepository.save(team);
-
-        // then
-        boolean exist = teamService.checkExistWithTeamName(teamName);
-        assertTrue(exist);
-
-        exist = teamService.checkExistWithTeamName("nothing");
-        assertFalse(exist);
-    }
-
-    @Test
     @Transactional
     public void testFindTeamByTeamName() {
 
@@ -146,32 +124,6 @@ class TeamServiceTests {
         } catch (Exception e) {
             // PASS
         }
-    }
-
-    @Test
-    public void testCreateTeamWhenTeamNameNotDuplicated() {
-
-        // given
-        TeamVO teamVO = TeamVO
-                .builder()
-                .name("testTeam")
-                .build();
-
-        // ok
-        teamService.createTeamWhenTeamNameNotDuplicated(teamVO);
-
-        Team team = teamService.findTeamByTeamName(teamVO.getName());
-
-        assertEquals(teamVO.getName(), team.getName());
-
-        // fail
-        try {
-            teamService.createTeamWhenTeamNameNotDuplicated(teamVO);
-            fail("팀 이름이 중복되어 저장이 정상적으로 되지 않아야 한다.");
-        } catch (Exception e) {
-            // PASS
-        }
-
     }
 
 }
