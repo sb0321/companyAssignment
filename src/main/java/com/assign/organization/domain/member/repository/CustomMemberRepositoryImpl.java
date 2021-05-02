@@ -29,14 +29,17 @@ public class CustomMemberRepositoryImpl implements CustomMemberRepository {
 
         return queryFactory
                 .select(member)
-                .from(member, team)
-                .leftJoin(team)
+                .from(member)
+                .leftJoin(member.team, team)
                 .where(
                         member.name.contains(keyword)
                         .or(member.contact.businessCall.contains(keyword)
-                        .or(member.contact.cellPhone.contains(keyword))
-                        .or(team.name.contains(keyword)))
+                        .or(member.contact.cellPhone.contains(keyword)))
+                        .or(team.name.contains(keyword))
                 )
+                .orderBy(member.name.asc())
+                .orderBy(team.name.asc())
+                .orderBy(member.duty.desc())
                 .fetch();
     }
 }
