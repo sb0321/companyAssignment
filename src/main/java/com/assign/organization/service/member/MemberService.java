@@ -22,6 +22,33 @@ public class MemberService {
 
     private final MemberRepository memberRepository;
 
+    public List<MemberVO> findMembersContainsKeyword(String keyword) {
+        List<Member> memberList = memberRepository.findMembersContainsKeyword(keyword);
+        return convertMemberListToMemberVOList(memberList);
+    }
+
+    private List<MemberVO> convertMemberListToMemberVOList(List<Member> memberList) {
+
+        List<MemberVO> memberVOList = new ArrayList<>();
+
+        for (Member member : memberList) {
+            MemberVO vo = MemberVO
+                    .builder()
+                    .id(member.getId())
+                    .name(member.getName())
+                    .businessCall(member.getContact().getBusinessCall())
+                    .cellPhone(member.getContact().getCellPhone())
+                    .position(member.getPosition())
+                    .teamName(member.getTeam().getName())
+                    .duty(member.getDuty())
+                    .build();
+
+            memberVOList.add(vo);
+        }
+
+        return memberVOList;
+    }
+
     public Member findMemberById(Long id) {
 
         Optional<Member> findMember = memberRepository.findById(id);

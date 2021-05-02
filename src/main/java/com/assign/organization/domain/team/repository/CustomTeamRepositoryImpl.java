@@ -3,9 +3,6 @@ package com.assign.organization.domain.team.repository;
 import com.assign.organization.domain.member.QMember;
 import com.assign.organization.domain.team.QTeam;
 import com.assign.organization.domain.team.Team;
-import com.querydsl.core.types.Expression;
-import com.querydsl.core.types.dsl.CaseBuilder;
-import com.querydsl.core.types.dsl.NumberExpression;
 import com.querydsl.jpa.impl.JPAQueryFactory;
 import lombok.RequiredArgsConstructor;
 
