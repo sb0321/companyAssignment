@@ -1,5 +1,6 @@
 package com.assign.organization.service.team;
 
+import com.assign.organization.domain.member.CSVMemberVO;
 import com.assign.organization.domain.member.Member;
 import com.assign.organization.domain.team.QTeam;
 import com.assign.organization.domain.team.Team;
@@ -32,6 +33,68 @@ class TeamServiceTests {
     @AfterEach
     public void tearDown() {
         teamRepository.deleteAll();
+    }
+
+    @Test
+    public void testInsertTeamsFromTeamVOList() {
+
+        // given
+        List<TeamVO> teamVOList = new ArrayList<>();
+        for(int i = 0; i < 5; i++) {
+            TeamVO teamVO = TeamVO
+                    .builder()
+                    .name("test" + i)
+                    .build();
+
+            teamVOList.add(teamVO);
+        }
+
+        // duplicatedTeamName
+        teamVOList.add(TeamVO.builder().name("test1").build());
+
+        // when
+        teamService.insertTeamsFromTeamVOList(teamVOList);
+
+        // then
+        for(int i = 0; i < 5; i++) {
+            Optional<Team> findTeam = teamRepository.findByTeamName("test" + i);
+            assertTrue(findTeam.isPresent());
+            assertEquals(teamVOList.get(i).getName(), findTeam.get().getName());
+        }
+
+        // then 중복된 이름은 없이 만들어져야 함
+        assertEquals(teamVOList.size() - 1, teamRepository.findAllTeams().size());
+    }
+
+    @Test
+    public void testExtractTeamVOListFromCSVMemberVOList() {
+
+        // given
+        List<CSVMemberVO> csvMemberVOList = new ArrayList<>();
+        for(int i = 0; i < 10; i++) {
+            CSVMemberVO csvMemberVO = CSVMemberVO
+                    .builder()
+                    .id((long)i)
+                    .name("test" + i)
+                    .teamName("team" + i)
+                    .businessCall("100" + i)
+                    .cellPhone("010-0000-000" + i)
+                    .position("사원")
+                    .duty("팀장")
+                    .build();
+
+            csvMemberVOList.add(csvMemberVO);
+        }
+
+        // when
+        List<TeamVO> teamVOList = teamService.extractTeamVOListFromCSVMemberVOList(csvMemberVOList);
+
+        log.info(teamVOList.toString());
+
+        for (int i = 0; i < teamVOList.size(); i++) {
+            assertEquals(csvMemberVOList.get(i).getTeamName(), teamVOList.get(i).getName());
+        }
+
     }
 
     @Test

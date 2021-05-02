@@ -18,14 +18,12 @@ public class CustomTeamRepositoryImpl implements CustomTeamRepository {
     public List<Team> findAllTeams() {
 
         QTeam team = QTeam.team;
-        QMember member = QMember.member;
 
         return queryFactory
                 .select(team)
-                .from(team, member)
+                .from(team)
                 .groupBy(team)
                 .orderBy(team.name.asc())
-                .orderBy(member.name.asc())
                 .fetch();
     }
 

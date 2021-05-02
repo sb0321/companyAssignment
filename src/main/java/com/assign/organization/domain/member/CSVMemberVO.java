@@ -1,11 +1,13 @@
 package com.assign.organization.domain.member;
 
 import lombok.AllArgsConstructor;
+import lombok.Builder;
 import lombok.Getter;
 import lombok.ToString;
 
 @ToString
 @Getter
+@Builder
 @AllArgsConstructor
 public class CSVMemberVO {
 
