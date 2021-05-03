@@ -1,6 +1,5 @@
 package com.assign.organization.domain.team.repository;
 
-import com.assign.organization.domain.member.QMember;
 import com.assign.organization.domain.team.QTeam;
 import com.assign.organization.domain.team.Team;
 import com.querydsl.jpa.impl.JPAQueryFactory;
