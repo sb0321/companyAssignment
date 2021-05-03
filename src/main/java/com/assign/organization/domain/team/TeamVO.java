@@ -7,14 +7,12 @@ import java.util.List;
 import java.util.Set;
 
 @Getter
-@Setter
 @ToString
-@NoArgsConstructor
 public class TeamVO {
 
-    private Long id;
-    private String name;
-    private List<MemberVO> members;
+    private final Long id;
+    private final String name;
+    private final List<MemberVO> members;
 
     @Builder
     public TeamVO(Long id, String name, List<MemberVO> members) {

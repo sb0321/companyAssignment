@@ -1,12 +1,11 @@
 package com.assign.organization.service.team;
 
 import com.assign.organization.domain.member.CSVMemberVO;
+import com.assign.organization.domain.member.Contact;
 import com.assign.organization.domain.member.Member;
-import com.assign.organization.domain.team.QTeam;
 import com.assign.organization.domain.team.Team;
 import com.assign.organization.domain.team.repository.TeamRepository;
 import com.assign.organization.domain.team.TeamVO;
-import com.querydsl.core.types.Predicate;
 import lombok.extern.slf4j.Slf4j;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.Test;
@@ -33,6 +32,29 @@ class TeamServiceTests {
     @AfterEach
     public void tearDown() {
         teamRepository.deleteAll();
+    }
+
+    @Test
+    @Transactional
+    public void testInsertTeams() {
+
+        // given
+        List<Team> teamList = new ArrayList<>();
+
+        for(int i = 0; i < 5; i++) {
+            teamList.add(new Team("team" + i));
+        }
+
+        // when
+        teamService.insertTeams(teamList);
+
+        // then
+        List<Team> findTeamList = teamRepository.findAllTeamsOrderByTeamName();
+
+        for (int i = 0; i < teamList.size(); i++) {
+            assertEquals(teamList.get(i).getName(), findTeamList.get(i).getName());
+        }
+
     }
 
     @Test
@@ -63,7 +85,7 @@ class TeamServiceTests {
         }
 
         // then 중복된 이름은 없이 만들어져야 함
-        assertEquals(teamVOList.size() - 1, teamRepository.findAllTeams().size());
+        assertEquals(teamVOList.size() - 1, teamRepository.findAllTeamsOrderByTeamName().size());
     }
 
     @Test
@@ -113,8 +135,8 @@ class TeamServiceTests {
 
         teamRepository.saveAll(teamList);
 
-        List<Team> teams = teamService.findAllTeamListOrderByTeamNameDesc();
-        log.info(teams.toString());
+        List<TeamVO> teamVOList = teamService.findAllTeamListOrderByTeamNameDesc();
+        log.info(teamVOList.toString());
     }
 
     private void addMembersToTeam(Team team, List<Member> memberList) {
@@ -125,12 +147,20 @@ class TeamServiceTests {
         List<Member> memberList = new ArrayList<>();
 
         for (int i = startIdIdx * 4; i < startIdIdx + 4; i++) {
+
+            Contact contact = Contact
+                    .builder()
+                    .cellPhone("010-0000-00" + i)
+                    .businessCall("10" + i)
+                    .build();
+
             Member member = Member
                     .builder()
                     .id((long) i)
                     .name("member" + i)
                     .duty("사원")
                     .position("팀원")
+                    .contact(contact)
                     .build();
 
             memberList.add(member);

@@ -2,6 +2,7 @@ package com.assign.organization.service.team;
 
 import com.assign.organization.domain.member.CSVMemberVO;
 import com.assign.organization.domain.member.Member;
+import com.assign.organization.domain.member.MemberVO;
 import com.assign.organization.domain.team.Team;
 import com.assign.organization.domain.team.TeamVO;
 import com.assign.organization.domain.team.repository.TeamRepository;
@@ -15,6 +16,7 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
 import java.util.Optional;
+import java.util.stream.Collectors;
 
 @Slf4j
 @Service
@@ -28,9 +30,51 @@ public class TeamService {
         teamRepository.saveAll(teams);
     }
 
-    public List<Team> findAllTeamListOrderByTeamNameDesc() {
-        return teamRepository.findAllTeams();
+    public List<TeamVO> findAllTeamListOrderByTeamNameDesc() {
+        List<Team> teamList = teamRepository.findAllTeamsOrderByTeamName();
+        return convertTeamListToTeamVOList(teamList);
     }
+
+    public List<TeamVO> convertTeamListToTeamVOList(List<Team> teamList) {
+        List<TeamVO> teamVOList = new ArrayList<>();
+        for (Team team : teamList) {
+
+            List<MemberVO> memberVOList = convertMemberListToMemberVOList(team.getMembers());
+
+            TeamVO vo = TeamVO
+                    .builder()
+                    .name(team.getName())
+                    .id(team.getId())
+                    .members(memberVOList)
+                    .build();
+
+            teamVOList.add(vo);
+        }
+
+        return teamVOList;
+    }
+
+    private List<MemberVO> convertMemberListToMemberVOList(Collection<Member> memberList) {
+        return memberList
+                .stream()
+                .map(this::convertMemberToMemberVO)
+                .collect(Collectors.toList());
+    }
+
+    private MemberVO convertMemberToMemberVO(Member member) {
+        return MemberVO
+                .builder()
+                .id(member.getId())
+                .name(member.getName())
+                .teamName(member.getTeam().getName())
+                .cellPhone(member.getContact().getCellPhone())
+                .businessCall(member.getContact().getBusinessCall())
+                .position(member.getPosition())
+                .duty(member.getDuty())
+                .build();
+    }
+
+
 
     @Transactional
     public void addMemberToTeam(Team team, Member member) {
@@ -54,7 +98,9 @@ public class TeamService {
             if (checkExistWithTeamName(teamVO.getName())) {
                 continue;
             }
-            createTeamWhenTeamNameNotDuplicated(teamVO);
+
+            Team team = convertTeamVOToEntity(teamVO);
+            teamRepository.save(team);
         }
     }
 
@@ -78,16 +124,6 @@ public class TeamService {
     private boolean checkExistWithTeamName(String teamName) {
         long duplication = teamRepository.countTeamNameDuplication(teamName);
         return duplication != 0;
-    }
-
-    private void createTeamWhenTeamNameNotDuplicated(TeamVO teamVO) {
-        Team newTeam = convertTeamVOToEntity(teamVO);
-
-        try {
-            teamRepository.save(newTeam);
-        } catch (Exception e) {
-            log.info(e.getMessage());
-        }
     }
 
     private TeamVO extractTeamVOFromCSVMemberVO(CSVMemberVO csvMemberVO) {

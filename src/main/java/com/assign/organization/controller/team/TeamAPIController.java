@@ -25,47 +25,8 @@ public class TeamAPIController {
 
     @GetMapping("")
     public List<TeamVO> getTeamsWithMembers() {
-        List<Team> teamList = teamService.findAllTeamListOrderByTeamNameDesc();
-        return convertTeamListToTeamVOList(teamList);
+        return teamService.findAllTeamListOrderByTeamNameDesc();
     }
 
-    private List<TeamVO> convertTeamListToTeamVOList(List<Team> teamList) {
-        return teamList
-                .stream()
-                .map(this::convertTeamToTeamVO)
-                .collect(Collectors.toList());
-    }
-
-    private TeamVO convertTeamToTeamVO(Team team) {
-        List<MemberVO> memberVOList = convertMemberListToMemberVOList(team.getMembers());
-        memberVOList.sort(Comparator.comparing(MemberVO::getName));
-
-        return TeamVO
-                .builder()
-                .id(team.getId())
-                .name(team.getName())
-                .members(memberVOList)
-                .build();
-    }
-
-    private List<MemberVO> convertMemberListToMemberVOList(Collection<Member> memberList) {
-        return memberList
-                .stream()
-                .map(this::convertMemberToMemberVO)
-                .collect(Collectors.toList());
-    }
-
-    private MemberVO convertMemberToMemberVO(Member member) {
-        return MemberVO
-                .builder()
-                .id(member.getId())
-                .name(member.getName())
-                .teamName(member.getTeam().getName())
-                .cellPhone(member.getContact().getCellPhone())
-                .businessCall(member.getContact().getBusinessCall())
-                .position(member.getPosition())
-                .duty(member.getDuty())
-                .build();
-    }
 
 }

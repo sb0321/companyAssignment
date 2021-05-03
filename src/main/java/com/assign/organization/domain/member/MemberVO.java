@@ -1,11 +1,13 @@
 package com.assign.organization.domain.member;
 
-import lombok.*;
+import lombok.Builder;
+import lombok.Getter;
+import lombok.Setter;
+import lombok.ToString;
 
 @Getter
 @Setter
 @ToString
-@NoArgsConstructor
 public class MemberVO {
 
     private Long id;

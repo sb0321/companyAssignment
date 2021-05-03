@@ -7,7 +7,7 @@ import java.util.Optional;
 
 public interface CustomTeamRepository {
 
-    List<Team> findAllTeams();
+    List<Team> findAllTeamsOrderByTeamName();
 
     long countTeamNameDuplication(String teamName);
 

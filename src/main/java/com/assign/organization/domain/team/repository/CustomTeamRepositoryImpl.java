@@ -14,7 +14,7 @@ public class CustomTeamRepositoryImpl implements CustomTeamRepository {
     private final JPAQueryFactory queryFactory;
 
     @Override
-    public List<Team> findAllTeams() {
+    public List<Team> findAllTeamsOrderByTeamName() {
 
         QTeam team = QTeam.team;
 
