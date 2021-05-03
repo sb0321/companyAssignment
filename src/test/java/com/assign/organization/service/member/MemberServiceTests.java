@@ -160,22 +160,4 @@ class MemberServiceTests {
         }
 
     }
-
-    @Test
-    void testCreateMemberFromMemberVO() {
-
-        // given
-        MemberVO newMemberVO = MemberVO
-                .builder()
-                .id(1L)
-                .name("test")
-                .businessCall("1001")
-                .cellPhone("010-1111-1111")
-                .duty("팀장")
-                .position("사원")
-                .build();
-
-        // ok
-        memberService.createMemberFromMemberVO(newMemberVO);
-    }
 }

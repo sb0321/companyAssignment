@@ -1,19 +1,20 @@
 package com.assign.organization.service.member;
 
-import com.assign.organization.domain.member.*;
+import com.assign.organization.domain.member.CSVMemberVO;
+import com.assign.organization.domain.member.Contact;
+import com.assign.organization.domain.member.Member;
+import com.assign.organization.domain.member.MemberVO;
 import com.assign.organization.domain.member.repository.MemberRepository;
+import com.assign.organization.domain.team.Team;
+import com.assign.organization.service.team.TeamService;
 import com.assign.organization.utils.NameGenerator;
-import com.querydsl.jpa.impl.JPAQuery;
-import com.querydsl.jpa.impl.JPAQueryFactory;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 
 import javax.persistence.NoResultException;
 import javax.transaction.Transactional;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Optional;
+import java.util.*;
 
 @Slf4j
 @Service
@@ -21,6 +22,8 @@ import java.util.Optional;
 public class MemberService {
 
     private final MemberRepository memberRepository;
+
+    private final TeamService teamService;
 
     public List<MemberVO> findMembersContainsKeyword(String keyword) {
         List<Member> memberList = memberRepository.findMembersContainsKeyword(keyword);
@@ -62,36 +65,46 @@ public class MemberService {
 
     @Transactional
     public void insertMembersFromCSVMemberVOList(List<CSVMemberVO> csvMemberVOList) {
-        List<MemberVO> memberVOList = convertCSVMemberVOListToMemberVOList(csvMemberVOList);
-        createMembersFromMemberVOList(memberVOList);
+        Collection<Team> teams = connectMembersToTeamAndGetTeamCollection(csvMemberVOList);
+        teamService.insertTeams(teams);
     }
 
-    public void createMemberFromMemberVO(MemberVO memberVO) {
-        Member newMember = convertMemberVOToMemberEntity(memberVO);
-        memberRepository.save(newMember);
-    }
+    private Collection<Team> connectMembersToTeamAndGetTeamCollection(List<CSVMemberVO> csvMemberVOList) {
 
-    private void createMembersFromMemberVOList(List<MemberVO> memberVOList) {
-        for (MemberVO memberVO : memberVOList) {
-            String convertedName = generateNewMemberNameIfDuplicated(memberVO.getName());
-            memberVO.setName(convertedName);
-            createMemberFromMemberVO(memberVO);
-        }
-    }
-
-    private List<MemberVO> convertCSVMemberVOListToMemberVOList(List<CSVMemberVO> csvMemberVOList) {
-        List<MemberVO> convertedList = new ArrayList<>();
+        Map<String, Team> teams = new HashMap<>();
+        Map<String, Integer> nameDuplication = new HashMap<>();
 
         for (CSVMemberVO csvMemberVO : csvMemberVOList) {
-            MemberVO converted = convertCSVMemberVOToMemberVO(csvMemberVO);
-            convertedList.add(converted);
+            MemberVO memberVO = convertCSVMemberVOToMemberVO(csvMemberVO);
+
+            int nameDuplicatedCount = getNameDuplicationCount(nameDuplication, memberVO.getName());
+            String newName = generateNewMemberNameIfDuplicated(memberVO.getName(), nameDuplicatedCount);
+            memberVO.setName(newName);
+
+            Member member = convertMemberVOToMemberEntity(memberVO);
+
+            String teamName = csvMemberVO.getTeamName();
+
+            teams.putIfAbsent(teamName, Team.builder().name(teamName).build());
+            teams.get(teamName).addTeamMember(member);
         }
-        return convertedList;
+
+        return teams.values();
     }
 
-    private String generateNewMemberNameIfDuplicated(String name) {
-        long nameDuplicationCount = memberRepository.countNameContains(name);
-        return NameGenerator.generateNameWhenDuplication(name, nameDuplicationCount);
+    private int getNameDuplicationCount(Map<String, Integer> nameDuplication, String name) {
+
+        if (!nameDuplication.containsKey(name)) {
+            nameDuplication.put(name, -1);
+        }
+
+        nameDuplication.replace(name, nameDuplication.get(name) + 1);
+
+        return nameDuplication.get(name);
+    }
+
+    private String generateNewMemberNameIfDuplicated(String name, int duplicationCount) {
+        return NameGenerator.generateNameWhenDuplication(name, duplicationCount);
     }
 
     private MemberVO convertCSVMemberVOToMemberVO(CSVMemberVO csvMemberVO) {

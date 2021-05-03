@@ -4,7 +4,6 @@ import com.assign.organization.domain.team.Team;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
-import org.hibernate.annotations.ColumnDefault;
 
 import javax.persistence.*;
 import java.util.Objects;
@@ -21,7 +20,7 @@ public class Member {
     @Column(nullable = false, unique = true)
     private String name;
 
-    @ManyToOne(fetch = FetchType.LAZY, cascade = CascadeType.PERSIST)
+    @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "TEAM_ID")
     private Team team;
 
@@ -45,6 +44,5 @@ public class Member {
 
     public void changeTeam(Team team) {
         this.team = team;
-        team.getMembers().removeIf(m -> Objects.equals(m, this));
     }
 }

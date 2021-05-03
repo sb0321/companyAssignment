@@ -12,6 +12,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 import javax.persistence.NoResultException;
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.List;
 import java.util.Optional;
 
@@ -21,6 +22,11 @@ import java.util.Optional;
 public class TeamService {
 
     private final TeamRepository teamRepository;
+
+    @Transactional
+    public void insertTeams(Collection<Team> teams) {
+        teamRepository.saveAll(teams);
+    }
 
     public List<Team> findAllTeamListOrderByTeamNameDesc() {
         return teamRepository.findAllTeams();
