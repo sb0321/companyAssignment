@@ -8,6 +8,7 @@ import com.assign.organization.domain.member.repository.MemberRepository;
 import com.assign.organization.domain.team.Team;
 import com.assign.organization.domain.team.repository.TeamRepository;
 import lombok.extern.slf4j.Slf4j;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.jdbc.AutoConfigureTestDatabase;
@@ -33,6 +34,12 @@ class MemberServiceTests {
 
     @Autowired
     private MemberService memberService;
+
+    @BeforeEach
+    public void init() {
+        teamRepository.deleteAll();
+        memberRepository.deleteAll();
+    }
 
     @Test
     @Transactional
@@ -96,11 +103,9 @@ class MemberServiceTests {
                 .name("testTeam")
                 .build();
 
+        team.addTeamMember(member);
+
         teamRepository.save(team);
-
-        member.changeTeam(team);
-
-        memberRepository.save(member);
 
         // when
         String nameKeyword = "test";
