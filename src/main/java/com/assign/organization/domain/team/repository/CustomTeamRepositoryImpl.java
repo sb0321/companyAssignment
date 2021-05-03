@@ -19,8 +19,7 @@ public class CustomTeamRepositoryImpl implements CustomTeamRepository {
         QTeam team = QTeam.team;
 
         return queryFactory
-                .select(team)
-                .from(team)
+                .selectFrom(team)
                 .groupBy(team)
                 .orderBy(team.name.asc())
                 .fetch();
