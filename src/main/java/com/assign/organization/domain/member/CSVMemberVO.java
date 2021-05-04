@@ -7,7 +7,6 @@ import lombok.ToString;
 
 @ToString
 @Getter
-@Builder
 @AllArgsConstructor
 public class CSVMemberVO {
 

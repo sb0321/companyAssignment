@@ -94,16 +94,8 @@ class TeamServiceTests {
         // given
         List<CSVMemberVO> csvMemberVOList = new ArrayList<>();
         for(int i = 0; i < 10; i++) {
-            CSVMemberVO csvMemberVO = CSVMemberVO
-                    .builder()
-                    .id((long)i)
-                    .name("test" + i)
-                    .teamName("team" + i)
-                    .businessCall("100" + i)
-                    .cellPhone("010-0000-000" + i)
-                    .position("사원")
-                    .duty("팀장")
-                    .build();
+            CSVMemberVO csvMemberVO = new CSVMemberVO((long)i, "test" + i, "team" + i,
+                    "100" + i, "010-0000-000" + i, "팀장", "사원");
 
             csvMemberVOList.add(csvMemberVO);
         }

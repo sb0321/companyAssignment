@@ -17,14 +17,19 @@ public class CSVReader {
     private static final int DUTY_CONTAIN_ARRAY_LENGTH = 7;
 
     public static List<CSVMemberVO> readCSVFile(String csvFilePath) throws IOException {
-        BufferedReader csvFileBufferedReader = getFileBufferedReader(csvFilePath);
-        List<CSVMemberVO> csvMemberVOListFromReader = getCSVMemberVOListFromReader(csvFileBufferedReader);
-        csvFileBufferedReader.close();
-        return csvMemberVOListFromReader;
+        List<CSVMemberVO> readCsvMemberVOList = getCSVMemberVOList(csvFilePath);
+        return readCsvMemberVOList;
     }
 
-    private static BufferedReader getFileBufferedReader(String filePath) throws FileNotFoundException {
-        return new BufferedReader(new FileReader(filePath));
+    private static List<CSVMemberVO> getCSVMemberVOList(String filePath) throws FileNotFoundException {
+
+        try (BufferedReader br = new BufferedReader(new FileReader(filePath))){
+            List<CSVMemberVO> csvMemberVOListFromReader = getCSVMemberVOListFromReader(br);
+            return csvMemberVOListFromReader;
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+        return null;
     }
 
     private static List<CSVMemberVO> getCSVMemberVOListFromReader(BufferedReader bufferedReader) throws IOException {

@@ -38,9 +38,9 @@ public class CustomMemberRepositoryImpl implements CustomMemberRepository {
                         .or(member.contact.cellPhone.contains(keyword)))
                         .or(team.name.contains(keyword))
                 )
+                .orderBy(team.name.asc())
                 .orderBy(member.duty.desc())
                 .orderBy(member.name.asc())
-                .orderBy(team.name.asc())
                 .fetch();
     }
 }
