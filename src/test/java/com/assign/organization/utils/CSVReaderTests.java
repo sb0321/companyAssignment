@@ -1,8 +1,8 @@
 package com.assign.organization.utils;
 
 import com.assign.organization.domain.member.CSVMemberVO;
+import com.assign.organization.exception.CSVFileNotValidException;
 import lombok.extern.slf4j.Slf4j;
-import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.springframework.beans.factory.annotation.Value;
@@ -12,11 +12,8 @@ import org.springframework.test.context.junit.jupiter.SpringExtension;
 import java.io.IOException;
 import java.util.List;
 
-import static org.junit.jupiter.api.Assertions.assertNull;
-import static org.junit.jupiter.api.Assertions.fail;
-
 @Slf4j
-@ExtendWith({SpringExtension.class})
+@ExtendWith(SpringExtension.class)
 @TestPropertySource(value = "classpath:application.properties")
 class CSVReaderTests {
 
@@ -24,16 +21,15 @@ class CSVReaderTests {
     private String CSV_FILE_PATH;
 
     @Test
-    void testReadCSVFile() throws IOException {
+    void testReadCSVFile() {
 
-        log.info(CSV_FILE_PATH);
-
-        List<CSVMemberVO> csvMemberVOList = CSVReader.readCSVFile("failedPath");
-
-        log.info(csvMemberVOList.toString());
-
-
+        try {
+            List<CSVMemberVO> csvMemberVOList = CSVReader.readCSVFile(CSV_FILE_PATH);
+        } catch (CSVFileNotValidException e) {
+            e.printStackTrace();
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
 
     }
-
 }

@@ -1,6 +1,7 @@
 package com.assign.organization.domain.member;
 
 import com.assign.organization.domain.team.Team;
+import lombok.AccessLevel;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -10,11 +11,12 @@ import java.util.Objects;
 
 @Getter
 @Entity
-@NoArgsConstructor
+@NoArgsConstructor(access = AccessLevel.PROTECTED)
 public class Member {
 
     @Id
     @Column(name = "MEMBER_ID")
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
     @Column(nullable = false, unique = true)
@@ -34,8 +36,7 @@ public class Member {
     private String duty;
 
     @Builder
-    public Member(Long id, String name, Contact contact, String position, String duty) {
-        this.id = id;
+    public Member(String name, Contact contact, String position, String duty) {
         this.name = name;
         this.contact = contact;
         this.position = position;
@@ -43,6 +44,11 @@ public class Member {
     }
 
     public void changeTeam(Team team) {
+
+        if(this.team != null) {
+            this.team.getMembers().removeIf(m -> Objects.equals(m, this));
+        }
+
         this.team = team;
         team.getMembers().add(this);
     }

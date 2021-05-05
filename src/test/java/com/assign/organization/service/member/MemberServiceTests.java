@@ -43,36 +43,6 @@ class MemberServiceTests {
 
     @Test
     @Transactional
-    public void testInsertMembersFromCSVMemberVOList() {
-
-        // given
-        List<CSVMemberVO> csvMemberVOList = new ArrayList<>();
-        for (int i = 0; i < 10; i++) {
-            CSVMemberVO csvMemberVO = new CSVMemberVO((long)i, "test" + i, "team" + i,
-                    "100" + i, "010-0000-000" + i, "팀장", "사원");
-
-
-            csvMemberVOList.add(csvMemberVO);
-        }
-
-        // when
-        memberService.insertMembersFromCSVMemberVOList(csvMemberVOList);
-
-        // then
-        List<Member> findMemberList = (List<Member>) memberRepository.findAll();
-
-        assertEquals(csvMemberVOList.size(), findMemberList.size());
-
-        log.info(findMemberList.toString());
-
-        for (int i = 0; i < findMemberList.size(); i++) {
-            assertEquals(csvMemberVOList.get(i).getName(), findMemberList.get(i).getName());
-        }
-
-    }
-
-    @Test
-    @Transactional
     public void testFindMembersContainsKeyword() {
 
         // given
@@ -84,7 +54,6 @@ class MemberServiceTests {
 
         Member member = Member
                 .builder()
-                .id(1L)
                 .name("test")
                 .contact(contact)
                 .duty("팀장")
@@ -96,7 +65,7 @@ class MemberServiceTests {
                 .name("testTeam")
                 .build();
 
-        team.addTeamMember(member);
+        member.changeTeam(team);
 
         teamRepository.save(team);
 
@@ -138,7 +107,6 @@ class MemberServiceTests {
         // given
         Member member = Member
                 .builder()
-                .id(memberId)
                 .name("test")
                 .duty("팀장")
                 .position("차장")

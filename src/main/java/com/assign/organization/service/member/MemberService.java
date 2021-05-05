@@ -86,7 +86,7 @@ public class MemberService {
             String teamName = csvMemberVO.getTeamName();
 
             teams.putIfAbsent(teamName, Team.builder().name(teamName).build());
-            teams.get(teamName).addTeamMember(member);
+            member.changeTeam(teams.get(teamName));
         }
 
         return teams.values();
@@ -110,7 +110,6 @@ public class MemberService {
     private MemberVO convertCSVMemberVOToMemberVO(CSVMemberVO csvMemberVO) {
         return MemberVO
                 .builder()
-                .id(csvMemberVO.getId())
                 .name(csvMemberVO.getName())
                 .businessCall(csvMemberVO.getBusinessCall())
                 .cellPhone(csvMemberVO.getCellPhone())
@@ -126,7 +125,6 @@ public class MemberService {
         return
                 Member
                         .builder()
-                        .id(memberVO.getId())
                         .name(memberVO.getName())
                         .duty(memberVO.getDuty())
                         .position(memberVO.getPosition())

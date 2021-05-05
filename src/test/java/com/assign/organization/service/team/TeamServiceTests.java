@@ -88,28 +88,6 @@ class TeamServiceTests {
         assertEquals(teamVOList.size() - 1, teamRepository.findAllTeamsOrderByTeamName().size());
     }
 
-    @Test
-    public void testExtractTeamVOListFromCSVMemberVOList() {
-
-        // given
-        List<CSVMemberVO> csvMemberVOList = new ArrayList<>();
-        for(int i = 0; i < 10; i++) {
-            CSVMemberVO csvMemberVO = new CSVMemberVO((long)i, "test" + i, "team" + i,
-                    "100" + i, "010-0000-000" + i, "팀장", "사원");
-
-            csvMemberVOList.add(csvMemberVO);
-        }
-
-        // when
-        List<TeamVO> teamVOList = teamService.extractTeamVOListFromCSVMemberVOList(csvMemberVOList);
-
-        log.info(teamVOList.toString());
-
-        for (int i = 0; i < teamVOList.size(); i++) {
-            assertEquals(csvMemberVOList.get(i).getTeamName(), teamVOList.get(i).getName());
-        }
-
-    }
 
     @Test
     @Transactional
@@ -132,7 +110,7 @@ class TeamServiceTests {
     }
 
     private void addMembersToTeam(Team team, List<Member> memberList) {
-        memberList.forEach(team::addTeamMember);
+        memberList.forEach(m -> m.changeTeam(team));
     }
 
     private List<Member> makeMemberList(int startIdIdx) {
@@ -148,7 +126,6 @@ class TeamServiceTests {
 
             Member member = Member
                     .builder()
-                    .id((long) i)
                     .name("member" + i)
                     .duty("사원")
                     .position("팀원")
@@ -174,14 +151,13 @@ class TeamServiceTests {
 
         Member member = Member
                 .builder()
-                .id(1L)
                 .name("test")
                 .position("사원")
                 .duty("팀원")
                 .build();
 
         // when
-        teamService.addMemberToTeam(savedTeam, member);
+        teamService.changeMemberTeam(savedTeam, member);
     }
 
     @Test

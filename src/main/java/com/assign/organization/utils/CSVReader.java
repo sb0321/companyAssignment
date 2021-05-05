@@ -1,73 +1,147 @@
 package com.assign.organization.utils;
 
 import com.assign.organization.domain.member.CSVMemberVO;
+import com.assign.organization.exception.CSVFileNotValidException;
+import lombok.extern.slf4j.Slf4j;
 
-import java.io.BufferedReader;
-import java.io.FileNotFoundException;
-import java.io.FileReader;
 import java.io.IOException;
+import java.io.RandomAccessFile;
+import java.nio.ByteBuffer;
+import java.nio.CharBuffer;
+import java.nio.channels.FileChannel;
+import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 
-
+@Slf4j
 public class CSVReader {
 
-    private static final String CSV_SEPARATOR = ",";
-    private static final String FOLLOWER = "팀원";
-    private static final int DUTY_CONTAIN_ARRAY_LENGTH = 7;
+    private static final int BUFFER_SIZE = 1024;
+    private static final int END_OF_FILE = -1;
 
-    public static List<CSVMemberVO> readCSVFile(String csvFilePath) throws IOException {
-        List<CSVMemberVO> readCsvMemberVOList = getCSVMemberVOList(csvFilePath);
-        return readCsvMemberVOList;
+    private CSVReader() {
     }
 
-    private static List<CSVMemberVO> getCSVMemberVOList(String filePath) throws FileNotFoundException {
+    private static class RawMemberData {
 
-        try (BufferedReader br = new BufferedReader(new FileReader(filePath))){
-            List<CSVMemberVO> csvMemberVOListFromReader = getCSVMemberVOListFromReader(br);
-            return csvMemberVOListFromReader;
-        } catch (IOException e) {
-            e.printStackTrace();
+        private static final String NAME_REGEX = "^[ㄱ-ㅎ|ㅏ-ㅣ가-힣a-zA-Z0-9]*$";
+        private static final String CELL_PHONE_REGEX = "^\\d{3}[-]\\d{4}[-]\\d{4}$";
+        private static final String BUSINESS_CALL_REGEX = "^\\d{4}$";
+        private static final String POSITION_REGEX = "^[ㄱ-ㅎㅏ-ㅣ가-힣a-zA-Z]*$";
+        private static final String DUTY_REGEX = "^팀[장|원]$";
+
+        private final String name;
+        private final String teamName;
+        private final String businessCall;
+        private final String cellPhone;
+        private final String duty;
+        private final String position;
+
+        public RawMemberData(String rawData) {
+            String[] split = rawData.split(",");
+
+            this.name = split[1];
+            this.businessCall = split[2];
+            this.cellPhone = split[3];
+            this.teamName = split[4];
+            this.position = split[5];
+            this.duty = split[6];
         }
-        return null;
+
+        public CSVMemberVO convertCSVMemberVO() throws CSVFileNotValidException {
+
+            if(!checkDataValid()) {
+                throw new CSVFileNotValidException();
+            }
+
+            return new CSVMemberVO(name, teamName, businessCall, cellPhone, duty, position);
+        }
+
+        private boolean checkDataValid() {
+            return checkNameValid() &&
+                    checkCellPhoneValid() &&
+                    checkBusinessCallValid() &&
+                    checkPositionValid() &&
+//                    checkDutyValid() &&
+                    !teamName.isEmpty();
+        }
+
+        private boolean checkNameValid() {
+            return this.name.matches(NAME_REGEX) && !this.name.isEmpty();
+        }
+
+        private boolean checkCellPhoneValid() {
+            return this.cellPhone.matches(CELL_PHONE_REGEX) && !this.cellPhone.isEmpty();
+        }
+
+        private boolean checkBusinessCallValid() {
+            return this.businessCall.matches(BUSINESS_CALL_REGEX) && !this.cellPhone.isEmpty();
+        }
+
+        private boolean checkPositionValid() {
+            return this.position.matches(POSITION_REGEX) && !this.position.isEmpty();
+        }
+
+        private boolean checkDutyValid() {
+            return this.duty.matches(DUTY_REGEX) && !this.duty.isEmpty();
+        }
     }
 
-    private static List<CSVMemberVO> getCSVMemberVOListFromReader(BufferedReader bufferedReader) throws IOException {
+    public static List<CSVMemberVO> readCSVFile(String csvFilePath) throws CSVFileNotValidException, IOException {
+
+        RandomAccessFile csvFile = new RandomAccessFile(csvFilePath, "r");
+        String dataStr = readDataFromRandomAccessFile(csvFile);
+        List<String> rawMemberDataList = convertSplitStringData(dataStr);
+
+        return convertRawMemberDataListToCSVMemberVoList(rawMemberDataList);
+    }
+
+    private static List<CSVMemberVO> convertRawMemberDataListToCSVMemberVoList(List<String> rawMemberDataList) throws CSVFileNotValidException {
+
         List<CSVMemberVO> csvMemberVOList = new ArrayList<>();
-
-        String line;
-
-        while ((line = bufferedReader.readLine()) != null) {
-            CSVMemberVO csvMemberVO = convertStringInfoToCSVMemberVO(line);
+        for (String memberData : rawMemberDataList) {
+            log.info(memberData);
+            CSVMemberVO csvMemberVO = convertRawMemberDataToCSVMemberVO(memberData);
             csvMemberVOList.add(csvMemberVO);
         }
 
         return csvMemberVOList;
     }
 
-    private static CSVMemberVO convertStringInfoToCSVMemberVO(String info) {
-        String[] splitInfo = info.split(CSV_SEPARATOR);
-
-        Long id = Long.parseLong(splitInfo[0]);
-        String name = splitInfo[1];
-        String businessCall = splitInfo[2];
-        String cellPhone = splitInfo[3];
-        String teamName = splitInfo[4];
-        String position = splitInfo[5];
-        String duty = getDuty(splitInfo);
-
-        return new CSVMemberVO(id, name, teamName, businessCall, cellPhone, duty, position);
+    private static CSVMemberVO convertRawMemberDataToCSVMemberVO(String rawMemberData) throws CSVFileNotValidException {
+        RawMemberData memberData = new RawMemberData(rawMemberData);
+        return memberData.convertCSVMemberVO();
     }
 
-    private static String getDuty(String[] info) {
-        if(checkDutyContains(info)) {
-            return info[6];
+    private static List<String> convertSplitStringData(String fileData) {
+        String[] splitData = fileData.split("\\n");
+        return Arrays.asList(splitData);
+    }
+
+    private static String readDataFromRandomAccessFile(RandomAccessFile file) throws IOException {
+
+        FileChannel fileChannel = file.getChannel();
+        ByteBuffer byteBuffer = ByteBuffer.allocate(BUFFER_SIZE);
+
+        int read = fileChannel.read(byteBuffer);
+
+        StringBuilder stringBuilder = new StringBuilder();
+
+        while (read != END_OF_FILE) {
+
+            byteBuffer.flip();
+
+            CharBuffer charBuffer = StandardCharsets.UTF_8.decode(byteBuffer);
+
+            while (charBuffer.hasRemaining()) {
+                stringBuilder.append(charBuffer.get());
+            }
+
+            byteBuffer.clear();
+            read = fileChannel.read(byteBuffer);
         }
-        return FOLLOWER;
-    }
 
-    private static boolean checkDutyContains(String[] info) {
-        return info.length == DUTY_CONTAIN_ARRAY_LENGTH;
+        return stringBuilder.toString();
     }
-
 }

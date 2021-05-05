@@ -75,10 +75,9 @@ public class TeamService {
     }
 
 
-
     @Transactional
-    public void addMemberToTeam(Team team, Member member) {
-        team.addTeamMember(member);
+    public void changeMemberTeam(Team team, Member member) {
+        member.changeTeam(team);
     }
 
     public List<TeamVO> extractTeamVOListFromCSVMemberVOList(List<CSVMemberVO> csvMemberVOList) {

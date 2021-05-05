@@ -1,6 +1,7 @@
 package com.assign.organization.domain.team;
 
 import com.assign.organization.domain.member.Member;
+import lombok.AccessLevel;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -11,7 +12,7 @@ import java.util.List;
 
 @Getter
 @Entity
-@NoArgsConstructor
+@NoArgsConstructor(access = AccessLevel.PROTECTED)
 public class Team {
 
     @Id

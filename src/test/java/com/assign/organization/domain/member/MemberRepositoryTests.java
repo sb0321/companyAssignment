@@ -19,7 +19,7 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 class MemberRepositoryTests {
 
     @Autowired
-    private MemberRepository memberRepository;
+    MemberRepository memberRepository;
 
     @BeforeEach
     public void tearDown() {
@@ -35,7 +35,6 @@ class MemberRepositoryTests {
         for (int i = 0; i < 5; i++) {
             Member member = Member
                     .builder()
-                    .id((long) i)
                     .name("test" + i)
                     .position("사원")
                     .duty("팀장")
@@ -71,7 +70,6 @@ class MemberRepositoryTests {
 
             Member member = Member
                     .builder()
-                    .id((long) i)
                     .name("test" + i)
                     .position("사원")
                     .duty("팀장")

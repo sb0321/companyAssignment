@@ -1,6 +1,7 @@
 package com.assign.organization.controller.main;
 
 import com.assign.organization.domain.member.CSVMemberVO;
+import com.assign.organization.exception.CSVFileNotValidException;
 import com.assign.organization.service.member.MemberService;
 import com.assign.organization.utils.CSVReader;
 import lombok.RequiredArgsConstructor;
@@ -23,7 +24,7 @@ public class MainAPIController {
     private final MemberService memberService;
 
     @GetMapping("/init")
-    public void init() throws IOException {
+    public void init() throws IOException, CSVFileNotValidException {
         List<CSVMemberVO> csvMemberVOList = CSVReader.readCSVFile(csvFilePath);
         memberService.insertMembersFromCSVMemberVOList(csvMemberVOList);
     }
