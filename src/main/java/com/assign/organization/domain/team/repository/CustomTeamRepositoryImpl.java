@@ -20,7 +20,6 @@ public class CustomTeamRepositoryImpl implements CustomTeamRepository {
 
         return queryFactory
                 .selectFrom(team)
-                .groupBy(team)
                 .orderBy(team.name.asc())
                 .fetch();
     }

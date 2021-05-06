@@ -4,7 +4,6 @@ import com.assign.organization.domain.member.CSVMemberVO;
 import com.assign.organization.service.member.MemberService;
 import com.assign.organization.utils.CSVReader;
 import lombok.extern.slf4j.Slf4j;
-import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.TestInstance;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -13,11 +12,8 @@ import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMock
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.MvcResult;
-import org.springframework.test.web.servlet.setup.MockMvcBuilders;
 import org.springframework.transaction.annotation.Transactional;
-import org.springframework.web.filter.CharacterEncodingFilter;
 
-import java.io.IOException;
 import java.util.List;
 
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
@@ -43,8 +39,7 @@ class MemberAPIControllerTests {
     @Transactional
     public void testSearchKeywordMemberVOList() throws Exception {
 
-        List<CSVMemberVO> csvMemberVOList = CSVReader.readCSVFile(csvPath);
-        memberService.insertMembersFromCSVMemberVOList(csvMemberVOList);
+        memberService.insertMembersFromCSVFile(csvPath);
 
         MvcResult mvcResult = mockMvc.perform(get("/member")
                 .param("keyword", "승빈"))

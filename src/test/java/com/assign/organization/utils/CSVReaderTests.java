@@ -1,6 +1,6 @@
 package com.assign.organization.utils;
 
-import com.assign.organization.exception.CSVFileNotValidException;
+import com.assign.organization.exception.CSVFileInvalidException;
 import lombok.extern.slf4j.Slf4j;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -25,9 +25,9 @@ class CSVReaderTests {
     @Test
     void testReadCSVFile() {
 
-        assertThrows(CSVFileNotValidException.class, () -> CSVReader.readCSVFile(CSV_FILE_FAIL_PATH));
+        assertThrows(CSVFileInvalidException.class, () -> CSVReader.readCSVFile(CSV_FILE_FAIL_PATH));
 
-        assertThrows(CSVFileNotValidException.class, () -> CSVReader.readCSVFile("falsePath"));
+        assertThrows(CSVFileInvalidException.class, () -> CSVReader.readCSVFile("falsePath"));
 
         assertDoesNotThrow(() -> {
             CSVReader.readCSVFile(CSV_FILE_OK_PATH);

@@ -1,9 +1,8 @@
 package com.assign.organization.utils;
 
 import com.assign.organization.domain.member.CSVMemberVO;
-import com.assign.organization.exception.CSVFileNotValidException;
+import com.assign.organization.exception.CSVFileInvalidException;
 import lombok.AllArgsConstructor;
-import lombok.ToString;
 import lombok.extern.slf4j.Slf4j;
 
 import java.io.IOException;
@@ -43,12 +42,12 @@ public class CSVReader {
         String position;
         String duty;
 
-        public CSVMemberVO toCSVMemberVO() throws CSVFileNotValidException {
+        public CSVMemberVO toCSVMemberVO() throws CSVFileInvalidException {
             if (checkDataValid()) {
                 return new CSVMemberVO(name, teamName, businessCall, cellPhone, duty, position);
             }
 
-            throw new CSVFileNotValidException();
+            throw new CSVFileInvalidException();
         }
 
         private boolean checkDataValid() {
@@ -81,7 +80,7 @@ public class CSVReader {
         }
     }
 
-    public static List<CSVMemberVO> readCSVFile(String csvFilePath) throws CSVFileNotValidException {
+    public static List<CSVMemberVO> readCSVFile(String csvFilePath) throws CSVFileInvalidException {
         try {
             RandomAccessFile csvFile = new RandomAccessFile(csvFilePath, "r");
             String dataStr = readDataFromRandomAccessFile(csvFile);
@@ -89,11 +88,11 @@ public class CSVReader {
 
             return convertRawMemberDataListToCSVMemberVoList(rawMemberDataList);
         } catch (IOException e) {
-            throw new CSVFileNotValidException();
+            throw new CSVFileInvalidException();
         }
     }
 
-    private static List<CSVMemberVO> convertRawMemberDataListToCSVMemberVoList(List<String> rawMemberDataList) throws CSVFileNotValidException {
+    private static List<CSVMemberVO> convertRawMemberDataListToCSVMemberVoList(List<String> rawMemberDataList) throws CSVFileInvalidException {
 
         List<CSVMemberVO> csvMemberVOList = new ArrayList<>();
         for (String memberData : rawMemberDataList) {
@@ -105,7 +104,7 @@ public class CSVReader {
         return csvMemberVOList;
     }
 
-    private static CSVMemberVO convertRawMemberDataToCSVMemberVO(String rawMemberData) throws CSVFileNotValidException {
+    private static CSVMemberVO convertRawMemberDataToCSVMemberVO(String rawMemberData) throws CSVFileInvalidException {
 
         String[] split = rawMemberData.split(SEPARATOR);
         try {
@@ -122,7 +121,7 @@ public class CSVReader {
 
             return memberData.toCSVMemberVO();
         } catch (Exception e) {
-            throw new CSVFileNotValidException();
+            throw new CSVFileInvalidException();
         }
     }
 

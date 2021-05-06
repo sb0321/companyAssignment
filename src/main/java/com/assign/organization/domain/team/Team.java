@@ -23,7 +23,7 @@ public class Team {
     @Column(unique = true, nullable = false)
     private String name;
 
-    @OneToMany(mappedBy = "team", fetch = FetchType.LAZY, cascade = CascadeType.PERSIST)
+    @OneToMany(mappedBy = "team", fetch = FetchType.LAZY)
     private final List<Member> members = new ArrayList<>();
 
     @Builder

@@ -6,124 +6,77 @@ import com.assign.organization.domain.member.Member;
 import com.assign.organization.domain.member.MemberVO;
 import com.assign.organization.domain.member.repository.MemberRepository;
 import com.assign.organization.domain.team.Team;
-import com.assign.organization.domain.team.repository.TeamRepository;
+import com.assign.organization.exception.CSVFileInvalidException;
+import com.assign.organization.utils.CSVReader;
+import com.assign.organization.utils.NameGenerator;
 import lombok.extern.slf4j.Slf4j;
-import org.junit.jupiter.api.BeforeEach;
-import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.BeforeAll;
+import org.junit.jupiter.api.TestInstance;
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.ValueSource;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.jdbc.AutoConfigureTestDatabase;
 import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.transaction.annotation.Transactional;
 
-import java.util.ArrayList;
-import java.util.List;
+import java.util.*;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.fail;
 
 @Slf4j
 @SpringBootTest
+@TestInstance(value = TestInstance.Lifecycle.PER_CLASS)
 @AutoConfigureTestDatabase(replace = AutoConfigureTestDatabase.Replace.NONE)
 class MemberServiceTests {
 
     @Autowired
-    private MemberRepository memberRepository;
+    MemberRepository memberRepository;
 
     @Autowired
-    private TeamRepository teamRepository;
+    MemberService memberService;
 
-    @Autowired
-    private MemberService memberService;
+    @BeforeAll
+    void init() throws CSVFileInvalidException {
+        List<CSVMemberVO> csvMemberVOList = CSVReader.readCSVFile("/Users/sbkim/Downloads/data.csv");
 
-    @BeforeEach
-    public void init() {
-        teamRepository.deleteAll();
-        memberRepository.deleteAll();
-    }
+        Set<Member> members = new HashSet<>();
+        Map<String, Team> teams = new HashMap<>();
+        Map<String, Integer> memberNameDuplication = new HashMap<>();
 
-    @Test
-    @Transactional
-    public void testFindMembersContainsKeyword() {
+        for (CSVMemberVO csvMemberVO : csvMemberVOList) {
 
-        // given
-        Contact contact = Contact
-                .builder()
-                .businessCall("1001")
-                .cellPhone("010-1234-1111")
-                .build();
+            memberNameDuplication.putIfAbsent(csvMemberVO.getName(), -1);
+            memberNameDuplication.replace(csvMemberVO.getName(), memberNameDuplication.get(csvMemberVO.getName()) + 1);
 
-        Member member = Member
-                .builder()
-                .name("test")
-                .contact(contact)
-                .duty("팀장")
-                .position("차장")
-                .build();
+            teams.putIfAbsent(csvMemberVO.getTeamName(), new Team(csvMemberVO.getTeamName()));
 
-        Team team = Team
-                .builder()
-                .name("testTeam")
-                .build();
+            String newName = NameGenerator.generateNameWhenDuplication(csvMemberVO.getName(), memberNameDuplication.get(csvMemberVO.getName()));
+            Contact contact = new Contact(csvMemberVO.getCellPhone(), csvMemberVO.getBusinessCall());
+            Member member = Member
+                    .builder()
+                    .name(newName)
+                    .position(csvMemberVO.getPosition())
+                    .duty(csvMemberVO.getDuty())
+                    .contact(contact)
+                    .build();
 
-        member.changeTeam(team);
-
-        teamRepository.save(team);
-
-        // when
-        String nameKeyword = "test";
-
-        List<MemberVO> findMembers = memberService.findMembersContainsKeyword(nameKeyword);
-        log.info(findMembers.toString());
-        assertEquals(member.getName(), findMembers.get(0).getName());
-
-        // when
-        String businessCallKeyword = "1001";
-
-        findMembers = memberService.findMembersContainsKeyword(businessCallKeyword);
-        log.info(findMembers.toString());
-        assertEquals(member.getContact().getBusinessCall(), findMembers.get(0).getBusinessCall());
-
-        // when
-        String cellPhoneKeyword = "010-1234-1111";
-
-        findMembers = memberService.findMembersContainsKeyword(cellPhoneKeyword);
-        log.info(findMembers.toString());
-        assertEquals(member.getContact().getCellPhone(), findMembers.get(0).getCellPhone());
-
-        // when
-        String teamNameKeyword = "testTeam";
-
-        findMembers = memberService.findMembersContainsKeyword(teamNameKeyword);
-        log.info(findMembers.toString());
-        assertEquals(member.getTeam().getName(), findMembers.get(0).getTeamName());
-
-    }
-
-    @Test
-    public void testFindMemberById() {
-
-        final Long memberId = 1L;
-
-        // given
-        Member member = Member
-                .builder()
-                .name("test")
-                .duty("팀장")
-                .position("차장")
-                .build();
-
-        memberRepository.save(member);
-
-        // ok
-        memberService.findMemberById(memberId);
-
-        // fail
-        try {
-            memberService.findMemberById(2L);
-            fail("없는 아이디로 검색했을 때 예외가 발생해야 합니다.");
-        } catch (Exception e) {
-            // PASS
+            member.changeTeam(teams.get(csvMemberVO.getTeamName()));
+            members.add(member);
         }
 
+        memberRepository.saveAll(members);
     }
+
+
+    @ParameterizedTest
+    @ValueSource(strings = {"사원", "1000", "010-0000-000", "웹개발 1팀"})
+    void testFindMembersContainsKeyword(String keyword) {
+
+        List<MemberVO> findMemberVOList = memberService.findMembersContainsKeyword(keyword);
+        log.info(findMemberVOList.toString());
+
+    }
+
+
+
 }

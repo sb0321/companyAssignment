@@ -80,17 +80,6 @@ public class TeamService {
         member.changeTeam(team);
     }
 
-    public List<TeamVO> extractTeamVOListFromCSVMemberVOList(List<CSVMemberVO> csvMemberVOList) {
-        List<TeamVO> teamVOList = new ArrayList<>();
-
-        for (CSVMemberVO csvMemberVO : csvMemberVOList) {
-            TeamVO teamVO = extractTeamVOFromCSVMemberVO(csvMemberVO);
-            teamVOList.add(teamVO);
-        }
-
-        return teamVOList;
-    }
-
     @Transactional
     public void insertTeamsFromTeamVOList(List<TeamVO> teamVOList) {
         for (TeamVO teamVO : teamVOList) {
@@ -103,14 +92,8 @@ public class TeamService {
         }
     }
 
-    public Team findTeamByTeamName(String teamName) {
-        Optional<Team> findTeam = teamRepository.findByTeamName(teamName);
-
-        if (!findTeam.isPresent()) {
-            throw new NoResultException();
-        }
-
-        return findTeam.get();
+    public Optional<Team> findTeamByTeamName(String teamName) {
+        return teamRepository.findByTeamName(teamName);
     }
 
     private Team convertTeamVOToEntity(TeamVO teamVO) {
@@ -123,12 +106,5 @@ public class TeamService {
     private boolean checkExistWithTeamName(String teamName) {
         long duplication = teamRepository.countTeamNameDuplication(teamName);
         return duplication != 0;
-    }
-
-    private TeamVO extractTeamVOFromCSVMemberVO(CSVMemberVO csvMemberVO) {
-        return TeamVO
-                .builder()
-                .name(csvMemberVO.getTeamName())
-                .build();
     }
 }

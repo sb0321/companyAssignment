@@ -1,91 +1,112 @@
 package com.assign.organization.domain.team;
 
+import com.assign.organization.domain.member.CSVMemberVO;
+import com.assign.organization.domain.member.Contact;
+import com.assign.organization.domain.member.Member;
+import com.assign.organization.domain.member.repository.MemberRepository;
 import com.assign.organization.domain.team.repository.TeamRepository;
+import com.assign.organization.exception.CSVFileInvalidException;
+import com.assign.organization.utils.CSVReader;
+import com.assign.organization.utils.NameGenerator;
 import lombok.extern.slf4j.Slf4j;
+import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.TestInstance;
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.ValueSource;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.test.autoconfigure.jdbc.AutoConfigureTestDatabase;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.test.context.TestPropertySource;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Optional;
+import java.util.*;
+import java.util.stream.Collectors;
 
-import static org.junit.jupiter.api.Assertions.*;
+import static org.junit.jupiter.api.Assertions.assertEquals;
 
 @Slf4j
+@Transactional
 @SpringBootTest
+@TestInstance(value = TestInstance.Lifecycle.PER_CLASS)
+@TestPropertySource(value = "classpath:application.properties")
 @AutoConfigureTestDatabase(replace = AutoConfigureTestDatabase.Replace.NONE)
 class TeamRepositoryTests {
 
     @Autowired
-    private TeamRepository teamRepository;
+    TeamRepository teamRepository;
 
-    @Test
-    @Transactional
-    public void testFindByTeamName() {
+    @Autowired
+    MemberRepository memberRepository;
 
-        // given
-        Team team = new Team("test");
+    @Value(value = "${csv.data.success}")
+    String CSV_FILE_PATH;
 
-        teamRepository.save(team);
+    @BeforeAll
+    void init() throws CSVFileInvalidException {
+        List<CSVMemberVO> csvMemberVOList = CSVReader.readCSVFile(CSV_FILE_PATH);
 
-        // when
-        Optional<Team> findTeam = teamRepository.findByTeamName("test");
+        Set<Member> members = new HashSet<>();
+        Map<String, Team> teams = new HashMap<>();
+        Map<String, Integer> memberNameDuplication = new HashMap<>();
 
-        // then
-        assertTrue(findTeam.isPresent());
+        for (CSVMemberVO csvMemberVO : csvMemberVOList) {
 
-        // when
-        Optional<Team> notFindTeam = teamRepository.findByTeamName("no");
+            log.info(csvMemberVO.toString());
 
-        // then
-        assertFalse(notFindTeam.isPresent());
-    }
+            memberNameDuplication.putIfAbsent(csvMemberVO.getName(), -1);
+            memberNameDuplication.replace(csvMemberVO.getName(), memberNameDuplication.get(csvMemberVO.getName()) + 1);
 
-    @Test
-    @Transactional
-    public void testCountTeamNameDuplication() {
 
-        // given
-        Team team = new Team("test");
+            teams.putIfAbsent(csvMemberVO.getTeamName(), new Team(csvMemberVO.getTeamName()));
 
-        teamRepository.save(team);
+            String newName = NameGenerator.generateNameWhenDuplication(csvMemberVO.getName(), memberNameDuplication.get(csvMemberVO.getName()));
+            Contact contact = new Contact(csvMemberVO.getCellPhone(), csvMemberVO.getBusinessCall());
 
-        // when
-        long duplicationCount = teamRepository.countTeamNameDuplication("test");
+            Member member = Member
+                    .builder()
+                    .name(newName)
+                    .position(csvMemberVO.getPosition())
+                    .duty(csvMemberVO.getDuty())
+                    .contact(contact)
+                    .build();
 
-        // then
-        assertEquals(1, duplicationCount);
-
-        // when
-        duplicationCount = teamRepository.countTeamNameDuplication("notDuplicated");
-
-        // then
-        assertEquals(0, duplicationCount);
-    }
-
-    @Test
-    @Transactional
-    public void testFindAllTeams() {
-
-        // given
-        List<Team> teamList = new ArrayList<>();
-        for (int i = 0; i < 5; i++) {
-            teamList.add(new Team("team" + i));
+            member.changeTeam(teams.get(csvMemberVO.getTeamName()));
+            members.add(member);
         }
 
-        Iterable<Team> teams = teamRepository.saveAll(teamList);
-        List<Team> savedTeams = new ArrayList<>();
-        teams.forEach(savedTeams::add);
+        memberRepository.saveAll(members);
+    }
 
+    @ParameterizedTest
+    @ValueSource(strings = {"웹개발 1팀", "웹개발 2팀", "모비즌셀", "영업지원부"})
+    void testCountTeamNameDuplication(String teamName) {
+        long duplicationCount = teamRepository.countTeamNameDuplication(teamName);
+        assertEquals(1, duplicationCount);
+    }
+
+    @Test
+    void testFindAllTeamsOrderByTeamName() {
         List<Team> findTeamList = teamRepository.findAllTeamsOrderByTeamName();
 
-        for (int i = 0; i < savedTeams.size(); i++) {
-            assertEquals(savedTeams.get(i).getName(), findTeamList.get(i).getName());
+        for (Team team : findTeamList) {
+            log.info(team.getName());
+            log.info(team.getMembers().stream().map(Member::getName).collect(Collectors.toList()).toString());
         }
 
+        checkTeamNameOrdered(findTeamList);
+    }
+
+    void checkTeamNameOrdered(List<Team> teamList) {
+        List<String> teamNameList = new ArrayList<>();
+        teamList.forEach(t -> teamNameList.add(t.getName()));
+
+        teamNameList.sort(String::compareTo);
+
+        for (int i = 0; i < teamList.size(); i++) {
+            assertEquals(teamList.get(i).getName(), teamNameList.get(i));
+        }
     }
 
 }

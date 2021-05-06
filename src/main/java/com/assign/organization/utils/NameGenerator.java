@@ -1,8 +1,10 @@
 package com.assign.organization.utils;
 
+import lombok.NonNull;
+
 public class NameGenerator {
 
-    public static String generateNameWhenDuplication(String name, long duplicationCount) {
+    public static String generateNameWhenDuplication(@NonNull String name, long duplicationCount) {
         if (checkNameDuplicated(duplicationCount)) {
             return name + (char) ('A' + duplicationCount);
         }
