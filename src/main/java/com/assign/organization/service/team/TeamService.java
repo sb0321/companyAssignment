@@ -79,37 +79,7 @@ public class TeamService {
                 .build();
     }
 
-
-    @Transactional
-    public void changeMemberTeam(Team team, Member member) {
-        member.changeTeam(team);
-    }
-
-    @Transactional
-    public void insertTeamsFromTeamVOList(List<TeamVO> teamVOList) {
-        for (TeamVO teamVO : teamVOList) {
-            if (checkExistWithTeamName(teamVO.getName())) {
-                continue;
-            }
-
-            Team team = convertTeamVOToEntity(teamVO);
-            teamRepository.save(team);
-        }
-    }
-
     public Optional<Team> findTeamByTeamName(String teamName) {
         return teamRepository.findByTeamName(teamName);
-    }
-
-    private Team convertTeamVOToEntity(TeamVO teamVO) {
-        return Team
-                .builder()
-                .name(teamVO.getName())
-                .build();
-    }
-
-    private boolean checkExistWithTeamName(String teamName) {
-        long duplication = teamRepository.countTeamNameDuplication(teamName);
-        return duplication != 0;
     }
 }
