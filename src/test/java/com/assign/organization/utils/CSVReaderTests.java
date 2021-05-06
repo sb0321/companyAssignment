@@ -1,6 +1,5 @@
 package com.assign.organization.utils;
 
-import com.assign.organization.domain.member.CSVMemberVO;
 import com.assign.organization.exception.CSVFileNotValidException;
 import lombok.extern.slf4j.Slf4j;
 import org.junit.jupiter.api.Test;
@@ -9,27 +8,30 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.test.context.TestPropertySource;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
 
-import java.io.IOException;
-import java.util.List;
+import static org.junit.jupiter.api.Assertions.assertDoesNotThrow;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 
 @Slf4j
 @ExtendWith(SpringExtension.class)
 @TestPropertySource(value = "classpath:application.properties")
 class CSVReaderTests {
 
-    @Value("${csv.data}")
-    private String CSV_FILE_PATH;
+    @Value(value = "${csv.data.success}")
+    String CSV_FILE_OK_PATH;
+
+    @Value(value = "${csv.data.fail}")
+    String CSV_FILE_FAIL_PATH;
 
     @Test
     void testReadCSVFile() {
 
-        try {
-            List<CSVMemberVO> csvMemberVOList = CSVReader.readCSVFile(CSV_FILE_PATH);
-        } catch (CSVFileNotValidException e) {
-            e.printStackTrace();
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
+        assertThrows(CSVFileNotValidException.class, () -> CSVReader.readCSVFile(CSV_FILE_FAIL_PATH));
+
+        assertThrows(CSVFileNotValidException.class, () -> CSVReader.readCSVFile("falsePath"));
+
+        assertDoesNotThrow(() -> {
+            CSVReader.readCSVFile(CSV_FILE_OK_PATH);
+        });
 
     }
 }

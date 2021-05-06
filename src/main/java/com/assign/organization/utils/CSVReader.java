@@ -2,6 +2,8 @@ package com.assign.organization.utils;
 
 import com.assign.organization.domain.member.CSVMemberVO;
 import com.assign.organization.exception.CSVFileNotValidException;
+import lombok.AllArgsConstructor;
+import lombok.ToString;
 import lombok.extern.slf4j.Slf4j;
 
 import java.io.IOException;
@@ -17,45 +19,36 @@ import java.util.List;
 @Slf4j
 public class CSVReader {
 
+    private static final String NAME_REGEX = "^[ㄱ-ㅎ|ㅏ-ㅣ가-힣a-zA-Z0-9]*$";
+    private static final String CELL_PHONE_REGEX = "^\\d{3}[-]\\d{4}[-]\\d{4}$";
+    private static final String BUSINESS_CALL_REGEX = "^\\d{4}$";
+    private static final String POSITION_REGEX = "^[ㄱ-ㅎㅏ-ㅣ가-힣a-zA-Z]*$";
+    private static final String DUTY_REGEX = "^팀[장|원]$";
+
+    private static final String SEPARATOR = ",";
+
     private static final int BUFFER_SIZE = 1024;
     private static final int END_OF_FILE = -1;
 
     private CSVReader() {
     }
 
+    @AllArgsConstructor
     private static class RawMemberData {
+        long num;
+        String name;
+        String businessCall;
+        String cellPhone;
+        String teamName;
+        String position;
+        String duty;
 
-        private static final String NAME_REGEX = "^[ㄱ-ㅎ|ㅏ-ㅣ가-힣a-zA-Z0-9]*$";
-        private static final String CELL_PHONE_REGEX = "^\\d{3}[-]\\d{4}[-]\\d{4}$";
-        private static final String BUSINESS_CALL_REGEX = "^\\d{4}$";
-        private static final String POSITION_REGEX = "^[ㄱ-ㅎㅏ-ㅣ가-힣a-zA-Z]*$";
-        private static final String DUTY_REGEX = "^팀[장|원]$";
-
-        private final String name;
-        private final String teamName;
-        private final String businessCall;
-        private final String cellPhone;
-        private final String duty;
-        private final String position;
-
-        public RawMemberData(String rawData) {
-            String[] split = rawData.split(",");
-
-            this.name = split[1];
-            this.businessCall = split[2];
-            this.cellPhone = split[3];
-            this.teamName = split[4];
-            this.position = split[5];
-            this.duty = split[6];
-        }
-
-        public CSVMemberVO convertCSVMemberVO() throws CSVFileNotValidException {
-
-            if(!checkDataValid()) {
-                throw new CSVFileNotValidException();
+        public CSVMemberVO toCSVMemberVO() throws CSVFileNotValidException {
+            if (checkDataValid()) {
+                return new CSVMemberVO(name, teamName, businessCall, cellPhone, duty, position);
             }
 
-            return new CSVMemberVO(name, teamName, businessCall, cellPhone, duty, position);
+            throw new CSVFileNotValidException();
         }
 
         private boolean checkDataValid() {
@@ -63,7 +56,7 @@ public class CSVReader {
                     checkCellPhoneValid() &&
                     checkBusinessCallValid() &&
                     checkPositionValid() &&
-//                    checkDutyValid() &&
+                    checkDutyValid() &&
                     !teamName.isEmpty();
         }
 
@@ -88,13 +81,16 @@ public class CSVReader {
         }
     }
 
-    public static List<CSVMemberVO> readCSVFile(String csvFilePath) throws CSVFileNotValidException, IOException {
+    public static List<CSVMemberVO> readCSVFile(String csvFilePath) throws CSVFileNotValidException {
+        try {
+            RandomAccessFile csvFile = new RandomAccessFile(csvFilePath, "r");
+            String dataStr = readDataFromRandomAccessFile(csvFile);
+            List<String> rawMemberDataList = convertSplitStringData(dataStr);
 
-        RandomAccessFile csvFile = new RandomAccessFile(csvFilePath, "r");
-        String dataStr = readDataFromRandomAccessFile(csvFile);
-        List<String> rawMemberDataList = convertSplitStringData(dataStr);
-
-        return convertRawMemberDataListToCSVMemberVoList(rawMemberDataList);
+            return convertRawMemberDataListToCSVMemberVoList(rawMemberDataList);
+        } catch (IOException e) {
+            throw new CSVFileNotValidException();
+        }
     }
 
     private static List<CSVMemberVO> convertRawMemberDataListToCSVMemberVoList(List<String> rawMemberDataList) throws CSVFileNotValidException {
@@ -110,8 +106,24 @@ public class CSVReader {
     }
 
     private static CSVMemberVO convertRawMemberDataToCSVMemberVO(String rawMemberData) throws CSVFileNotValidException {
-        RawMemberData memberData = new RawMemberData(rawMemberData);
-        return memberData.convertCSVMemberVO();
+
+        String[] split = rawMemberData.split(SEPARATOR);
+        try {
+
+            long num = Long.parseLong(split[0]);
+            String name = split[1];
+            String businessCall = split[2].trim();
+            String cellPhone = split[3].trim();
+            String teamName = split[4].trim();
+            String position = split[5].trim();
+            String duty = split[6].trim();
+
+            RawMemberData memberData = new RawMemberData(num, name, businessCall, cellPhone, teamName, position, duty);
+
+            return memberData.toCSVMemberVO();
+        } catch (Exception e) {
+            throw new CSVFileNotValidException();
+        }
     }
 
     private static List<String> convertSplitStringData(String fileData) {
