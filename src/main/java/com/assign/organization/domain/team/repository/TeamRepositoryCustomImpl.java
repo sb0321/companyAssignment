@@ -9,7 +9,7 @@ import java.util.List;
 import java.util.Optional;
 
 @RequiredArgsConstructor
-public class CustomTeamRepositoryImpl implements CustomTeamRepository {
+public class TeamRepositoryCustomImpl implements TeamRepositoryCustom {
 
     private final JPAQueryFactory queryFactory;
 
@@ -18,8 +18,8 @@ public class CustomTeamRepositoryImpl implements CustomTeamRepository {
 
         QTeam team = QTeam.team;
 
-        return queryFactory
-                .selectFrom(team)
+        return queryFactory.selectFrom(team)
+                .groupBy(team.id)
                 .orderBy(team.name.asc())
                 .fetch();
     }

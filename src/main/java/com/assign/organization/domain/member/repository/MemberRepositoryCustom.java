@@ -4,7 +4,7 @@ import com.assign.organization.domain.member.Member;
 
 import java.util.List;
 
-public interface CustomMemberRepository {
+public interface MemberRepositoryCustom {
 
     long countNameContains(String name);
 

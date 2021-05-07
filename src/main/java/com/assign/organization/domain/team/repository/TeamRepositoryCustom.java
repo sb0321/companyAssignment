@@ -5,7 +5,7 @@ import com.assign.organization.domain.team.Team;
 import java.util.List;
 import java.util.Optional;
 
-public interface CustomTeamRepository {
+public interface TeamRepositoryCustom {
 
     List<Team> findAllTeamsOrderByTeamName();
 
