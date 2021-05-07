@@ -37,7 +37,7 @@ public class TeamService {
         });
     }
 
-    public List<TeamVO> convertTeamListToTeamVOList(List<Team> teamList) {
+    private List<TeamVO> convertTeamListToTeamVOList(List<Team> teamList) {
         List<TeamVO> teamVOList = new ArrayList<>();
         for (Team team : teamList) {
 

@@ -1,33 +1,78 @@
 package com.assign.organization.service.team;
 
-import com.assign.organization.domain.member.CSVMemberVO;
 import com.assign.organization.domain.member.Contact;
 import com.assign.organization.domain.member.Member;
 import com.assign.organization.domain.team.Team;
-import com.assign.organization.domain.team.repository.TeamRepository;
 import com.assign.organization.domain.team.TeamVO;
+import com.assign.organization.domain.team.repository.TeamRepository;
 import lombok.extern.slf4j.Slf4j;
-import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.Test;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.test.autoconfigure.jdbc.AutoConfigureTestDatabase;
-import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.transaction.annotation.Transactional;
+import org.junit.jupiter.api.extension.ExtendWith;
+import org.mockito.InjectMocks;
+import org.mockito.Mock;
+import org.mockito.junit.jupiter.MockitoExtension;
 
-import java.util.*;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Optional;
 
-import static org.junit.jupiter.api.Assertions.*;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.Mockito.when;
 
 @Slf4j
-@SpringBootTest
-@AutoConfigureTestDatabase(replace = AutoConfigureTestDatabase.Replace.NONE)
+@ExtendWith(MockitoExtension.class)
 class TeamServiceTests {
 
-    @Autowired
-    private TeamRepository teamRepository;
+    @Mock
+    TeamRepository teamRepository;
 
-    @Autowired
-    private TeamService teamService;
+    @InjectMocks
+    TeamService teamService;
+
+    @Test
+    void testFindAllTeamListOrderByTeamNameDesc() {
+
+        List<Team> result = new ArrayList<>();
+
+        for (int i = 5; i >= 0; i--) {
+            Team team = new Team("test" + i);
+
+            Member member = Member
+                    .builder()
+                    .name("name" + i)
+                    .position("pos" + i)
+                    .duty("duty")
+                    .contact(new Contact("010-0000-000" + i, "100" + i))
+                    .build();
+
+            member.setTeam(team);
+
+            result.add(team);
+        }
+
+        when(teamRepository.findAllTeamsOrderByTeamName()).thenReturn(result);
+
+        List<TeamVO> findTeamList = teamService.findAllTeamListOrderByTeamNameDesc();
+
+        log.info(findTeamList.toString());
+    }
+
+    @Test
+    void testFindTeamByTeamName() {
+
+        String teamName = "test";
+
+        Team team = new Team(teamName);
+
+        when(teamRepository.findByTeamName(any())).thenReturn(Optional.of(team));
+
+        Optional<Team> findTeam = teamService.findTeamByTeamName(teamName);
+
+        assertTrue(findTeam.isPresent());
+        assertEquals(teamName, findTeam.get().getName());
+    }
 
 
 }
