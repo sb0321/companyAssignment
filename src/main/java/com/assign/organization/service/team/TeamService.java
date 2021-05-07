@@ -1,6 +1,5 @@
 package com.assign.organization.service.team;
 
-import com.assign.organization.domain.member.CSVMemberVO;
 import com.assign.organization.domain.member.Member;
 import com.assign.organization.domain.member.MemberVO;
 import com.assign.organization.domain.team.Team;
@@ -9,9 +8,7 @@ import com.assign.organization.domain.team.repository.TeamRepository;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Transactional;
 
-import javax.persistence.NoResultException;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
