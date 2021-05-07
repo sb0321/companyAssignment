@@ -43,7 +43,7 @@ public class Member {
         this.duty = duty;
     }
 
-    public void changeTeam(Team team) {
+    public void setTeam(Team team) {
 
         if(this.team != null) {
             this.team.getMembers().removeIf(m -> Objects.equals(m, this));
