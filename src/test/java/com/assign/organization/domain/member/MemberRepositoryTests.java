@@ -79,7 +79,7 @@ class MemberRepositoryTests {
                     .contact(contact)
                     .build();
 
-            member.changeTeam(teams.get(csvMemberVO.getTeamName()));
+            member.setTeam(teams.get(csvMemberVO.getTeamName()));
             members.add(member);
         }
 
