@@ -27,11 +27,11 @@ class CSVReaderTests {
 
         assertThrows(CSVFileInvalidException.class, () -> CSVReader.readCSVFile(CSV_FILE_FAIL_PATH));
 
-//        assertThrows(CSVFileInvalidException.class, () -> CSVReader.readCSVFile("falsePath"));
-//
-//        assertDoesNotThrow(() -> {
-//            CSVReader.readCSVFile(CSV_FILE_OK_PATH);
-//        });
+        assertThrows(CSVFileInvalidException.class, () -> CSVReader.readCSVFile("falsePath"));
+
+        assertDoesNotThrow(() -> {
+            CSVReader.readCSVFile(CSV_FILE_OK_PATH);
+        });
 
     }
 }
