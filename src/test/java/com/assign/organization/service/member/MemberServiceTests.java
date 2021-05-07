@@ -1,82 +1,74 @@
 package com.assign.organization.service.member;
 
-import com.assign.organization.domain.member.CSVMemberVO;
 import com.assign.organization.domain.member.Contact;
 import com.assign.organization.domain.member.Member;
 import com.assign.organization.domain.member.MemberVO;
 import com.assign.organization.domain.member.repository.MemberRepository;
 import com.assign.organization.domain.team.Team;
 import com.assign.organization.exception.CSVFileInvalidException;
-import com.assign.organization.utils.CSVReader;
-import com.assign.organization.utils.NameGenerator;
+import com.assign.organization.service.team.TeamService;
 import lombok.extern.slf4j.Slf4j;
-import org.junit.jupiter.api.BeforeAll;
-import org.junit.jupiter.api.TestInstance;
-import org.junit.jupiter.params.ParameterizedTest;
-import org.junit.jupiter.params.provider.ValueSource;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.test.autoconfigure.jdbc.AutoConfigureTestDatabase;
-import org.springframework.boot.test.context.SpringBootTest;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
+import org.mockito.InjectMocks;
+import org.mockito.Mock;
+import org.springframework.beans.factory.annotation.Value;
+import org.springframework.test.context.TestPropertySource;
+import org.springframework.test.context.junit.jupiter.SpringExtension;
 
-import java.util.*;
+import java.util.ArrayList;
+import java.util.List;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.fail;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.Mockito.when;
 
 @Slf4j
-@SpringBootTest
-@TestInstance(value = TestInstance.Lifecycle.PER_CLASS)
-@AutoConfigureTestDatabase(replace = AutoConfigureTestDatabase.Replace.NONE)
+@ExtendWith(SpringExtension.class)
+@TestPropertySource(value = "classpath:application.properties")
 class MemberServiceTests {
 
-    @Autowired
+    @Mock
     MemberRepository memberRepository;
 
-    @Autowired
+    @Mock
+    TeamService teamService;
+
+    @InjectMocks
     MemberService memberService;
 
-    @BeforeAll
-    void init() throws CSVFileInvalidException {
-        List<CSVMemberVO> csvMemberVOList = CSVReader.readCSVFile("/Users/sbkim/Downloads/data.csv");
+    @Value(value = "${csv.data.success}")
+    String CSV_FILE_PATH;
 
-        Set<Member> members = new HashSet<>();
-        Map<String, Team> teams = new HashMap<>();
-        Map<String, Integer> memberNameDuplication = new HashMap<>();
+    @Test
+    void testFindMembersContainsKeyword() {
 
-        for (CSVMemberVO csvMemberVO : csvMemberVOList) {
+        String keyword = "test";
 
-            memberNameDuplication.putIfAbsent(csvMemberVO.getName(), -1);
-            memberNameDuplication.replace(csvMemberVO.getName(), memberNameDuplication.get(csvMemberVO.getName()) + 1);
+        Contact contact = new Contact("", "");
 
-            teams.putIfAbsent(csvMemberVO.getTeamName(), new Team(csvMemberVO.getTeamName()));
+        Member member = Member
+                .builder()
+                .name(keyword)
+                .duty("")
+                .position("")
+                .contact(contact)
+                .build();
 
-            String newName = NameGenerator.generateNameWhenDuplication(csvMemberVO.getName(), memberNameDuplication.get(csvMemberVO.getName()));
-            Contact contact = new Contact(csvMemberVO.getCellPhone(), csvMemberVO.getBusinessCall());
-            Member member = Member
-                    .builder()
-                    .name(newName)
-                    .position(csvMemberVO.getPosition())
-                    .duty(csvMemberVO.getDuty())
-                    .contact(contact)
-                    .build();
+        member.setTeam(new Team(""));
 
-            member.changeTeam(teams.get(csvMemberVO.getTeamName()));
-            members.add(member);
-        }
+        List<Member> result = new ArrayList<>();
+        result.add(member);
 
-        memberRepository.saveAll(members);
+        when(memberRepository.findMembersContainsKeyword(any())).thenReturn(result);
+
+        List<MemberVO> findMembers = memberService.findMembersContainsKeyword(keyword);
+
+        assertEquals(keyword, findMembers.stream().findAny().get().getName());
     }
 
-
-    @ParameterizedTest
-    @ValueSource(strings = {"사원", "1000", "010-0000-000", "웹개발 1팀"})
-    void testFindMembersContainsKeyword(String keyword) {
-
-        List<MemberVO> findMemberVOList = memberService.findMembersContainsKeyword(keyword);
-        log.info(findMemberVOList.toString());
-
+    @Test
+    void testInsertMembersFromCSVFile() throws CSVFileInvalidException {
+        memberService.insertMembersFromCSVFile(CSV_FILE_PATH);
     }
-
-
-
 }
