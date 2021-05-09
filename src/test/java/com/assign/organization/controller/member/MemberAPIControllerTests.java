@@ -26,8 +26,10 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 @TestInstance(value = TestInstance.Lifecycle.PER_CLASS)
 @TestPropertySource(value = "classpath:application.properties")
 class MemberAPIControllerTests {
+    
+    static final String UTF8_CHARSET = "UTF-8";
 
-    private MockMvc mockMvc;
+    MockMvc mockMvc;
 
     @Autowired
     MemberAPIController controller;
@@ -41,7 +43,7 @@ class MemberAPIControllerTests {
     @BeforeAll
     void init() throws CSVFileInvalidException {
         mockMvc = MockMvcBuilders.standaloneSetup(controller)
-                .addFilter(new CharacterEncodingFilter("UTF-8", true))
+                .addFilter(new CharacterEncodingFilter(UTF8_CHARSET, true))
                 .build();
 
         memberService.insertMembersFromCSVFile(CSV_FILE_PATH);

@@ -8,11 +8,11 @@ import com.assign.organization.domain.team.Team;
 import com.assign.organization.exception.CSVFileInvalidException;
 import com.assign.organization.service.team.TeamService;
 import lombok.extern.slf4j.Slf4j;
+import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
-import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.test.context.TestPropertySource;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
@@ -25,9 +25,12 @@ import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.when;
 
 @Slf4j
-@ExtendWith(MockitoExtension.class)
+@ExtendWith(SpringExtension.class)
 @TestPropertySource(value = "classpath:application.properties")
 class MemberServiceTests {
+
+    @Value(value = "${csv.data.success}")
+    String CSV_FILE_PATH;
 
     @Mock
     MemberRepository memberRepository;
@@ -38,8 +41,6 @@ class MemberServiceTests {
     @InjectMocks
     MemberService memberService;
 
-    @Value(value = "${csv.data.success}")
-    String CSV_FILE_PATH;
 
     @Test
     void testFindMembersContainsKeyword() {
@@ -70,6 +71,7 @@ class MemberServiceTests {
 
     @Test
     void testInsertMembersFromCSVFile() throws CSVFileInvalidException {
+        log.info(CSV_FILE_PATH);
         memberService.insertMembersFromCSVFile(CSV_FILE_PATH);
     }
 }
