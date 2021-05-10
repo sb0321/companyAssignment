@@ -2,7 +2,6 @@ package com.assign.organization.domain.team;
 
 import com.assign.organization.domain.member.Member;
 import lombok.AccessLevel;
-import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 
@@ -26,7 +25,6 @@ public class Team {
     @OneToMany(mappedBy = "team", fetch = FetchType.LAZY)
     private final List<Member> members = new ArrayList<>();
 
-    @Builder
     public Team(String name) {
         this.name = name;
     }
