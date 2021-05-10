@@ -19,7 +19,7 @@ import java.util.Optional;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.Mockito.when;
+import static org.mockito.Mockito.*;
 
 @Slf4j
 @ExtendWith(MockitoExtension.class)
@@ -56,6 +56,8 @@ class TeamServiceTests {
 
         List<TeamVO> findTeamList = teamService.findAllTeamListOrderByTeamNameDesc();
 
+        verify(teamRepository, times(1)).findAllTeamsOrderByTeamName();
+
         log.info(findTeamList.toString());
     }
 
@@ -69,6 +71,8 @@ class TeamServiceTests {
         when(teamRepository.findByTeamName(any())).thenReturn(Optional.of(team));
 
         Optional<Team> findTeam = teamService.findTeamByTeamName(teamName);
+
+        verify(teamRepository, times(1)).findByTeamName(anyString());
 
         assertTrue(findTeam.isPresent());
         assertEquals(teamName, findTeam.get().getName());

@@ -34,13 +34,20 @@ class MainAPIControllerTests {
     }
 
     @Test
-    void testSearchKeywordMemberVOList() throws Exception {
+    void testCSVFileRead() throws Exception {
 
         mockMvc.perform(
                 get("/init")
         )
         .andDo(print())
         .andExpect(status().isOk());
+    }
+
+    @Test
+    void testCSVFileReadFail() throws Exception {
+        mockMvc.perform(
+                get("/init")
+        );
     }
 
 }

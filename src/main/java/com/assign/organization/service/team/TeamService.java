@@ -43,12 +43,7 @@ public class TeamService {
 
             List<MemberVO> memberVOList = convertMemberListToMemberVOList(team.getMembers());
 
-            TeamVO vo = TeamVO
-                    .builder()
-                    .name(team.getName())
-                    .id(team.getId())
-                    .members(memberVOList)
-                    .build();
+            TeamVO vo = new TeamVO(team.getId(), team.getName(), memberVOList);
 
             teamVOList.add(vo);
         }

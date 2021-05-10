@@ -1,24 +1,19 @@
 package com.assign.organization.domain.team;
 
 import com.assign.organization.domain.member.MemberVO;
-import lombok.Builder;
-import lombok.Getter;
-import lombok.ToString;
+import lombok.*;
 
 import java.util.List;
 
 @Getter
+@Setter
 @ToString
+@EqualsAndHashCode
+@NoArgsConstructor
+@AllArgsConstructor
 public class TeamVO {
 
-    private final Long id;
-    private final String name;
-    private final List<MemberVO> members;
-
-    @Builder
-    public TeamVO(Long id, String name, List<MemberVO> members) {
-        this.id = id;
-        this.name = name;
-        this.members = members;
-    }
+    private Long id;
+    private String name;
+    private List<MemberVO> members;
 }
