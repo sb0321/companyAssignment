@@ -22,8 +22,10 @@ import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.filter.CharacterEncodingFilter;
 
 import java.util.List;
+import java.util.Objects;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
@@ -72,7 +74,7 @@ class MemberAPIControllerTests {
 
         List<MemberVO> expected = memberService.findMembersContainsKeyword(keyword);
 
-        assertEquals(expected, memberVOList);
+        assertTrue(Objects.deepEquals(expected, memberVOList));
     }
 
 }
