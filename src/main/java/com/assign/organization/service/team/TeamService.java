@@ -24,17 +24,7 @@ public class TeamService {
 
     public List<TeamVO> findAllTeamListOrderByTeamNameDesc() {
         List<Team> teamList = teamRepository.findAllTeamsOrderByTeamName();
-        teamList.forEach(t -> sortTeamMembersDutyAndName(t.getMembers()));
         return convertTeamListToTeamVOList(teamList);
-    }
-
-    private void sortTeamMembersDutyAndName(List<Member> memberList) {
-        memberList.sort((m1, m2) -> {
-            if (m1.getDuty().equals(m2.getDuty())) {
-                return m1.getName().compareTo(m2.getName());
-            }
-            return m2.getDuty().compareTo(m1.getDuty());
-        });
     }
 
     private List<TeamVO> convertTeamListToTeamVOList(List<Team> teamList) {

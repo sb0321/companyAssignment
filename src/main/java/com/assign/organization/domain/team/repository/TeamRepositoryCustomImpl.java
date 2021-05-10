@@ -1,5 +1,6 @@
 package com.assign.organization.domain.team.repository;
 
+import com.assign.organization.domain.member.QMember;
 import com.assign.organization.domain.team.QTeam;
 import com.assign.organization.domain.team.Team;
 import com.querydsl.jpa.impl.JPAQueryFactory;
@@ -17,10 +18,14 @@ public class TeamRepositoryCustomImpl implements TeamRepositoryCustom {
     public List<Team> findAllTeamsOrderByTeamName() {
 
         QTeam team = QTeam.team;
+        QMember member = QMember.member;
 
-        return queryFactory.selectFrom(team)
-                .groupBy(team.id)
-                .orderBy(team.name.asc())
+        return queryFactory
+                .selectFrom(team)
+                .rightJoin(team.members, member)
+                .fetchJoin()
+                .orderBy(team.name.asc(), member.duty.desc(), member.name.asc())
+                .distinct()
                 .fetch();
     }
 
