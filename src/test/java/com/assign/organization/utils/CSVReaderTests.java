@@ -8,8 +8,7 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.test.context.TestPropertySource;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
 
-import static org.junit.jupiter.api.Assertions.assertDoesNotThrow;
-import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.junit.jupiter.api.Assertions.*;
 
 @Slf4j
 @ExtendWith(SpringExtension.class)
@@ -24,14 +23,11 @@ class CSVReaderTests {
 
     @Test
     void testReadCSVFile() {
-
-        assertThrows(CSVFileInvalidException.class, () -> CSVReader.readCSVFile(CSV_FILE_FAIL_PATH));
-
-        assertThrows(CSVFileInvalidException.class, () -> CSVReader.readCSVFile("falsePath"));
-
-        assertDoesNotThrow(() -> {
-            CSVReader.readCSVFile(CSV_FILE_OK_PATH);
-        });
+        assertAll(
+                () -> assertThrows(CSVFileInvalidException.class, () -> CSVReader.readCSVFile(CSV_FILE_FAIL_PATH)),
+                () -> assertThrows(CSVFileInvalidException.class, () -> CSVReader.readCSVFile("falsePath")),
+                () -> assertDoesNotThrow(() -> { CSVReader.readCSVFile(CSV_FILE_OK_PATH); })
+        );
 
     }
 }
