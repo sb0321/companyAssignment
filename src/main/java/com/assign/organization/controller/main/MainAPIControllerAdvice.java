@@ -1,6 +1,6 @@
 package com.assign.organization.controller.main;
 
-import com.assign.organization.exception.CSVFileInvalidException;
+import com.assign.organization.exception.InvalidCSVFileException;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
@@ -9,7 +9,7 @@ import org.springframework.web.bind.annotation.RestControllerAdvice;
 @RestControllerAdvice
 public class MainAPIControllerAdvice {
 
-    @ExceptionHandler(CSVFileInvalidException.class)
+    @ExceptionHandler(InvalidCSVFileException.class)
     public String csvFileException() {
         return "csv file is not valid";
     }

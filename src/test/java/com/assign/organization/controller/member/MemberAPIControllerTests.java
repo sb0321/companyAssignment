@@ -1,13 +1,12 @@
 package com.assign.organization.controller.member;
 
 import com.assign.organization.domain.member.MemberVO;
-import com.assign.organization.exception.CSVFileInvalidException;
+import com.assign.organization.exception.InvalidCSVFileException;
 import com.assign.organization.service.member.MemberService;
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.extern.slf4j.Slf4j;
 import org.junit.jupiter.api.BeforeAll;
-import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.TestInstance;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.ValueSource;
@@ -51,7 +50,7 @@ class MemberAPIControllerTests {
     String CSV_FILE_PATH;
 
     @BeforeAll
-    void init() throws CSVFileInvalidException {
+    void init() throws InvalidCSVFileException {
         mockMvc = MockMvcBuilders.standaloneSetup(controller)
                 .addFilter(new CharacterEncodingFilter(UTF8_CHARSET, true))
                 .build();

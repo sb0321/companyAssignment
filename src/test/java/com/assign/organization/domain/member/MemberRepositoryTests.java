@@ -2,7 +2,7 @@ package com.assign.organization.domain.member;
 
 import com.assign.organization.domain.member.repository.MemberRepository;
 import com.assign.organization.domain.team.Team;
-import com.assign.organization.exception.CSVFileInvalidException;
+import com.assign.organization.exception.InvalidCSVFileException;
 import com.assign.organization.utils.CSVReader;
 import com.assign.organization.utils.NameGenerator;
 import com.querydsl.jpa.impl.JPAQueryFactory;
@@ -51,7 +51,7 @@ class MemberRepositoryTests {
 
 
     @BeforeAll
-    void init() throws CSVFileInvalidException {
+    void init() throws InvalidCSVFileException {
         List<CSVMemberVO> csvMemberVOList = CSVReader.readCSVFile(CSV_FILE_PATH);
 
         Set<Member> members = new HashSet<>();

@@ -6,7 +6,7 @@ import com.assign.organization.domain.member.Member;
 import com.assign.organization.domain.member.MemberVO;
 import com.assign.organization.domain.member.repository.MemberRepository;
 import com.assign.organization.domain.team.Team;
-import com.assign.organization.exception.CSVFileInvalidException;
+import com.assign.organization.exception.InvalidCSVFileException;
 import com.assign.organization.service.team.TeamService;
 import com.assign.organization.utils.CSVReader;
 import com.assign.organization.utils.NameGenerator;
@@ -34,7 +34,7 @@ public class MemberService {
     }
 
     @Transactional
-    public void insertMembersFromCSVFile(String csvFilePath) throws CSVFileInvalidException {
+    public void insertMembersFromCSVFile(String csvFilePath) throws InvalidCSVFileException {
 
         List<CSVMemberVO> csvMemberVOList = CSVReader.readCSVFile(csvFilePath);
 

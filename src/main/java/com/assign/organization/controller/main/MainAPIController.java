@@ -1,6 +1,6 @@
 package com.assign.organization.controller.main;
 
-import com.assign.organization.exception.CSVFileInvalidException;
+import com.assign.organization.exception.InvalidCSVFileException;
 import com.assign.organization.service.member.MemberService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -19,7 +19,7 @@ public class MainAPIController {
     private String csvFilePath;
 
     @GetMapping("/init")
-    public void init() throws CSVFileInvalidException {
+    public void init() throws InvalidCSVFileException {
         memberService.insertMembersFromCSVFile(csvFilePath);
     }
 

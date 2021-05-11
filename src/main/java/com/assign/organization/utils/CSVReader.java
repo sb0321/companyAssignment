@@ -1,11 +1,10 @@
 package com.assign.organization.utils;
 
 import com.assign.organization.domain.member.CSVMemberVO;
-import com.assign.organization.exception.CSVFileInvalidException;
+import com.assign.organization.exception.InvalidCSVFileException;
 import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 
-import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.RandomAccessFile;
 import java.nio.ByteBuffer;
@@ -43,12 +42,12 @@ public class CSVReader {
         String position;
         String duty;
 
-        public CSVMemberVO toCSVMemberVO() throws CSVFileInvalidException {
+        public CSVMemberVO toCSVMemberVO() throws InvalidCSVFileException {
             if (checkDataValid()) {
                 return new CSVMemberVO(name, teamName, businessCall, cellPhone, duty, position);
             }
 
-            throw new CSVFileInvalidException("raw 데이터를 변환하는데 실패했습니다.");
+            throw new InvalidCSVFileException("raw 데이터를 변환하는데 실패했습니다.");
         }
 
         private boolean checkDataValid() {
@@ -81,7 +80,7 @@ public class CSVReader {
         }
     }
 
-    public static List<CSVMemberVO> readCSVFile(String csvFilePath) throws CSVFileInvalidException {
+    public static List<CSVMemberVO> readCSVFile(String csvFilePath) throws InvalidCSVFileException {
         try {
             RandomAccessFile csvFile = new RandomAccessFile(csvFilePath, "r");
             String dataStr = readDataFromRandomAccessFile(csvFile);
@@ -90,11 +89,11 @@ public class CSVReader {
             return convertRawMemberDataListToCSVMemberVoList(rawMemberDataList);
         } catch (IOException e) {
             e.printStackTrace();
-            throw new CSVFileInvalidException("파일 경로가 잘못되어 있습니다.");
+            throw new InvalidCSVFileException("파일 경로가 잘못되어 있습니다.");
         }
     }
 
-    private static List<CSVMemberVO> convertRawMemberDataListToCSVMemberVoList(List<String> rawMemberDataList) throws CSVFileInvalidException {
+    private static List<CSVMemberVO> convertRawMemberDataListToCSVMemberVoList(List<String> rawMemberDataList) throws InvalidCSVFileException {
 
         try {
             List<CSVMemberVO> csvMemberVOList = new ArrayList<>();
@@ -106,13 +105,13 @@ public class CSVReader {
 
 
             return csvMemberVOList;
-        } catch (CSVFileInvalidException e) {
+        } catch (InvalidCSVFileException e) {
             e.printStackTrace();
-            throw new CSVFileInvalidException("CSV 파일이 손상되었거나 잘못되어 있습니다.");
+            throw new InvalidCSVFileException("CSV 파일이 손상되었거나 잘못되어 있습니다.");
         }
     }
 
-    private static CSVMemberVO convertRawMemberDataToCSVMemberVO(String rawMemberData) throws CSVFileInvalidException {
+    private static CSVMemberVO convertRawMemberDataToCSVMemberVO(String rawMemberData) throws InvalidCSVFileException {
 
         String[] split = rawMemberData.split(SEPARATOR);
         try {
@@ -130,7 +129,7 @@ public class CSVReader {
             return memberData.toCSVMemberVO();
         } catch (Exception e) {
             e.printStackTrace();
-            throw new CSVFileInvalidException("CSV파일이 손상되었거나 잘못 되어 있습니다.");
+            throw new InvalidCSVFileException("CSV파일이 손상되었거나 잘못 되어 있습니다.");
         }
     }
 
