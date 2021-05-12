@@ -1,6 +1,5 @@
 package com.assign.organization.service.member;
 
-import com.assign.organization.domain.contact.Contact;
 import com.assign.organization.domain.member.Member;
 import com.assign.organization.domain.member.MemberVO;
 import com.assign.organization.domain.member.repository.MemberRepository;
@@ -16,7 +15,6 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.test.context.TestPropertySource;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
 
-import java.io.FileNotFoundException;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -47,14 +45,13 @@ class MemberServiceTests {
 
         String keyword = "test";
 
-        Contact contact = new Contact("", "");
-
         Member member = Member
                 .builder()
                 .name(keyword)
                 .duty("")
                 .position("")
-                .contact(contact)
+                .cellPhone("")
+                .businessCall("")
                 .build();
 
         member.setTeam(new Team(""));

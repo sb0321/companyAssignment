@@ -54,8 +54,8 @@ public class TeamService {
                 .id(member.getId())
                 .name(member.getName())
                 .teamName(member.getTeam().getName())
-                .cellPhone(member.getContact().getCellPhone())
-                .businessCall(member.getContact().getBusinessCall())
+                .cellPhone(member.getCellPhone())
+                .businessCall(member.getBusinessCall())
                 .position(member.getPosition())
                 .duty(member.getDuty())
                 .build();

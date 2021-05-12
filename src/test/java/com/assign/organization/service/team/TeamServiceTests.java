@@ -1,6 +1,5 @@
 package com.assign.organization.service.team;
 
-import com.assign.organization.domain.contact.Contact;
 import com.assign.organization.domain.member.Member;
 import com.assign.organization.domain.team.Team;
 import com.assign.organization.domain.team.TeamVO;
@@ -44,7 +43,8 @@ class TeamServiceTests {
                     .name("name" + i)
                     .position("pos" + i)
                     .duty("duty")
-                    .contact(new Contact("010-0000-000" + i, "100" + i))
+                    .cellPhone("010-0000-000" + i)
+                    .businessCall("100" + i)
                     .build();
 
             member.setTeam(team);

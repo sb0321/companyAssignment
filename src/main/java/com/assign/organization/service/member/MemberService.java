@@ -1,6 +1,5 @@
 package com.assign.organization.service.member;
 
-import com.assign.organization.domain.contact.Contact;
 import com.assign.organization.domain.member.CSVMemberVO;
 import com.assign.organization.domain.member.Member;
 import com.assign.organization.domain.member.MemberVO;
@@ -42,8 +41,6 @@ public class MemberService {
 
         for (CSVMemberVO csvMemberVO : csvMemberVOList) {
 
-            Contact contact = new Contact(csvMemberVO.getBusinessCall(), csvMemberVO.getCellPhone());
-
             String newName = generateNewMemberNameIfDuplicated(csvMemberVO.getName());
 
             Member member = Member
@@ -51,7 +48,8 @@ public class MemberService {
                     .name(newName)
                     .position(csvMemberVO.getPosition())
                     .duty(csvMemberVO.getDuty())
-                    .contact(contact)
+                    .businessCall(csvMemberVO.getBusinessCall())
+                    .cellPhone(csvMemberVO.getCellPhone())
                     .build();
 
             member.setTeam(teams.get(csvMemberVO.getTeamName()));
@@ -71,8 +69,8 @@ public class MemberService {
                     .builder()
                     .id(member.getId())
                     .name(member.getName())
-                    .businessCall(member.getContact().getBusinessCall())
-                    .cellPhone(member.getContact().getCellPhone())
+                    .businessCall(member.getBusinessCall())
+                    .cellPhone(member.getCellPhone())
                     .position(member.getPosition())
                     .teamName(team == null ? TEAM_DOES_NOT_EXIST : team.getName())
                     .duty(member.getDuty())

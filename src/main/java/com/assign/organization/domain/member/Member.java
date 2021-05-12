@@ -1,6 +1,5 @@
 package com.assign.organization.domain.member;
 
-import com.assign.organization.domain.contact.Contact;
 import com.assign.organization.domain.team.Team;
 import lombok.AccessLevel;
 import lombok.Builder;
@@ -27,9 +26,11 @@ public class Member {
     @JoinColumn(name = "TEAM_ID")
     private Team team;
 
-    @OneToOne(cascade = CascadeType.ALL, fetch = FetchType.LAZY)
-    @JoinColumn(name = "BUSINESS_CALL", nullable = false)
-    private Contact contact;
+    @Column(nullable = false, unique = true)
+    private String businessCall;
+
+    @Column(nullable = false, unique = true)
+    private String cellPhone;
 
     @Column(nullable = false)
     private String position;
@@ -38,12 +39,16 @@ public class Member {
     private String duty;
 
     @Builder
-    public Member(String name, Contact contact, String position, String duty) {
+    public Member(String name, Team team, String businessCall, String cellPhone, String position, String duty) {
         this.name = name;
-        this.contact = contact;
+        this.team = team;
+        this.businessCall = businessCall;
+        this.cellPhone = cellPhone;
         this.position = position;
         this.duty = duty;
     }
+
+
 
     public void setTeam(Team team) {
 

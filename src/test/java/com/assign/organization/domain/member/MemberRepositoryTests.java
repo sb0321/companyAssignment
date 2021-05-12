@@ -1,6 +1,5 @@
 package com.assign.organization.domain.member;
 
-import com.assign.organization.domain.contact.Contact;
 import com.assign.organization.domain.member.repository.MemberRepository;
 import com.assign.organization.domain.team.Team;
 import com.assign.organization.exception.InvalidCSVFileException;
@@ -70,14 +69,14 @@ class MemberRepositoryTests {
             teams.putIfAbsent(csvMemberVO.getTeamName(), new Team(csvMemberVO.getTeamName()));
 
             String newName = NameGenerator.generateNameWhenDuplication(csvMemberVO.getName(), memberNameDuplication.get(csvMemberVO.getName()));
-            Contact contact = new Contact(csvMemberVO.getCellPhone(), csvMemberVO.getBusinessCall());
 
             Member member = Member
                     .builder()
                     .name(newName)
                     .position(csvMemberVO.getPosition())
                     .duty(csvMemberVO.getDuty())
-                    .contact(contact)
+                    .businessCall(csvMemberVO.getBusinessCall())
+                    .cellPhone(csvMemberVO.getCellPhone())
                     .build();
 
             member.setTeam(teams.get(csvMemberVO.getTeamName()));
@@ -101,8 +100,8 @@ class MemberRepositoryTests {
     boolean checkKeywordContains(Member member, String keyword) {
         return member.getName().contains(keyword) ||
                 member.getTeam().getName().contains(keyword) ||
-                member.getContact().getCellPhone().contains(keyword) ||
-                member.getContact().getBusinessCall().contains(keyword);
+                member.getCellPhone().contains(keyword) ||
+                member.getBusinessCall().contains(keyword);
     }
 
     @ParameterizedTest

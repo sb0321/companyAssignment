@@ -34,8 +34,8 @@ public class MemberRepositoryCustomImpl implements MemberRepositoryCustom {
                 .on(member.team.eq(team))
                 .where(
                         member.name.contains(keyword)
-                        .or(member.contact.businessCall.contains(keyword)
-                        .or(member.contact.cellPhone.contains(keyword)))
+                        .or(member.businessCall.contains(keyword)
+                        .or(member.cellPhone.contains(keyword)))
                         .or(team.name.contains(keyword))
                 )
                 .orderBy(
