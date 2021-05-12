@@ -1,6 +1,6 @@
 package com.assign.organization.controller.main;
 
-import com.assign.organization.controller.main.responsedomain.CustomResponse;
+import com.assign.organization.controller.main.responsedomain.CSVStatusResponse;
 import com.assign.organization.exception.InvalidCSVFileException;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
@@ -16,12 +16,12 @@ import java.util.List;
 public class MainAPIControllerAdvice {
 
     @ExceptionHandler(InvalidCSVFileException.class)
-    public ResponseEntity<CustomResponse> handleCsvFileException(InvalidCSVFileException e) {
+    public ResponseEntity<CSVStatusResponse> handleCsvFileException(InvalidCSVFileException e) {
 
         List<String> messages = new LinkedList<>();
         messages.add(e.getMessage());
 
-        CustomResponse response = new CustomResponse(CustomResponse.ResponseStatus.FAIL, messages);
+        CSVStatusResponse response = new CSVStatusResponse(CSVStatusResponse.ResponseStatus.FAIL, messages);
 
         return new ResponseEntity<>(response, HttpStatus.BAD_REQUEST);
     }

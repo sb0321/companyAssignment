@@ -7,7 +7,7 @@ import java.util.List;
 
 @Getter
 @AllArgsConstructor
-public class CustomResponse {
+public class CSVStatusResponse {
 
     public enum ResponseStatus {
         OK, FAIL

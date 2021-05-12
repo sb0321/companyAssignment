@@ -1,6 +1,6 @@
 package com.assign.organization.controller.main;
 
-import com.assign.organization.controller.main.responsedomain.CustomResponse;
+import com.assign.organization.controller.main.responsedomain.CSVStatusResponse;
 import com.assign.organization.exception.InvalidCSVFileException;
 import com.assign.organization.service.member.MemberService;
 import lombok.RequiredArgsConstructor;
@@ -24,14 +24,14 @@ public class MainAPIController {
     private final MemberService memberService;
 
     @GetMapping("/read")
-    public ResponseEntity<CustomResponse> init(@RequestParam(value = "csvFilePath") String csvFilePath)
+    public ResponseEntity<CSVStatusResponse> init(@RequestParam(value = "csvFilePath") String csvFilePath)
             throws InvalidCSVFileException {
         memberService.insertMembersFromCSVFile(csvFilePath);
 
         List<String> messages = new LinkedList<>();
         messages.add(SUCCESS_MESSAGE);
 
-        CustomResponse response = new CustomResponse(CustomResponse.ResponseStatus.OK, messages);
+        CSVStatusResponse response = new CSVStatusResponse(CSVStatusResponse.ResponseStatus.OK, messages);
 
         return new ResponseEntity<>(response, HttpStatus.OK);
     }
