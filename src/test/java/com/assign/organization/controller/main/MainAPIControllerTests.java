@@ -37,17 +37,10 @@ class MainAPIControllerTests {
     void testCSVFileRead() throws Exception {
 
         mockMvc.perform(
-                get("/init")
+                get("/read")
+//                .param("csvFilePath", "/Users/sbkim/Downloads/data.csv")
         )
         .andDo(print())
         .andExpect(status().isOk());
     }
-
-    @Test
-    void testCSVFileReadFail() throws Exception {
-        mockMvc.perform(
-                get("/init")
-        );
-    }
-
 }

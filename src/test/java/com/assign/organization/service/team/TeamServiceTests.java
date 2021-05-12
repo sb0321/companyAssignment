@@ -1,6 +1,6 @@
 package com.assign.organization.service.team;
 
-import com.assign.organization.domain.member.Contact;
+import com.assign.organization.domain.contact.Contact;
 import com.assign.organization.domain.member.Member;
 import com.assign.organization.domain.team.Team;
 import com.assign.organization.domain.team.TeamVO;

@@ -1,5 +1,6 @@
 package com.assign.organization.domain.member;
 
+import com.assign.organization.domain.contact.Contact;
 import com.assign.organization.domain.team.Team;
 import lombok.AccessLevel;
 import lombok.Builder;
@@ -26,7 +27,8 @@ public class Member {
     @JoinColumn(name = "TEAM_ID")
     private Team team;
 
-    @Embedded
+    @OneToOne(cascade = CascadeType.ALL, fetch = FetchType.LAZY)
+    @JoinColumn(name = "BUSINESS_CALL", nullable = false)
     private Contact contact;
 
     @Column(nullable = false)

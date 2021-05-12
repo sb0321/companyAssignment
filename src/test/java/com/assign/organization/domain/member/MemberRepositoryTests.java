@@ -1,5 +1,6 @@
 package com.assign.organization.domain.member;
 
+import com.assign.organization.domain.contact.Contact;
 import com.assign.organization.domain.member.repository.MemberRepository;
 import com.assign.organization.domain.team.Team;
 import com.assign.organization.exception.InvalidCSVFileException;

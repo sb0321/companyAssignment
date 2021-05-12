@@ -1,7 +1,7 @@
 package com.assign.organization.service.member;
 
+import com.assign.organization.domain.contact.Contact;
 import com.assign.organization.domain.member.CSVMemberVO;
-import com.assign.organization.domain.member.Contact;
 import com.assign.organization.domain.member.Member;
 import com.assign.organization.domain.member.MemberVO;
 import com.assign.organization.domain.member.repository.MemberRepository;
@@ -42,7 +42,7 @@ public class MemberService {
 
         for (CSVMemberVO csvMemberVO : csvMemberVOList) {
 
-            Contact contact = new Contact(csvMemberVO.getCellPhone(), csvMemberVO.getBusinessCall());
+            Contact contact = new Contact(csvMemberVO.getBusinessCall(), csvMemberVO.getCellPhone());
 
             String newName = generateNewMemberNameIfDuplicated(csvMemberVO.getName());
 
