@@ -6,11 +6,12 @@ import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 
 import java.io.IOException;
-import java.io.RandomAccessFile;
 import java.nio.ByteBuffer;
 import java.nio.CharBuffer;
 import java.nio.channels.FileChannel;
 import java.nio.charset.StandardCharsets;
+import java.nio.file.Paths;
+import java.nio.file.StandardOpenOption;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
@@ -82,14 +83,13 @@ public class CSVReader {
 
     public static List<CSVMemberVO> readCSVFile(String csvFilePath) throws InvalidCSVFileException {
         try {
-            RandomAccessFile csvFile = new RandomAccessFile(csvFilePath, "r");
-            String dataStr = readDataFromRandomAccessFile(csvFile);
+            String dataStr = readDataFromCSVFile(csvFilePath);
             List<String> rawMemberDataList = convertSplitStringData(dataStr);
 
             return convertRawMemberDataListToCSVMemberVoList(rawMemberDataList);
         } catch (IOException e) {
             e.printStackTrace();
-            throw new InvalidCSVFileException("파일 경로가 잘못되어 있습니다.");
+            throw new InvalidCSVFileException("파일 경로가 잘못되어 있습니다. : " + e.getMessage());
         }
     }
 
@@ -138,9 +138,9 @@ public class CSVReader {
         return Arrays.asList(splitData);
     }
 
-    private static String readDataFromRandomAccessFile(RandomAccessFile file) throws IOException {
+    private static String readDataFromCSVFile(String filePath) throws IOException {
 
-        FileChannel fileChannel = file.getChannel();
+        FileChannel fileChannel = FileChannel.open(Paths.get(filePath), StandardOpenOption.SYNC);
         ByteBuffer byteBuffer = ByteBuffer.allocate(BUFFER_SIZE);
 
         int read = fileChannel.read(byteBuffer);
@@ -160,6 +160,7 @@ public class CSVReader {
             byteBuffer.clear();
             read = fileChannel.read(byteBuffer);
         }
+        fileChannel.close();
 
         return stringBuilder.toString();
     }
