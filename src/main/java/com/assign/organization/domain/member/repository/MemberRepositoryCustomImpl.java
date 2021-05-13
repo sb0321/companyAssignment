@@ -30,8 +30,8 @@ public class MemberRepositoryCustomImpl implements MemberRepositoryCustom {
         return queryFactory
                 .select(member)
                 .from(member)
-                .leftJoin(team)
-                .on(member.team.eq(team))
+                .leftJoin(member.team, team)
+                .fetchJoin()
                 .where(
                         member.name.contains(keyword)
                         .or(member.businessCall.contains(keyword)
