@@ -72,7 +72,9 @@ class MemberRepositoryTests {
 
             Member member = Member
                     .builder()
+                    .id(csvMemberVO.getMemberId())
                     .name(newName)
+                    .enteredDate(csvMemberVO.getEnteredDate())
                     .position(csvMemberVO.getPosition())
                     .duty(csvMemberVO.getDuty())
                     .businessCall(csvMemberVO.getBusinessCall())

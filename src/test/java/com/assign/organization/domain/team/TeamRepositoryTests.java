@@ -77,7 +77,9 @@ class TeamRepositoryTests {
 
             Member member = Member
                     .builder()
+                    .id(csvMemberVO.getMemberId())
                     .name(newName)
+                    .enteredDate(csvMemberVO.getEnteredDate())
                     .position(csvMemberVO.getPosition())
                     .duty(csvMemberVO.getDuty())
                     .cellPhone(csvMemberVO.getCellPhone())
