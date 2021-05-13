@@ -69,7 +69,9 @@ public class MemberService {
 
             Member member = Member
                     .builder()
+                    .id(csvMemberVO.getMemberId())
                     .name(newName)
+                    .enteredDate(csvMemberVO.getEnteredDate())
                     .position(csvMemberVO.getPosition())
                     .duty(csvMemberVO.getDuty())
                     .businessCall(csvMemberVO.getBusinessCall())
@@ -77,6 +79,8 @@ public class MemberService {
                     .build();
 
             member.setTeam(teams.get(csvMemberVO.getTeamName()));
+            log.info(teams.get(csvMemberVO.getTeamName()).getName() + "ddd");
+
 
             memberRepository.save(member);
         }

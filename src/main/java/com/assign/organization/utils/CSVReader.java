@@ -3,6 +3,7 @@ package com.assign.organization.utils;
 import com.assign.organization.domain.member.CSVMemberVO;
 import com.assign.organization.exception.InvalidCSVFileException;
 import lombok.AllArgsConstructor;
+import lombok.ToString;
 import lombok.extern.slf4j.Slf4j;
 
 import java.io.IOException;
@@ -12,6 +13,9 @@ import java.nio.channels.FileChannel;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Paths;
 import java.nio.file.StandardOpenOption;
+import java.time.LocalDate;
+import java.time.format.DateTimeFormatter;
+import java.time.format.DateTimeParseException;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
@@ -33,10 +37,12 @@ public class CSVReader {
     private CSVReader() {
     }
 
+    @ToString
     @AllArgsConstructor
     private static class RawMemberData {
-        long num;
+        String memberId;
         String name;
+        String enteredDate;
         String businessCall;
         String cellPhone;
         String teamName;
@@ -45,19 +51,43 @@ public class CSVReader {
 
         public CSVMemberVO toCSVMemberVO() throws InvalidCSVFileException {
             if (checkDataValid()) {
-                return new CSVMemberVO(name, teamName, businessCall, cellPhone, duty, position);
+
+                Long convertedMemberId = Long.parseLong(memberId);
+                LocalDate convertedEnteredDate = LocalDate.parse(enteredDate);
+
+                return new CSVMemberVO(convertedMemberId, convertedEnteredDate, name, teamName, businessCall, cellPhone, duty, position);
             }
 
-            throw new InvalidCSVFileException("raw 데이터를 변환하는데 실패했습니다.");
+            throw new InvalidCSVFileException("raw 데이터를 변환하는데 실패했습니다 : " + this);
         }
 
         private boolean checkDataValid() {
-            return checkNameValid() &&
+            return checkMemberIdValid() &&
+                    checkNameValid() &&
+                    checkEnteredDateValid() &&
                     checkCellPhoneValid() &&
                     checkBusinessCallValid() &&
                     checkPositionValid() &&
                     checkDutyValid() &&
                     !teamName.isEmpty();
+        }
+
+        private boolean checkMemberIdValid() {
+            try {
+                Long.parseLong(memberId);
+            } catch (NumberFormatException e) {
+                return false;
+            }
+            return true;
+        }
+
+        private boolean checkEnteredDateValid() {
+            try {
+                LocalDate.parse(enteredDate);
+            } catch (DateTimeParseException e) {
+                return false;
+            }
+            return true;
         }
 
         private boolean checkNameValid() {
@@ -107,7 +137,7 @@ public class CSVReader {
             return csvMemberVOList;
         } catch (InvalidCSVFileException e) {
             e.printStackTrace();
-            throw new InvalidCSVFileException("CSV 파일이 손상되었거나 잘못되어 있습니다.");
+            throw new InvalidCSVFileException(e.getMessage());
         }
     }
 
@@ -116,20 +146,22 @@ public class CSVReader {
         String[] split = rawMemberData.split(SEPARATOR);
         try {
 
-            long num = Long.parseLong(split[0]);
-            String name = split[1];
-            String businessCall = split[2].trim();
-            String cellPhone = split[3].trim();
-            String teamName = split[4].trim();
-            String position = split[5].trim();
-            String duty = split[6].trim();
+            String memberId = split[1].trim();
+            String name = split[2].trim();
+            String endteredDate = split[3].trim();
+            String businessCall = split[4].trim();
+            String cellPhone = split[5].trim();
+            String teamName = split[6].trim();
+            String position = split[7].trim();
+            String duty = split[8].trim();
 
-            RawMemberData memberData = new RawMemberData(num, name, businessCall, cellPhone, teamName, position, duty);
+            RawMemberData memberData =
+                    new RawMemberData(memberId, name, endteredDate, businessCall, cellPhone, teamName, position, duty);
 
             return memberData.toCSVMemberVO();
         } catch (Exception e) {
             e.printStackTrace();
-            throw new InvalidCSVFileException("CSV파일이 손상되었거나 잘못 되어 있습니다.");
+            throw new InvalidCSVFileException(e.getMessage());
         }
     }
 

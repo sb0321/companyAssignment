@@ -1,26 +1,30 @@
 package com.assign.organization.domain.member;
 
 import com.assign.organization.domain.team.Team;
-import lombok.AccessLevel;
-import lombok.Builder;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
+import lombok.*;
 
 import javax.persistence.*;
+import java.time.LocalDate;
 import java.util.Objects;
 
-@Getter
+@Getter()
 @Entity
+@ToString(exclude = "team")
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 public class Member {
 
     @Id
+    @GeneratedValue(strategy = GenerationType.AUTO)
     @Column(name = "MEMBER_ID")
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    private Long id_;
+
     private Long id;
 
     @Column(nullable = false, unique = true)
     private String name;
+
+    @Column(nullable = false)
+    private LocalDate enteredDate;
 
     @ManyToOne(fetch = FetchType.LAZY, cascade = CascadeType.PERSIST, optional = false)
     @JoinColumn(name = "TEAM_ID")
@@ -39,8 +43,10 @@ public class Member {
     private String duty;
 
     @Builder
-    public Member(String name, Team team, String businessCall, String cellPhone, String position, String duty) {
+    public Member(Long id, String name, LocalDate enteredDate, Team team, String businessCall, String cellPhone, String position, String duty) {
+        this.id = id;
         this.name = name;
+        this.enteredDate = enteredDate;
         this.team = team;
         this.businessCall = businessCall;
         this.cellPhone = cellPhone;
@@ -48,11 +54,8 @@ public class Member {
         this.duty = duty;
     }
 
-
-
     public void setTeam(Team team) {
-
-        if(this.team != null) {
+        if (this.team != null) {
             this.team.getMembers().removeIf(m -> Objects.equals(m, this));
         }
 
