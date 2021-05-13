@@ -32,6 +32,30 @@ public class MemberService {
         return convertMemberListToMemberVOList(memberList);
     }
 
+    private List<MemberVO> convertMemberListToMemberVOList(List<Member> memberList) {
+        List<MemberVO> memberVOList = new ArrayList<>();
+
+        for (Member member : memberList) {
+
+            Team team = member.getTeam();
+
+            MemberVO vo = MemberVO
+                    .builder()
+                    .id(member.getId())
+                    .name(member.getName())
+                    .businessCall(member.getBusinessCall())
+                    .cellPhone(member.getCellPhone())
+                    .position(member.getPosition())
+                    .teamName(team == null ? TEAM_DOES_NOT_EXIST : team.getName())
+                    .duty(member.getDuty())
+                    .build();
+
+            memberVOList.add(vo);
+        }
+
+        return memberVOList;
+    }
+
     @Transactional
     public void insertMembersFromCSVFile(String csvFilePath) throws InvalidCSVFileException {
 
@@ -58,28 +82,9 @@ public class MemberService {
         }
     }
 
-    private List<MemberVO> convertMemberListToMemberVOList(List<Member> memberList) {
-        List<MemberVO> memberVOList = new ArrayList<>();
-
-        for (Member member : memberList) {
-
-            Team team = member.getTeam();
-
-            MemberVO vo = MemberVO
-                    .builder()
-                    .id(member.getId())
-                    .name(member.getName())
-                    .businessCall(member.getBusinessCall())
-                    .cellPhone(member.getCellPhone())
-                    .position(member.getPosition())
-                    .teamName(team == null ? TEAM_DOES_NOT_EXIST : team.getName())
-                    .duty(member.getDuty())
-                    .build();
-
-            memberVOList.add(vo);
-        }
-
-        return memberVOList;
+    private String generateNewMemberNameIfDuplicated(String name) {
+        long duplicationCount = memberRepository.countNameContains(name);
+        return NameGenerator.generateNameWhenDuplication(name, duplicationCount);
     }
 
     private Map<String, Team> extractTeamsFromCSVMemberVOList(List<CSVMemberVO> csvMemberVOList) {
@@ -97,8 +102,5 @@ public class MemberService {
         return findTeam.orElseGet(() -> new Team(teamName));
     }
 
-    private String generateNewMemberNameIfDuplicated(String name) {
-        long duplicationCount = memberRepository.countNameContains(name);
-        return NameGenerator.generateNameWhenDuplication(name, duplicationCount);
-    }
+
 }

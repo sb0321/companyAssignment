@@ -2,17 +2,17 @@ package com.assign.organization.controller.main.responsedomain;
 
 import lombok.AllArgsConstructor;
 import lombok.Getter;
-
-import java.util.List;
+import lombok.NoArgsConstructor;
 
 @Getter
+@NoArgsConstructor
 @AllArgsConstructor
-public class CSVStatusResponse {
+public class CSVSynchronizeResponse {
 
     public enum ResponseStatus {
         OK, FAIL
     }
 
-    private final ResponseStatus status;
-    private final List<String> messages;
+    private ResponseStatus status;
+    private String message;
 }

@@ -32,9 +32,7 @@ public class TeamService {
         for (Team team : teamList) {
 
             List<MemberVO> memberVOList = convertMemberListToMemberVOList(team.getMembers());
-
             TeamVO vo = new TeamVO(team.getId(), team.getName(), memberVOList);
-
             teamVOList.add(vo);
         }
 

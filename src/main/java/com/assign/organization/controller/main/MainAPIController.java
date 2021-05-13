@@ -1,18 +1,18 @@
 package com.assign.organization.controller.main;
 
-import com.assign.organization.controller.main.responsedomain.CSVStatusResponse;
+import com.assign.organization.controller.main.responsedomain.CSVSynchronizeResponse;
 import com.assign.organization.exception.InvalidCSVFileException;
 import com.assign.organization.service.member.MemberService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
-import java.util.LinkedList;
-import java.util.List;
+import javax.annotation.Nullable;
 
 @Slf4j
 @RestController
@@ -24,15 +24,12 @@ public class MainAPIController {
     private final MemberService memberService;
 
     @GetMapping("/read")
-    public ResponseEntity<CSVStatusResponse> init(@RequestParam(value = "csvFilePath") String csvFilePath)
+    public ResponseEntity<CSVSynchronizeResponse> read(
+            @RequestParam(value = "csvFilePath", defaultValue = "") String csvFilePath)
             throws InvalidCSVFileException {
+
         memberService.insertMembersFromCSVFile(csvFilePath);
-
-        List<String> messages = new LinkedList<>();
-        messages.add(SUCCESS_MESSAGE);
-
-        CSVStatusResponse response = new CSVStatusResponse(CSVStatusResponse.ResponseStatus.OK, messages);
-
+        CSVSynchronizeResponse response = new CSVSynchronizeResponse(CSVSynchronizeResponse.ResponseStatus.OK, SUCCESS_MESSAGE);
         return new ResponseEntity<>(response, HttpStatus.OK);
     }
 
