@@ -40,7 +40,8 @@ class TeamServiceTests {
 
             Member member = Member
                     .builder()
-                    .name("name" + i)
+                    .firstName("name" + i)
+                    .lastName("last" + i)
                     .position("pos" + i)
                     .duty("duty")
                     .cellPhone("010-0000-000" + i)

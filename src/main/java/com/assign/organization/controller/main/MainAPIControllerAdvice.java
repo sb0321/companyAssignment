@@ -1,6 +1,6 @@
 package com.assign.organization.controller.main;
 
-import com.assign.organization.controller.main.responsedomain.CSVSynchronizeResponse;
+import com.assign.organization.controller.main.response.CSVSynchronizeResponse;
 import com.assign.organization.exception.InvalidCSVFileException;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;

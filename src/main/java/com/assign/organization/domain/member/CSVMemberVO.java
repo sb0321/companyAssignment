@@ -13,7 +13,8 @@ public class CSVMemberVO {
 
     private final Long memberId;
     private final LocalDate enteredDate;
-    private final String name;
+    private final String lastName;
+    private final String firstName;
     private final String teamName;
     private final String businessCall;
     private final String cellPhone;

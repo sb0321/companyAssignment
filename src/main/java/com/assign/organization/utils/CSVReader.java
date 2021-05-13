@@ -23,13 +23,8 @@ import java.util.List;
 @Slf4j
 public class CSVReader {
 
-    private static final String NAME_REGEX = "^[ㄱ-ㅎ|ㅏ-ㅣ가-힣a-zA-Z0-9]*$";
-    private static final String CELL_PHONE_REGEX = "^\\d{3}[-]\\d{4}[-]\\d{4}$";
-    private static final String BUSINESS_CALL_REGEX = "^\\d{4}$";
-    private static final String POSITION_REGEX = "^[ㄱ-ㅎㅏ-ㅣ가-힣a-zA-Z]*$";
-    private static final String DUTY_REGEX = "^팀[장|원]$";
-
     private static final String SEPARATOR = ",";
+    private static final String NAME_SEPARATOR = " ";
 
     private static final int BUFFER_SIZE = 1024;
     private static final int END_OF_FILE = -1;
@@ -55,7 +50,12 @@ public class CSVReader {
                 Long convertedMemberId = Long.parseLong(memberId);
                 LocalDate convertedEnteredDate = LocalDate.parse(enteredDate);
 
-                return new CSVMemberVO(convertedMemberId, convertedEnteredDate, name, teamName, businessCall, cellPhone, duty, position);
+                String[] nameSplit = name.split(NAME_SEPARATOR);
+                String lastName = nameSplit[0];
+                String firstName = nameSplit[1];
+
+                return new CSVMemberVO(convertedMemberId, convertedEnteredDate,
+                        lastName, firstName, teamName, businessCall, cellPhone, duty, position);
             }
 
             throw new InvalidCSVFileException("raw 데이터를 변환하는데 실패했습니다 : " + this);
@@ -91,23 +91,23 @@ public class CSVReader {
         }
 
         private boolean checkNameValid() {
-            return this.name.matches(NAME_REGEX) && !this.name.isEmpty();
+            return this.name.matches(RegexExpression.NAME_REGEX) && !this.name.isEmpty();
         }
 
         private boolean checkCellPhoneValid() {
-            return this.cellPhone.matches(CELL_PHONE_REGEX) && !this.cellPhone.isEmpty();
+            return this.cellPhone.matches(RegexExpression.CELL_PHONE_REGEX) && !this.cellPhone.isEmpty();
         }
 
         private boolean checkBusinessCallValid() {
-            return this.businessCall.matches(BUSINESS_CALL_REGEX) && !this.cellPhone.isEmpty();
+            return this.businessCall.matches(RegexExpression.BUSINESS_CALL_REGEX) && !this.cellPhone.isEmpty();
         }
 
         private boolean checkPositionValid() {
-            return this.position.matches(POSITION_REGEX) && !this.position.isEmpty();
+            return this.position.matches(RegexExpression.POSITION_REGEX) && !this.position.isEmpty();
         }
 
         private boolean checkDutyValid() {
-            return this.duty.matches(DUTY_REGEX) && !this.duty.isEmpty();
+            return this.duty.matches(RegexExpression.DUTY_REGEX) && !this.duty.isEmpty();
         }
     }
 

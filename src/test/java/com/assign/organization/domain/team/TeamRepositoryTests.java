@@ -67,23 +67,26 @@ class TeamRepositoryTests {
 
             log.info(csvMemberVO.toString());
 
-            memberNameDuplication.putIfAbsent(csvMemberVO.getName(), -1);
-            memberNameDuplication.replace(csvMemberVO.getName(), memberNameDuplication.get(csvMemberVO.getName()) + 1);
+            memberNameDuplication.putIfAbsent(csvMemberVO.getLastName(), -1);
+            memberNameDuplication.replace(csvMemberVO.getLastName(),
+                    memberNameDuplication.get(csvMemberVO.getLastName()) + 1);
 
 
             teams.putIfAbsent(csvMemberVO.getTeamName(), new Team(csvMemberVO.getTeamName()));
 
-            String newName = NameGenerator.generateNameWhenDuplication(csvMemberVO.getName(), memberNameDuplication.get(csvMemberVO.getName()));
+            String newLastName = NameGenerator
+                    .generateNameWhenDuplication(csvMemberVO.getLastName(), memberNameDuplication.get(csvMemberVO.getLastName()));
 
             Member member = Member
                     .builder()
                     .id(csvMemberVO.getMemberId())
-                    .name(newName)
+                    .lastName(newLastName)
+                    .firstName(csvMemberVO.getFirstName())
                     .enteredDate(csvMemberVO.getEnteredDate())
                     .position(csvMemberVO.getPosition())
                     .duty(csvMemberVO.getDuty())
-                    .cellPhone(csvMemberVO.getCellPhone())
                     .businessCall(csvMemberVO.getBusinessCall())
+                    .cellPhone(csvMemberVO.getCellPhone())
                     .build();
 
             member.setTeam(teams.get(csvMemberVO.getTeamName()));

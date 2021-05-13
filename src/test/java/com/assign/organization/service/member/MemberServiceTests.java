@@ -47,7 +47,7 @@ class MemberServiceTests {
 
         Member member = Member
                 .builder()
-                .name(keyword)
+                .firstName("firstName")
                 .duty("")
                 .position("")
                 .cellPhone("")

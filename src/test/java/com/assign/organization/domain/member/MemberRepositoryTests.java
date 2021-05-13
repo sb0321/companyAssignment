@@ -62,18 +62,21 @@ class MemberRepositoryTests {
 
             log.info(csvMemberVO.toString());
 
-            memberNameDuplication.putIfAbsent(csvMemberVO.getName(), -1);
-            memberNameDuplication.replace(csvMemberVO.getName(), memberNameDuplication.get(csvMemberVO.getName()) + 1);
+            memberNameDuplication.putIfAbsent(csvMemberVO.getLastName(), -1);
+            memberNameDuplication.replace(csvMemberVO.getLastName(),
+                    memberNameDuplication.get(csvMemberVO.getLastName()) + 1);
 
 
             teams.putIfAbsent(csvMemberVO.getTeamName(), new Team(csvMemberVO.getTeamName()));
 
-            String newName = NameGenerator.generateNameWhenDuplication(csvMemberVO.getName(), memberNameDuplication.get(csvMemberVO.getName()));
+            String newLastName = NameGenerator
+                    .generateNameWhenDuplication(csvMemberVO.getLastName(), memberNameDuplication.get(csvMemberVO.getLastName()));
 
             Member member = Member
                     .builder()
                     .id(csvMemberVO.getMemberId())
-                    .name(newName)
+                    .lastName(newLastName)
+                    .firstName(csvMemberVO.getFirstName())
                     .enteredDate(csvMemberVO.getEnteredDate())
                     .position(csvMemberVO.getPosition())
                     .duty(csvMemberVO.getDuty())
@@ -107,14 +110,14 @@ class MemberRepositoryTests {
     }
 
     @ParameterizedTest
-    @ValueSource(strings = {"사원", "김승빈"})
+    @ValueSource(strings = {"이사원", "김승빈"})
     void testCountNameContains(String memberName) {
         long count = memberRepository.countNameContains(memberName);
 
-        if (memberName.equals("사원")) {
-            assertEquals(9, count);
+        if (memberName.equals("이사원")) {
+            assertEquals(1, count);
         }
-        if (memberName.equals("김승빈")) {
+        if (memberName.equals("승빈")) {
             assertEquals(3, count);
         }
     }

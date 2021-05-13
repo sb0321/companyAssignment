@@ -20,8 +20,11 @@ public class Member {
 
     private Long id;
 
-    @Column(nullable = false, unique = true)
-    private String name;
+    @Column(nullable = false)
+    private String lastName;
+
+    @Column(nullable = false)
+    private String firstName;
 
     @Column(nullable = false)
     private LocalDate enteredDate;
@@ -43,15 +46,20 @@ public class Member {
     private String duty;
 
     @Builder
-    public Member(Long id, String name, LocalDate enteredDate, Team team, String businessCall, String cellPhone, String position, String duty) {
+    public Member(Long id, String lastName, String firstName, LocalDate enteredDate, Team team, String businessCall, String cellPhone, String position, String duty) {
         this.id = id;
-        this.name = name;
+        this.lastName = lastName;
+        this.firstName = firstName;
         this.enteredDate = enteredDate;
         this.team = team;
         this.businessCall = businessCall;
         this.cellPhone = cellPhone;
         this.position = position;
         this.duty = duty;
+    }
+
+    public String getName() {
+        return String.join(" ", lastName, firstName);
     }
 
     public void setTeam(Team team) {

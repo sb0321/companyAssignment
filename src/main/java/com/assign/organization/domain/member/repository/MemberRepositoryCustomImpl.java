@@ -16,9 +16,12 @@ public class MemberRepositoryCustomImpl implements MemberRepositoryCustom {
 
     @Override
     public long countNameContains(String name) {
+
+        QMember member = QMember.member;
+
         return queryFactory
-                .selectFrom(QMember.member)
-                .where(QMember.member.name.like(name + "%"))
+                .selectFrom(member)
+                .where(member.lastName.concat(member.firstName).like(name + "%"))
                 .fetchCount();
     }
 
@@ -33,7 +36,8 @@ public class MemberRepositoryCustomImpl implements MemberRepositoryCustom {
                 .leftJoin(member.team, team)
                 .fetchJoin()
                 .where(
-                        member.name.contains(keyword)
+                        member.firstName.contains(keyword)
+                        .or(member.lastName.contains(keyword))
                         .or(member.businessCall.contains(keyword)
                         .or(member.cellPhone.contains(keyword)))
                         .or(team.name.contains(keyword))
@@ -41,7 +45,8 @@ public class MemberRepositoryCustomImpl implements MemberRepositoryCustom {
                 .orderBy(
                         team.name.asc(),
                         member.duty.desc(),
-                        member.name.asc()
+                        member.lastName.asc(),
+                        member.firstName.asc()
                 )
                 .fetch();
     }

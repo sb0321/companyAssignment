@@ -1,6 +1,6 @@
 package com.assign.organization.controller.main;
 
-import com.assign.organization.controller.main.responsedomain.CSVSynchronizeResponse;
+import com.assign.organization.controller.main.response.CSVSynchronizeResponse;
 import com.assign.organization.domain.member.repository.MemberRepository;
 import com.assign.organization.domain.team.repository.TeamRepository;
 import com.fasterxml.jackson.databind.ObjectMapper;

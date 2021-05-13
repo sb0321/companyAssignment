@@ -65,12 +65,14 @@ public class MemberService {
 
         for (CSVMemberVO csvMemberVO : csvMemberVOList) {
 
-            String newName = generateNewMemberNameIfDuplicated(csvMemberVO.getName());
+            String newFirstName = generateNewMemberNameIfDuplicated(csvMemberVO);
+            log.info(newFirstName);
 
             Member member = Member
                     .builder()
                     .id(csvMemberVO.getMemberId())
-                    .name(newName)
+                    .firstName(newFirstName)
+                    .lastName(csvMemberVO.getLastName())
                     .enteredDate(csvMemberVO.getEnteredDate())
                     .position(csvMemberVO.getPosition())
                     .duty(csvMemberVO.getDuty())
@@ -79,16 +81,14 @@ public class MemberService {
                     .build();
 
             member.setTeam(teams.get(csvMemberVO.getTeamName()));
-            log.info(teams.get(csvMemberVO.getTeamName()).getName() + "ddd");
-
-
             memberRepository.save(member);
         }
     }
 
-    private String generateNewMemberNameIfDuplicated(String name) {
+    private String generateNewMemberNameIfDuplicated(CSVMemberVO vo) {
+        String name = String.join("", vo.getLastName(), vo.getFirstName());
         long duplicationCount = memberRepository.countNameContains(name);
-        return NameGenerator.generateNameWhenDuplication(name, duplicationCount);
+        return NameGenerator.generateNameWhenDuplication(vo.getFirstName(), duplicationCount);
     }
 
     private Map<String, Team> extractTeamsFromCSVMemberVOList(List<CSVMemberVO> csvMemberVOList) {

@@ -24,7 +24,12 @@ public class TeamRepositoryCustomImpl implements TeamRepositoryCustom {
                 .selectFrom(team)
                 .rightJoin(team.members, member)
                 .fetchJoin()
-                .orderBy(team.name.asc(), member.duty.desc(), member.name.asc())
+                .orderBy(
+                        team.name.asc(),
+                        member.duty.desc(),
+                        member.lastName.asc(),
+                        member.firstName.asc()
+                )
                 .distinct()
                 .fetch();
     }
