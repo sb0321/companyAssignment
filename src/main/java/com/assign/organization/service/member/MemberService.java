@@ -1,6 +1,6 @@
 package com.assign.organization.service.member;
 
-import com.assign.organization.domain.member.CSVMemberVO;
+import com.assign.organization.utils.CSVMemberVO;
 import com.assign.organization.domain.member.Member;
 import com.assign.organization.domain.member.MemberVO;
 import com.assign.organization.domain.member.repository.MemberRepository;

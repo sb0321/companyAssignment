@@ -7,7 +7,7 @@ import javax.persistence.*;
 import java.time.LocalDate;
 import java.util.Objects;
 
-@Getter()
+@Getter
 @Entity
 @ToString(exclude = "team")
 @NoArgsConstructor(access = AccessLevel.PROTECTED)

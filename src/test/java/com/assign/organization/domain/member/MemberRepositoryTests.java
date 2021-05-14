@@ -3,6 +3,7 @@ package com.assign.organization.domain.member;
 import com.assign.organization.domain.member.repository.MemberRepository;
 import com.assign.organization.domain.team.Team;
 import com.assign.organization.exception.InvalidCSVFileException;
+import com.assign.organization.utils.CSVMemberVO;
 import com.assign.organization.utils.CSVReader;
 import com.assign.organization.utils.NameGenerator;
 import com.querydsl.jpa.impl.JPAQueryFactory;

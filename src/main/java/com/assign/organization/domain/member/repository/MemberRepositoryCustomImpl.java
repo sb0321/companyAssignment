@@ -36,8 +36,7 @@ public class MemberRepositoryCustomImpl implements MemberRepositoryCustom {
                 .leftJoin(member.team, team)
                 .fetchJoin()
                 .where(
-                        member.firstName.contains(keyword)
-                        .or(member.lastName.contains(keyword))
+                        member.lastName.concat(member.firstName).contains(keyword)
                         .or(member.businessCall.contains(keyword)
                         .or(member.cellPhone.contains(keyword)))
                         .or(team.name.contains(keyword))

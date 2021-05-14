@@ -48,6 +48,7 @@ class MemberServiceTests {
         Member member = Member
                 .builder()
                 .firstName("firstName")
+                .lastName("test")
                 .duty("")
                 .position("")
                 .cellPhone("")
@@ -63,7 +64,7 @@ class MemberServiceTests {
 
         List<MemberVO> findMembers = memberService.findMembersContainsKeyword(keyword);
 
-        assertEquals(keyword, findMembers.stream().findAny().get().getName());
+        assertEquals(member.getName(), findMembers.stream().findAny().get().getName());
     }
 
     @Test
