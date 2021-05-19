@@ -113,22 +113,22 @@ public class CSVMemberVO {
     }
 
     private static boolean checkNameValid(String name) {
-        return name.matches(RegexExpression.NAME_REGEX);
+        return name.matches(Regex.NAME_REGEX);
     }
 
     private static boolean checkCellPhoneValid(String cellPhone) {
-        return cellPhone.matches(RegexExpression.CELL_PHONE_REGEX);
+        return cellPhone.matches(Regex.CELL_PHONE_REGEX);
     }
 
     private static boolean checkBusinessCallValid(String businessCall) {
-        return businessCall.matches(RegexExpression.BUSINESS_CALL_REGEX);
+        return businessCall.matches(Regex.BUSINESS_CALL_REGEX);
     }
 
     private static boolean checkPositionValid(String position) {
-        return position.matches(RegexExpression.POSITION_REGEX);
+        return position.matches(Regex.POSITION_REGEX);
     }
 
     private static boolean checkDutyValid(String duty) {
-        return duty.matches(RegexExpression.DUTY_REGEX);
+        return duty.matches(Regex.DUTY_REGEX);
     }
 }
