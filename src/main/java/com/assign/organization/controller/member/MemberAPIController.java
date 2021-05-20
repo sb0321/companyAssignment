@@ -17,7 +17,11 @@ public class MemberAPIController {
     private final MemberService memberService;
 
     @GetMapping("")
-    public List<MemberVO> searchKeywordMemberVOList(@RequestParam(value = "keyword", defaultValue = "") String keyword) {
+    public List<MemberVO> searchKeywordMemberVOList(@RequestParam(value = "keyword", required = false) String keyword) {
+        if (keyword == null) {
+            keyword = "";
+        }
+
         return memberService.findMembersContainsKeyword(keyword);
     }
 

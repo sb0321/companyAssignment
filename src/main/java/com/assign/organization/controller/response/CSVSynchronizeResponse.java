@@ -1,4 +1,4 @@
-package com.assign.organization.controller.main.response;
+package com.assign.organization.controller.response;
 
 import lombok.AllArgsConstructor;
 import lombok.Getter;
