@@ -5,6 +5,8 @@ import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.ToString;
+import org.hibernate.annotations.NotFound;
+import org.hibernate.annotations.NotFoundAction;
 
 import javax.persistence.*;
 import java.util.ArrayList;
@@ -24,7 +26,8 @@ public class Team {
     @Column(unique = true, nullable = false)
     private String name;
 
-    @OneToMany(mappedBy = "team")
+    @OneToMany(mappedBy = "team", cascade = CascadeType.PERSIST)
+    @NotFound(action = NotFoundAction.IGNORE)
     private final List<Member> members = new ArrayList<>();
 
     public Team(String name) {

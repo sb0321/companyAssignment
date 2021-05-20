@@ -2,6 +2,7 @@ package com.assign.organization.domain.member;
 
 import com.assign.organization.domain.member.repository.MemberRepository;
 import com.assign.organization.domain.team.Team;
+import com.assign.organization.domain.team.repository.TeamRepository;
 import com.assign.organization.exception.InvalidCSVFileException;
 import com.assign.organization.utils.CSVMemberVO;
 import com.assign.organization.utils.CSVReader;
@@ -22,6 +23,7 @@ import org.springframework.test.context.TestPropertySource;
 import org.springframework.transaction.annotation.Transactional;
 
 import javax.persistence.EntityManager;
+import java.io.IOException;
 import java.util.*;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
@@ -47,19 +49,20 @@ class MemberRepositoryTests {
     @Autowired
     MemberRepository memberRepository;
 
+    @Autowired
+    TeamRepository teamRepository;
+
     @Value("${csv.data.success}")
     String CSV_FILE_PATH;
 
 
     @BeforeAll
-    void init() throws InvalidCSVFileException {
-        List<CSVMemberVO> csvMemberVOList = CSVReader.readCSVFile(CSV_FILE_PATH);
-
-        Set<Member> members = new HashSet<>();
+    void init() throws InvalidCSVFileException, IOException {
         Map<String, Team> teams = new HashMap<>();
         Map<String, Integer> memberNameDuplication = new HashMap<>();
 
-        for (CSVMemberVO csvMemberVO : csvMemberVOList) {
+        CSVReader.setCSVFile(CSV_FILE_PATH);
+        for (CSVMemberVO csvMemberVO : getCSVMemberVOList()) {
 
             log.info(csvMemberVO.toString());
 
@@ -85,11 +88,24 @@ class MemberRepositoryTests {
                     .cellPhone(csvMemberVO.getCellPhone())
                     .build();
 
-            member.setTeam(teams.get(csvMemberVO.getTeamName()));
-            members.add(member);
+            teams.get(csvMemberVO.getTeamName()).addMember(member);
         }
+        CSVReader.close();
+        teamRepository.saveAll(teams.values());
+    }
 
-        memberRepository.saveAll(members);
+    List<CSVMemberVO> getCSVMemberVOList() throws InvalidCSVFileException, IOException {
+        List<CSVMemberVO> list = new LinkedList<>();
+        CSVReader.setCSVFile(CSV_FILE_PATH);
+        while (true) {
+            List<CSVMemberVO> load = CSVReader.readCSVMemberVOList(100);
+            if (load.isEmpty()) {
+                break;
+            }
+            list.addAll(load);
+        }
+        CSVReader.close();
+        return list;
     }
 
     @ParameterizedTest
@@ -109,18 +125,4 @@ class MemberRepositoryTests {
                 member.getCellPhone().contains(keyword) ||
                 member.getBusinessCall().contains(keyword);
     }
-
-    @ParameterizedTest
-    @ValueSource(strings = {"이사원", "김승빈"})
-    void testCountNameContains(String memberName) {
-        long count = memberRepository.countNameContains(memberName);
-
-        if (memberName.equals("이사원")) {
-            assertEquals(1, count);
-        }
-        if (memberName.equals("승빈")) {
-            assertEquals(3, count);
-        }
-    }
-
 }

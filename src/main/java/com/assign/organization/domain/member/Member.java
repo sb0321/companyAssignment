@@ -14,11 +14,7 @@ import java.util.Objects;
 public class Member {
 
     @Id
-    @GeneratedValue(strategy = GenerationType.AUTO)
     @Column(name = "MEMBER_ID")
-    private Long id_;
-
-    @Column(nullable = false, unique = true)
     private Long id;
 
     @Column(nullable = false)
@@ -30,7 +26,7 @@ public class Member {
     @Column(nullable = false)
     private LocalDate enteredDate;
 
-    @ManyToOne(fetch = FetchType.LAZY, cascade = CascadeType.PERSIST, optional = false)
+    @ManyToOne(fetch = FetchType.LAZY, optional = false)
     @JoinColumn(name = "TEAM_ID")
     private Team team;
 

@@ -24,6 +24,7 @@ import org.springframework.test.context.TestPropertySource;
 import org.springframework.transaction.annotation.Transactional;
 
 import javax.persistence.EntityManager;
+import java.io.IOException;
 import java.util.*;
 import java.util.stream.Collectors;
 
@@ -56,10 +57,12 @@ class TeamRepositoryTests {
     String CSV_FILE_PATH;
 
     @BeforeAll
-    void init() throws InvalidCSVFileException {
-        List<CSVMemberVO> csvMemberVOList = CSVReader.readCSVFile(CSV_FILE_PATH);
+    void init() throws InvalidCSVFileException, IOException {
 
-        Set<Member> members = new HashSet<>();
+        CSVReader.setCSVFile(CSV_FILE_PATH);
+        List<CSVMemberVO> csvMemberVOList = CSVReader.readCSVMemberVOList(1000);
+        CSVReader.close();
+
         Map<String, Team> teams = new HashMap<>();
         Map<String, Integer> memberNameDuplication = new HashMap<>();
 
@@ -89,11 +92,9 @@ class TeamRepositoryTests {
                     .cellPhone(csvMemberVO.getCellPhone())
                     .build();
 
-            member.setTeam(teams.get(csvMemberVO.getTeamName()));
-            members.add(member);
+            teams.get(csvMemberVO.getTeamName()).addMember(member);
         }
-
-        memberRepository.saveAll(members);
+        teamRepository.saveAll(teams.values());
     }
 
     @ParameterizedTest

@@ -15,13 +15,15 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 
 import javax.transaction.Transactional;
+import java.io.IOException;
 import java.util.*;
-import java.util.stream.Collectors;
 
 @Slf4j
 @Service
 @RequiredArgsConstructor
 public class TeamService {
+
+    private static final int BUFFER_SIZE = 5;
 
     private final TeamRepository teamRepository;
 
@@ -29,15 +31,34 @@ public class TeamService {
 
     @Transactional
     public void insertMembersFromCSVFile(String csvFilePath) throws InvalidCSVFileException {
+        CSVReader.setCSVFile(csvFilePath);
+        while (true) {
+            List<CSVMemberVO> csvMemberVOList = CSVReader.readCSVMemberVOList(BUFFER_SIZE);
 
-        List<CSVMemberVO> csvMemberVOList = CSVReader.readCSVFile(csvFilePath);
+            if (csvMemberVOList.isEmpty()) {
+                break;
+            }
+            saveMembersAndTeams(csvMemberVOList);
+        }
+        closeCSVReader();
+    }
 
-        Map<String, Team> teams = extractTeamsFromCSVMemberVOList(csvMemberVOList);
+    private void closeCSVReader() throws InvalidCSVFileException {
+        try {
+            CSVReader.close();
+        } catch (IOException e) {
+            e.printStackTrace();
+            throw new InvalidCSVFileException("CSVReader를 close 하는 도중 오류가 났습니다.");
+        }
+    }
+
+    private void saveMembersAndTeams(List<CSVMemberVO> csvMemberVOList) {
+        Map<String, Team> teams = new HashMap<>();
 
         for (CSVMemberVO csvMemberVO : csvMemberVOList) {
-
             String newFirstName = generateNewMemberNameIfDuplicated(csvMemberVO);
-            log.info(newFirstName);
+
+            teams.putIfAbsent(csvMemberVO.getTeamName(), findTeamOrMakeNewTeam(csvMemberVO.getTeamName()));
 
             Member member = Member
                     .builder()
@@ -63,16 +84,6 @@ public class TeamService {
         return NameGenerator.generateNameWhenDuplication(vo.getFirstName(), duplicationCount);
     }
 
-    private Map<String, Team> extractTeamsFromCSVMemberVOList(List<CSVMemberVO> csvMemberVOList) {
-        Map<String, Team> teams = new HashMap<>();
-        for (CSVMemberVO csvMemberVO : csvMemberVOList) {
-            Team team = findTeamOrMakeNewTeam(csvMemberVO.getTeamName());
-            teams.putIfAbsent(csvMemberVO.getTeamName(), team);
-        }
-
-        return teams;
-    }
-
     private Team findTeamOrMakeNewTeam(String teamName) {
         Optional<Team> findTeam = teamRepository.findByTeamName(teamName);
         return findTeam.orElseGet(() -> new Team(teamName));
@@ -91,7 +102,6 @@ public class TeamService {
             TeamVO vo = new TeamVO(team.getId(), team.getName(), memberVOList);
             teamVOList.add(vo);
         }
-
         return teamVOList;
     }
 
