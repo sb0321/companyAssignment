@@ -37,16 +37,6 @@ public class CSVMemberVO {
     }
 
     public static CSVMemberVO from(String rawMemberData) throws InvalidCSVFileException {
-        try {
-            return checkDataValidAndGetData(rawMemberData);
-        } catch (InvalidCSVFileException e) {
-            e.printStackTrace();
-            throw e;
-        }
-
-    }
-
-    private static CSVMemberVO checkDataValidAndGetData(String rawMemberData) throws InvalidCSVFileException {
         String[] split = rawMemberData.split(CSV_SEPARATOR);
 
         try {
@@ -71,7 +61,6 @@ public class CSVMemberVO {
 
             throw new InvalidCSVFileException("raw 데이터를 변환하는데 실패했습니다 : " + "사번: " + memberId + ", 이름: " + name);
         } catch (Exception e) {
-            e.printStackTrace();
             throw new InvalidCSVFileException(e.getMessage());
         }
     }

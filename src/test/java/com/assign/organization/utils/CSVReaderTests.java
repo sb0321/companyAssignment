@@ -8,6 +8,8 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.test.context.TestPropertySource;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
 
+import java.nio.file.NoSuchFileException;
+
 import static org.junit.jupiter.api.Assertions.*;
 
 @Slf4j
@@ -21,13 +23,31 @@ class CSVReaderTests {
     @Value(value = "${csv.data.fail}")
     String CSV_FILE_FAIL_PATH;
 
-    @Test
-    void testReadCSVFile() {
-        assertAll(
-                () -> assertThrows(InvalidCSVFileException.class, () -> CSVReader.readCSVFile(CSV_FILE_FAIL_PATH)),
-                () -> assertThrows(InvalidCSVFileException.class, () -> CSVReader.readCSVFile("falsePath")),
-                () -> assertDoesNotThrow(() -> { CSVReader.readCSVFile(CSV_FILE_OK_PATH); })
-        );
+    @Value(value = "${csv.data.invalid.extension}")
+    String INVALID_CSV_FILE_PATH;
 
+    @Test
+    void testReadCSVFileSuccess() {
+        assertDoesNotThrow(() -> CSVReader.readCSVFile(CSV_FILE_OK_PATH));
+    }
+
+    @Test
+    void testReadCSVFileFailWithInvalidPath() {
+        assertThrows(InvalidCSVFileException.class, () -> CSVReader.readCSVFile("failedPath.csv"));
+    }
+
+    @Test
+    void testReadCSVFileFailWithInvalidFile() {
+        InvalidCSVFileException exception =
+                assertThrows(InvalidCSVFileException.class, () -> CSVReader.readCSVFile(CSV_FILE_FAIL_PATH));
+
+        String exceptionMessage = exception.getMessage();
+        exceptionMessage = exceptionMessage.substring(0, exceptionMessage.indexOf(":"));
+        assertEquals("raw 데이터를 변환하는데 실패했습니다", exceptionMessage.trim());
+    }
+
+    @Test
+    void testReadCSVFileFailWithInvalidExtension() {
+        assertThrows(InvalidCSVFileException.class, () -> CSVReader.readCSVFile(INVALID_CSV_FILE_PATH));
     }
 }

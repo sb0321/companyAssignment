@@ -19,12 +19,16 @@ public class CSVReader {
 
     private static final int BUFFER_SIZE = 100 * 1024 * 1024;
     private static final int END_OF_FILE = -1;
+    private static final String CSV_EXTENSION = "csv";
 
     private CSVReader() {
     }
 
     public static List<CSVMemberVO> readCSVFile(String csvFilePath) throws InvalidCSVFileException {
         try {
+            if (!checkFileExtension(csvFilePath)) {
+                throw new InvalidCSVFileException("파일 확장자가 " + CSV_EXTENSION + "이 아닙니다.");
+            }
             String dataStr = readDataFromCSVFile(csvFilePath);
             List<String> rawMemberDataList = convertSplitStringData(dataStr);
 
@@ -32,33 +36,32 @@ public class CSVReader {
         } catch (IOException e) {
             e.printStackTrace();
             throw new InvalidCSVFileException("파일 경로가 잘못되어 있습니다. : " + e.getMessage());
+        } catch (InvalidCSVFileException e) {
+            e.printStackTrace();
+            throw e;
         }
+    }
+
+    private static boolean checkFileExtension(String csvFilePath) {
+        int extensionPos = csvFilePath.indexOf(".");
+        if (extensionPos == -1) {
+            return false;
+        }
+
+        String extension = csvFilePath.substring(extensionPos + 1);
+        log.info(extension);
+        return extension.equalsIgnoreCase(CSV_EXTENSION);
     }
 
     private static List<CSVMemberVO> convertRawMemberDataListToCSVMemberVoList(List<String> rawMemberDataList) throws InvalidCSVFileException {
-
-        try {
-            List<CSVMemberVO> csvMemberVOList = new ArrayList<>();
-            for (String memberData : rawMemberDataList) {
-                log.info(memberData);
-                CSVMemberVO csvMemberVO = convertRawMemberDataToCSVMemberVO(memberData);
-                csvMemberVOList.add(csvMemberVO);
-            }
-
-            return csvMemberVOList;
-        } catch (InvalidCSVFileException e) {
-            e.printStackTrace();
-            throw new InvalidCSVFileException(e.getMessage());
+        List<CSVMemberVO> csvMemberVOList = new ArrayList<>();
+        for (String memberData : rawMemberDataList) {
+            log.info(memberData);
+            CSVMemberVO csvMemberVO = CSVMemberVO.from(memberData);
+            csvMemberVOList.add(csvMemberVO);
         }
-    }
 
-    private static CSVMemberVO convertRawMemberDataToCSVMemberVO(String rawMemberData) throws InvalidCSVFileException {
-        try {
-            return CSVMemberVO.from(rawMemberData);
-        } catch (Exception e) {
-            e.printStackTrace();
-            throw new InvalidCSVFileException(e.getMessage());
-        }
+        return csvMemberVOList;
     }
 
     private static List<String> convertSplitStringData(String fileData) {
