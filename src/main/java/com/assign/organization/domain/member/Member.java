@@ -18,6 +18,7 @@ public class Member {
     @Column(name = "MEMBER_ID")
     private Long id_;
 
+    @Column(nullable = false, unique = true)
     private Long id;
 
     @Column(nullable = false)
@@ -63,11 +64,6 @@ public class Member {
     }
 
     public void setTeam(Team team) {
-        if (this.team != null) {
-            this.team.getMembers().removeIf(m -> Objects.equals(m, this));
-        }
-
         this.team = team;
-        team.getMembers().add(this);
     }
 }

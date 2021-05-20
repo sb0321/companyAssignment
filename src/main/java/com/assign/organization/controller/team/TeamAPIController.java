@@ -22,6 +22,4 @@ public class TeamAPIController {
     public List<TeamVO> getTeamsWithMembers() {
         return teamService.findAllTeamListOrderByTeamNameDesc();
     }
-
-
 }

@@ -21,7 +21,6 @@ public class MemberAPIController {
         if (keyword == null) {
             keyword = "";
         }
-
         return memberService.findMembersContainsKeyword(keyword);
     }
 

@@ -33,12 +33,8 @@ class MemberServiceTests {
     @Mock
     MemberRepository memberRepository;
 
-    @Mock
-    TeamService teamService;
-
     @InjectMocks
     MemberService memberService;
-
 
     @Test
     void testFindMembersContainsKeyword() {
@@ -65,11 +61,5 @@ class MemberServiceTests {
         List<MemberVO> findMembers = memberService.findMembersContainsKeyword(keyword);
 
         assertEquals(member.getName(), findMembers.stream().findAny().get().getName());
-    }
-
-    @Test
-    void testInsertMembersFromCSVFile() throws InvalidCSVFileException {
-        log.info(CSV_FILE_PATH);
-        memberService.insertMembersFromCSVFile(CSV_FILE_PATH);
     }
 }

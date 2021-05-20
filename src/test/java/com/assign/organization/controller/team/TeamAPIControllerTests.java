@@ -1,7 +1,6 @@
 package com.assign.organization.controller.team;
 
 import com.assign.organization.domain.team.TeamVO;
-import com.assign.organization.service.member.MemberService;
 import com.assign.organization.service.team.TeamService;
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -44,9 +43,6 @@ class TeamAPIControllerTests {
     TeamAPIController teamAPIController;
 
     @Autowired
-    MemberService memberService;
-
-    @Autowired
     TeamService teamService;
 
     @Value(value = "${csv.data.success}")
@@ -58,7 +54,7 @@ class TeamAPIControllerTests {
                 .addFilters(new CharacterEncodingFilter(CHARSET, true))
                 .build();
 
-        memberService.insertMembersFromCSVFile(CSV_FILE_PATH);
+        teamService.insertMembersFromCSVFile(CSV_FILE_PATH);
     }
 
 

@@ -1,17 +1,23 @@
 package com.assign.organization.service.team;
 
 import com.assign.organization.domain.member.Member;
+import com.assign.organization.domain.member.MemberVO;
 import com.assign.organization.domain.team.Team;
 import com.assign.organization.domain.team.TeamVO;
 import com.assign.organization.domain.team.repository.TeamRepository;
+import com.assign.organization.service.member.MemberService;
 import lombok.extern.slf4j.Slf4j;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
+import org.mockito.ArgumentMatchers;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
+import org.mockito.invocation.InvocationOnMock;
 import org.mockito.junit.jupiter.MockitoExtension;
+import org.mockito.stubbing.Answer;
 
 import java.util.ArrayList;
+import java.util.LinkedList;
 import java.util.List;
 import java.util.Optional;
 
@@ -26,6 +32,9 @@ class TeamServiceTests {
 
     @Mock
     TeamRepository teamRepository;
+
+    @Mock
+    MemberService memberService;
 
     @InjectMocks
     TeamService teamService;
@@ -48,18 +57,41 @@ class TeamServiceTests {
                     .businessCall("100" + i)
                     .build();
 
-            member.setTeam(team);
-
+            team.addMember(member);
             result.add(team);
         }
 
         when(teamRepository.findAllTeamsOrderByTeamName()).thenReturn(result);
+        when(memberService.convertMemberListToMemberVOList(anyList())).thenAnswer((Answer<List<MemberVO>>) invocation -> {
+            List<Member> memberList = invocation.getArgument(0);
+            return convert(memberList);
+        });
 
         List<TeamVO> findTeamList = teamService.findAllTeamListOrderByTeamNameDesc();
 
         verify(teamRepository, times(1)).findAllTeamsOrderByTeamName();
 
         log.info(findTeamList.toString());
+    }
+
+    List<MemberVO> convert(List<Member> memberList) {
+        List<MemberVO> convert = new LinkedList<>();
+
+        for (Member member : memberList) {
+            MemberVO vo = MemberVO
+                    .builder()
+                    .id(member.getId())
+                    .name(member.getName())
+                    .duty(member.getDuty())
+                    .teamName(member.getTeam() == null ? "없음" : member.getTeam().getName())
+                    .cellPhone(member.getCellPhone())
+                    .businessCall(member.getBusinessCall())
+                    .position(member.getPosition())
+                    .build();
+
+            convert.add(vo);
+        }
+        return convert;
     }
 
     @Test
@@ -78,6 +110,4 @@ class TeamServiceTests {
         assertTrue(findTeam.isPresent());
         assertEquals(teamName, findTeam.get().getName());
     }
-
-
 }

@@ -5,6 +5,7 @@ import com.assign.organization.domain.member.repository.MemberRepository;
 import com.assign.organization.domain.team.repository.TeamRepository;
 import com.assign.organization.exception.InvalidCSVFileException;
 import com.assign.organization.service.member.MemberService;
+import com.assign.organization.service.team.TeamService;
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.extern.slf4j.Slf4j;
@@ -50,6 +51,9 @@ class MemberAPIControllerTests {
     MemberService memberService;
 
     @Autowired
+    TeamService teamService;
+
+    @Autowired
     MemberRepository memberRepository;
 
     @Autowired
@@ -64,7 +68,7 @@ class MemberAPIControllerTests {
                 .addFilter(new CharacterEncodingFilter(UTF8_CHARSET, true))
                 .build();
 
-        memberService.insertMembersFromCSVFile(CSV_FILE_PATH);
+        teamService.insertMembersFromCSVFile(CSV_FILE_PATH);
 
         memberRepository.deleteAll();
         teamRepository.deleteAll();
