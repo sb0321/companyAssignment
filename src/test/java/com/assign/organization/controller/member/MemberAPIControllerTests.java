@@ -12,6 +12,8 @@ import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.TestInstance;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.EmptySource;
+import org.junit.jupiter.params.provider.NullAndEmptySource;
+import org.junit.jupiter.params.provider.NullSource;
 import org.junit.jupiter.params.provider.ValueSource;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
@@ -22,6 +24,7 @@ import org.springframework.test.web.servlet.MvcResult;
 import org.springframework.test.web.servlet.setup.MockMvcBuilders;
 import org.springframework.web.filter.CharacterEncodingFilter;
 
+import java.lang.reflect.Type;
 import java.util.List;
 import java.util.Objects;
 
@@ -35,7 +38,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 @TestInstance(value = TestInstance.Lifecycle.PER_CLASS)
 @TestPropertySource(value = "classpath:application.properties")
 class MemberAPIControllerTests {
-    
+
     static final String UTF8_CHARSET = "UTF-8";
 
     MockMvc mockMvc;
@@ -79,11 +82,27 @@ class MemberAPIControllerTests {
                 .andReturn();
 
         ObjectMapper mapper = new ObjectMapper();
-        List<MemberVO> memberVOList = mapper.readValue(mvcResult.getResponse().getContentAsString(), new TypeReference<List<MemberVO>>() {});
+        List<MemberVO> memberVOList = mapper.readValue(mvcResult.getResponse().getContentAsString(), new TypeReference<List<MemberVO>>() {
+        });
 
         List<MemberVO> expected = memberService.findMembersContainsKeyword(keyword);
 
         assertTrue(Objects.deepEquals(expected, memberVOList));
     }
 
+    @ParameterizedTest
+    @NullSource
+    void testSearchKeywordMemberVOListNull(String nullKeyword) throws Exception {
+        MvcResult mvcResult = mockMvc.perform(get("/member"))
+                .andDo(print())
+                .andExpect(status().isOk())
+                .andReturn();
+
+        ObjectMapper mapper = new ObjectMapper();
+        List<MemberVO> memberVOList = mapper.readValue(mvcResult.getResponse().getContentAsString(), new TypeReference<List<MemberVO>>() {});
+
+        List<MemberVO> expected = memberService.findMembersContainsKeyword("");
+
+        assertTrue(Objects.deepEquals(expected, memberVOList));
+    }
 }
