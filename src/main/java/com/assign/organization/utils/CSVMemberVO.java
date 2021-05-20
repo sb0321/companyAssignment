@@ -37,9 +37,8 @@ public class CSVMemberVO {
     }
 
     public static CSVMemberVO from(String rawMemberData) throws InvalidCSVFileException {
-        String[] split = rawMemberData.split(CSV_SEPARATOR);
-
         try {
+            String[] split = rawMemberData.split(CSV_SEPARATOR);
 
             String memberId = split[1].trim();
             String name = split[2].trim();
@@ -60,8 +59,10 @@ public class CSVMemberVO {
             }
 
             throw new InvalidCSVFileException("raw 데이터를 변환하는데 실패했습니다 : " + "사번: " + memberId + ", 이름: " + name);
-        } catch (Exception e) {
-            throw new InvalidCSVFileException(e.getMessage());
+        } catch (NullPointerException e) {
+            throw new InvalidCSVFileException("data가 null 입니다.");
+        } catch (ArrayIndexOutOfBoundsException e) {
+            throw new InvalidCSVFileException("data가 형식에 맞지 않습니다.");
         }
     }
 
