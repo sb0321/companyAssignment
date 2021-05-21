@@ -5,6 +5,7 @@ import com.assign.organization.service.team.TeamService;
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.extern.slf4j.Slf4j;
+import org.junit.jupiter.api.AfterAll;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.TestInstance;
@@ -57,7 +58,6 @@ class TeamAPIControllerTests {
 
         teamService.insertMembersFromCSVFile(CSV_FILE_PATH);
     }
-
 
     @Test
     void testGetTeamsWithMembers() throws Exception {

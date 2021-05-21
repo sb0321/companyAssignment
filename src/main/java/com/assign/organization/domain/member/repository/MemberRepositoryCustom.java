@@ -10,4 +10,6 @@ public interface MemberRepositoryCustom {
 
     List<Member> findMembersContainsKeyword(String keyword);
 
+    boolean checkMemberIdDuplication(Long memberId);
+
 }

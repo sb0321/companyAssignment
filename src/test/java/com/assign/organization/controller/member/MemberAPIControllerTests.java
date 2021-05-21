@@ -9,6 +9,7 @@ import com.assign.organization.service.team.TeamService;
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.extern.slf4j.Slf4j;
+import org.junit.jupiter.api.AfterAll;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.TestInstance;
 import org.junit.jupiter.params.ParameterizedTest;
@@ -69,7 +70,10 @@ class MemberAPIControllerTests {
                 .build();
 
         teamService.insertMembersFromCSVFile(CSV_FILE_PATH);
+    }
 
+    @AfterAll
+    void purge() {
         memberRepository.deleteAll();
         teamRepository.deleteAll();
     }

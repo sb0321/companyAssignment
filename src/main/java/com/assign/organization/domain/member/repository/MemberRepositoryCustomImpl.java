@@ -31,8 +31,7 @@ public class MemberRepositoryCustomImpl implements MemberRepositoryCustom {
         QTeam team = QTeam.team;
 
         return queryFactory
-                .select(member)
-                .from(member)
+                .selectFrom(member)
                 .leftJoin(member.team, team)
                 .fetchJoin()
                 .where(
@@ -48,5 +47,16 @@ public class MemberRepositoryCustomImpl implements MemberRepositoryCustom {
                         member.firstName.asc()
                 )
                 .fetch();
+    }
+
+    @Override
+    public boolean checkMemberIdDuplication(Long memberId) {
+        QMember member = QMember.member;
+
+        long count = queryFactory.selectFrom(member)
+                .where(member.id.eq(memberId))
+                .fetchCount();
+
+        return count != 0;
     }
 }

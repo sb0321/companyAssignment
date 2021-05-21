@@ -1,10 +1,13 @@
 package com.assign.organization.controller.main;
 
 import com.assign.organization.controller.response.CSVSynchronizeResponse;
+import com.assign.organization.controller.response.SimpleResponse;
 import com.assign.organization.domain.member.repository.MemberRepository;
 import com.assign.organization.domain.team.repository.TeamRepository;
+import com.assign.organization.exception.InvalidCSVFileException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.extern.slf4j.Slf4j;
+import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.TestInstance;
@@ -18,8 +21,7 @@ import org.springframework.test.web.servlet.MvcResult;
 import org.springframework.test.web.servlet.setup.MockMvcBuilders;
 import org.springframework.web.filter.CharacterEncodingFilter;
 
-import static org.junit.jupiter.api.Assertions.assertDoesNotThrow;
-import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.*;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
 
@@ -55,14 +57,16 @@ class MainAPIControllerTests {
                 .setControllerAdvice(controllerAdvice)
                 .addFilters(new CharacterEncodingFilter("UTF-8", true))
                 .build();
+    }
 
+    @AfterEach
+    void purge() {
         memberRepository.deleteAll();
         teamRepository.deleteAll();
     }
 
     @Test
     void testReadSuccess() {
-
         assertDoesNotThrow(() -> {
             MvcResult mvcResult = mockMvc.perform(
                     get("/read")
@@ -84,7 +88,7 @@ class MainAPIControllerTests {
         assertDoesNotThrow(() -> {
             MvcResult mvcResult = mockMvc.perform(
                     get("/read")
-                            .param("csvFilePath", "failedPath")
+                            .param("csvFilePath", "failedPath.csv")
             )
                     .andDo(print())
                     .andReturn();
@@ -94,6 +98,25 @@ class MainAPIControllerTests {
 
             assertEquals(CSVSynchronizeResponse.ResponseStatus.FAIL, response.getStatus());
             log.info(response.getMessage());
+        });
+    }
+
+    @Test
+    void testReadMemberIdDuplication() {
+        assertDoesNotThrow(() -> {
+            mockMvc.perform(get("/read")
+                    .param("csvFilePath", CSV_FILE_SUCCESS));
+
+            MvcResult mvcResult = mockMvc.perform(get("/read")
+                    .param("csvFilePath", CSV_FILE_SUCCESS))
+                    .andReturn();
+
+            String result = mvcResult.getResponse().getContentAsString();
+            CSVSynchronizeResponse response = new ObjectMapper().readValue(result, CSVSynchronizeResponse.class);
+            
+            String exceptionMessage = response.getMessage();
+            exceptionMessage = exceptionMessage.substring(0, exceptionMessage.indexOf("."));
+            assertEquals("중복되는 사번이 있습니다", exceptionMessage);
         });
     }
 

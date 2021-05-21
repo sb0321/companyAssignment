@@ -1,6 +1,7 @@
 package com.assign.organization.controller.main;
 
 import com.assign.organization.controller.response.CSVSynchronizeResponse;
+import com.assign.organization.controller.response.SimpleResponse;
 import com.assign.organization.exception.InvalidCSVFileException;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
@@ -15,7 +16,7 @@ public class MainAPIControllerAdvice {
     @ExceptionHandler(InvalidCSVFileException.class)
     public ResponseEntity<CSVSynchronizeResponse> handleCsvFileException(InvalidCSVFileException e) {
 
-        CSVSynchronizeResponse response = new CSVSynchronizeResponse(CSVSynchronizeResponse.ResponseStatus.FAIL, e.getMessage());
+        CSVSynchronizeResponse response = new CSVSynchronizeResponse(SimpleResponse.ResponseStatus.FAIL, e.getMessage());
         return new ResponseEntity<>(response, HttpStatus.BAD_REQUEST);
     }
 

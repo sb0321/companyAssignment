@@ -12,6 +12,7 @@ import com.assign.organization.utils.CSVReader;
 import com.assign.organization.utils.NameGenerator;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 
 import javax.transaction.Transactional;
@@ -23,17 +24,17 @@ import java.util.*;
 @RequiredArgsConstructor
 public class TeamService {
 
-    private static final int BUFFER_SIZE = 5;
-
     private final TeamRepository teamRepository;
-
     private final MemberService memberService;
+
+    @Value(value = "${insert.batch.size}")
+    private int BATCH_SIZE;
 
     @Transactional
     public void insertMembersFromCSVFile(String csvFilePath) throws InvalidCSVFileException {
         CSVReader.setCSVFile(csvFilePath);
         while (true) {
-            List<CSVMemberVO> csvMemberVOList = CSVReader.readCSVMemberVOList(BUFFER_SIZE);
+            List<CSVMemberVO> csvMemberVOList = CSVReader.readCSVMemberVOList(BATCH_SIZE);
 
             if (csvMemberVOList.isEmpty()) {
                 break;
@@ -52,30 +53,40 @@ public class TeamService {
         }
     }
 
-    private void saveMembersAndTeams(List<CSVMemberVO> csvMemberVOList) {
+    private void saveMembersAndTeams(List<CSVMemberVO> csvMemberVOList) throws InvalidCSVFileException {
         Map<String, Team> teams = new HashMap<>();
 
         for (CSVMemberVO csvMemberVO : csvMemberVOList) {
-            String newFirstName = generateNewMemberNameIfDuplicated(csvMemberVO);
+
+            if (memberService.checkMemberIdDuplication(csvMemberVO.getMemberId())) {
+                throw new InvalidCSVFileException("중복되는 사번이 있습니다. 사번:" + csvMemberVO.getMemberId() +
+                        " 이름:" + csvMemberVO.getLastName() + csvMemberVO.getFirstName());
+            }
 
             teams.putIfAbsent(csvMemberVO.getTeamName(), findTeamOrMakeNewTeam(csvMemberVO.getTeamName()));
 
-            Member member = Member
-                    .builder()
-                    .id(csvMemberVO.getMemberId())
-                    .firstName(newFirstName)
-                    .lastName(csvMemberVO.getLastName())
-                    .enteredDate(csvMemberVO.getEnteredDate())
-                    .position(csvMemberVO.getPosition())
-                    .duty(csvMemberVO.getDuty())
-                    .businessCall(csvMemberVO.getBusinessCall())
-                    .cellPhone(csvMemberVO.getCellPhone())
-                    .build();
-
+            Member member = CSVMemberVOToMember(csvMemberVO);
             teams.get(csvMemberVO.getTeamName()).addMember(member);
         }
 
         teamRepository.saveAll(teams.values());
+    }
+
+    private Member CSVMemberVOToMember(CSVMemberVO csvMemberVO) {
+
+        String newFirstName = generateNewMemberNameIfDuplicated(csvMemberVO);
+
+        return Member
+                .builder()
+                .id(csvMemberVO.getMemberId())
+                .firstName(newFirstName)
+                .lastName(csvMemberVO.getLastName())
+                .enteredDate(csvMemberVO.getEnteredDate())
+                .position(csvMemberVO.getPosition())
+                .duty(csvMemberVO.getDuty())
+                .businessCall(csvMemberVO.getBusinessCall())
+                .cellPhone(csvMemberVO.getCellPhone())
+                .build();
     }
 
     private String generateNewMemberNameIfDuplicated(CSVMemberVO vo) {

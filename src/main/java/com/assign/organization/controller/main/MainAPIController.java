@@ -1,6 +1,7 @@
 package com.assign.organization.controller.main;
 
 import com.assign.organization.controller.response.CSVSynchronizeResponse;
+import com.assign.organization.controller.response.SimpleResponse;
 import com.assign.organization.exception.InvalidCSVFileException;
 import com.assign.organization.service.member.MemberService;
 import com.assign.organization.service.team.TeamService;
@@ -32,7 +33,7 @@ public class MainAPIController {
         }
 
         teamService.insertMembersFromCSVFile(csvFilePath);
-        CSVSynchronizeResponse response = new CSVSynchronizeResponse(CSVSynchronizeResponse.ResponseStatus.OK, SUCCESS_MESSAGE);
+        CSVSynchronizeResponse response = new CSVSynchronizeResponse(SimpleResponse.ResponseStatus.OK, SUCCESS_MESSAGE);
         return new ResponseEntity<>(response, HttpStatus.OK);
     }
 

@@ -1,18 +1,16 @@
 package com.assign.organization.controller.response;
 
-import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 
 @Getter
 @NoArgsConstructor
-@AllArgsConstructor
-public class CSVSynchronizeResponse {
+public class CSVSynchronizeResponse extends SimpleResponse {
 
-    public enum ResponseStatus {
-        OK, FAIL
-    }
-
-    private ResponseStatus status;
     private String message;
+
+    public CSVSynchronizeResponse(ResponseStatus status, String message) {
+        super(status);
+        this.message = message;
+    }
 }
