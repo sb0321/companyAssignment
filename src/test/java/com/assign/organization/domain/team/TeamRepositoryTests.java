@@ -35,7 +35,6 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 @Transactional
 @TestInstance(value = TestInstance.Lifecycle.PER_CLASS)
 @TestPropertySource(value = "classpath:application.properties")
-@AutoConfigureTestDatabase(replace = AutoConfigureTestDatabase.Replace.NONE)
 class TeamRepositoryTests {
 
     @TestConfiguration
