@@ -78,8 +78,8 @@ class MainAPIControllerTests {
             String result = mvcResult.getResponse().getContentAsString();
             CSVSynchronizeResponse response = new ObjectMapper().readValue(result, CSVSynchronizeResponse.class);
 
-            assertEquals(CSVSynchronizeResponse.ResponseStatus.OK, response.getStatus());
-            log.info(response.getMessage());
+            assertEquals(SimpleResponse.ResponseStatus.OK, response.getStatus());
+            assertEquals("CSV파일로부터 동기화를 완료했습니다.", response.getMessage());
         });
     }
 
@@ -96,8 +96,26 @@ class MainAPIControllerTests {
             String result = mvcResult.getResponse().getContentAsString();
             CSVSynchronizeResponse response = new ObjectMapper().readValue(result, CSVSynchronizeResponse.class);
 
-            assertEquals(CSVSynchronizeResponse.ResponseStatus.FAIL, response.getStatus());
-            log.info(response.getMessage());
+            String exceptionMessage = response.getMessage();
+            exceptionMessage = exceptionMessage.substring(0, exceptionMessage.indexOf("."));
+
+            assertEquals(SimpleResponse.ResponseStatus.FAIL, response.getStatus());
+            assertEquals("파일 경로가 잘못되어 있습니다", exceptionMessage);
+        });
+    }
+
+    @Test
+    void testReadPathNull() {
+        assertDoesNotThrow(() -> {
+            MvcResult mvcResult = mockMvc.perform(get("/read"))
+                    .andDo(print())
+                    .andReturn();
+
+            String result = mvcResult.getResponse().getContentAsString();
+            CSVSynchronizeResponse response = new ObjectMapper().readValue(result, CSVSynchronizeResponse.class);
+
+            assertEquals("CSV파일 경로 파라미터가 없습니다.", response.getMessage());
+            assertEquals(SimpleResponse.ResponseStatus.FAIL, response.getStatus());
         });
     }
 
@@ -116,6 +134,8 @@ class MainAPIControllerTests {
             
             String exceptionMessage = response.getMessage();
             exceptionMessage = exceptionMessage.substring(0, exceptionMessage.indexOf("."));
+
+            assertEquals(SimpleResponse.ResponseStatus.FAIL, response.getStatus());
             assertEquals("중복되는 사번이 있습니다", exceptionMessage);
         });
     }
