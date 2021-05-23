@@ -35,6 +35,7 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 @Transactional
 @TestInstance(value = TestInstance.Lifecycle.PER_CLASS)
 @TestPropertySource(value = "classpath:application.properties")
+@AutoConfigureTestDatabase(replace = AutoConfigureTestDatabase.Replace.NONE)
 class MemberRepositoryTests {
 
     @TestConfiguration
@@ -88,7 +89,7 @@ class MemberRepositoryTests {
                     .cellPhone(csvMemberVO.getCellPhone())
                     .build();
 
-            teams.get(csvMemberVO.getTeamName()).addMember(member);
+            member.setTeam(teams.get(csvMemberVO.getTeamName()));
         }
         CSVReader.close();
         teamRepository.saveAll(teams.values());

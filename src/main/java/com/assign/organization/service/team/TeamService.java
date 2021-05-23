@@ -66,7 +66,7 @@ public class TeamService {
             teams.putIfAbsent(csvMemberVO.getTeamName(), findTeamOrMakeNewTeam(csvMemberVO.getTeamName()));
 
             Member member = CSVMemberVOToMember(csvMemberVO);
-            teams.get(csvMemberVO.getTeamName()).addMember(member);
+            member.setTeam(teams.get(csvMemberVO.getTeamName()));
         }
 
         teamRepository.saveAll(teams.values());

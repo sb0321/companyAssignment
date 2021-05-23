@@ -17,7 +17,7 @@ public class MainAPIControllerAdvice {
     public ResponseEntity<CSVSynchronizeResponse> handleCsvFileException(InvalidCSVFileException e) {
 
         CSVSynchronizeResponse response = new CSVSynchronizeResponse(SimpleResponse.ResponseStatus.FAIL, e.getMessage());
-        return new ResponseEntity<>(response, HttpStatus.BAD_REQUEST);
+        return ResponseEntity.badRequest().body(response);
     }
 
 }

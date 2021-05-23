@@ -15,7 +15,7 @@ class TeamTests {
                 .id(1L)
                 .build();
 
-        team.addMember(member);
+        member.setTeam(team);
 
         assertEquals(member, team.getMembers().get(0));
     }

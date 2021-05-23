@@ -4,7 +4,6 @@ import com.assign.organization.controller.response.CSVSynchronizeResponse;
 import com.assign.organization.controller.response.SimpleResponse;
 import com.assign.organization.domain.member.repository.MemberRepository;
 import com.assign.organization.domain.team.repository.TeamRepository;
-import com.assign.organization.exception.InvalidCSVFileException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.extern.slf4j.Slf4j;
 import org.junit.jupiter.api.AfterEach;
@@ -21,7 +20,8 @@ import org.springframework.test.web.servlet.MvcResult;
 import org.springframework.test.web.servlet.setup.MockMvcBuilders;
 import org.springframework.web.filter.CharacterEncodingFilter;
 
-import static org.junit.jupiter.api.Assertions.*;
+import static org.junit.jupiter.api.Assertions.assertDoesNotThrow;
+import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
 
@@ -31,7 +31,6 @@ import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.
 @TestPropertySource(value = "classpath:application.properties")
 @AutoConfigureTestDatabase(replace = AutoConfigureTestDatabase.Replace.NONE)
 class MainAPIControllerTests {
-
 
     MockMvc mockMvc;
 
@@ -47,6 +46,9 @@ class MainAPIControllerTests {
     @Autowired
     TeamRepository teamRepository;
 
+    @Autowired
+    ObjectMapper objectMapper;
+
     @Value(value = "${csv.data.success}")
     String CSV_FILE_SUCCESS;
 
@@ -60,7 +62,7 @@ class MainAPIControllerTests {
     }
 
     @AfterEach
-    void purge() {
+    void after() {
         memberRepository.deleteAll();
         teamRepository.deleteAll();
     }
@@ -76,7 +78,7 @@ class MainAPIControllerTests {
                     .andReturn();
 
             String result = mvcResult.getResponse().getContentAsString();
-            CSVSynchronizeResponse response = new ObjectMapper().readValue(result, CSVSynchronizeResponse.class);
+            CSVSynchronizeResponse response = objectMapper.readValue(result, CSVSynchronizeResponse.class);
 
             assertEquals(SimpleResponse.ResponseStatus.OK, response.getStatus());
             assertEquals("CSV파일로부터 동기화를 완료했습니다.", response.getMessage());
@@ -94,7 +96,7 @@ class MainAPIControllerTests {
                     .andReturn();
 
             String result = mvcResult.getResponse().getContentAsString();
-            CSVSynchronizeResponse response = new ObjectMapper().readValue(result, CSVSynchronizeResponse.class);
+            CSVSynchronizeResponse response = objectMapper.readValue(result, CSVSynchronizeResponse.class);
 
             String exceptionMessage = response.getMessage();
             exceptionMessage = exceptionMessage.substring(0, exceptionMessage.indexOf("."));
@@ -112,7 +114,7 @@ class MainAPIControllerTests {
                     .andReturn();
 
             String result = mvcResult.getResponse().getContentAsString();
-            CSVSynchronizeResponse response = new ObjectMapper().readValue(result, CSVSynchronizeResponse.class);
+            CSVSynchronizeResponse response = objectMapper.readValue(result, CSVSynchronizeResponse.class);
 
             assertEquals("CSV파일 경로 파라미터가 없습니다.", response.getMessage());
             assertEquals(SimpleResponse.ResponseStatus.FAIL, response.getStatus());
@@ -130,7 +132,7 @@ class MainAPIControllerTests {
                     .andReturn();
 
             String result = mvcResult.getResponse().getContentAsString();
-            CSVSynchronizeResponse response = new ObjectMapper().readValue(result, CSVSynchronizeResponse.class);
+            CSVSynchronizeResponse response = objectMapper.readValue(result, CSVSynchronizeResponse.class);
             
             String exceptionMessage = response.getMessage();
             exceptionMessage = exceptionMessage.substring(0, exceptionMessage.indexOf("."));

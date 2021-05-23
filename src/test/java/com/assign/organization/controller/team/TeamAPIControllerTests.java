@@ -47,6 +47,9 @@ class TeamAPIControllerTests {
     @Autowired
     TeamService teamService;
 
+    @Autowired
+    ObjectMapper objectMapper;
+
     @Value(value = "${csv.data.success}")
     String CSV_FILE_PATH;
 
@@ -67,8 +70,9 @@ class TeamAPIControllerTests {
                 .andDo(print())
                 .andReturn();
 
-        ObjectMapper mapper = new ObjectMapper();
-        List<TeamVO> list = mapper.readValue(mvcResult.getResponse().getContentAsString(), new TypeReference<List<TeamVO>>() {});
+        List<TeamVO> list = objectMapper
+                .readValue(mvcResult.getResponse().getContentAsString(), new TypeReference<List<TeamVO>>() {
+                });
 
         List<TeamVO> expected = teamService.findAllTeamListOrderByTeamNameDesc();
 

@@ -57,7 +57,7 @@ class TeamServiceTests {
                     .businessCall("100" + i)
                     .build();
 
-            team.addMember(member);
+            member.setTeam(team);
             result.add(team);
         }
 

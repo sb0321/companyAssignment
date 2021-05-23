@@ -10,7 +10,6 @@ import org.springframework.stereotype.Service;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Optional;
 
 @Slf4j
 @Service
@@ -30,7 +29,6 @@ public class MemberService {
         List<MemberVO> memberVOList = new ArrayList<>();
 
         for (Member member : memberList) {
-
             Team team = member.getTeam();
 
             MemberVO vo = MemberVO

@@ -5,6 +5,7 @@ import lombok.*;
 
 import javax.persistence.*;
 import java.time.LocalDate;
+import java.util.Objects;
 
 @Getter
 @Entity
@@ -59,6 +60,10 @@ public class Member {
     }
 
     public void setTeam(Team team) {
+        if(this.team != null) {
+            this.team.getMembers().removeIf(m -> Objects.equals(this, m));
+        }
         this.team = team;
+        team.getMembers().add(this);
     }
 }

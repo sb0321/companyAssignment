@@ -33,6 +33,7 @@ import java.util.Objects;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 @Slf4j
@@ -60,6 +61,9 @@ class MemberAPIControllerTests {
     @Autowired
     TeamRepository teamRepository;
 
+    @Autowired
+    ObjectMapper objectMapper;
+
     @Value(value = "${csv.data}")
     String CSV_FILE_PATH;
 
@@ -86,12 +90,13 @@ class MemberAPIControllerTests {
         MvcResult mvcResult = mockMvc.perform(get("/member")
                 .param("keyword", keyword))
                 .andExpect(status().isOk())
+                .andExpect(jsonPath("$").isArray())
                 .andDo(print())
                 .andReturn();
 
-        ObjectMapper mapper = new ObjectMapper();
-        List<MemberVO> memberVOList = mapper.readValue(mvcResult.getResponse().getContentAsString(), new TypeReference<List<MemberVO>>() {
-        });
+        List<MemberVO> memberVOList = objectMapper
+                .readValue(mvcResult.getResponse().getContentAsString(), new TypeReference<List<MemberVO>>() {
+                });
 
         List<MemberVO> expected = memberService.findMembersContainsKeyword(keyword);
 
@@ -101,13 +106,14 @@ class MemberAPIControllerTests {
     @ParameterizedTest
     @NullSource
     void testSearchKeywordMemberVOListNull(String nullKeyword) throws Exception {
-        MvcResult mvcResult = mockMvc.perform(get("/member"))
+        MvcResult mvcResult = mockMvc.perform(get("/member")
+                .param("keyword", nullKeyword))
                 .andDo(print())
                 .andExpect(status().isOk())
                 .andReturn();
 
-        ObjectMapper mapper = new ObjectMapper();
-        List<MemberVO> memberVOList = mapper.readValue(mvcResult.getResponse().getContentAsString(), new TypeReference<List<MemberVO>>() {});
+        List<MemberVO> memberVOList = objectMapper
+                .readValue(mvcResult.getResponse().getContentAsString(), new TypeReference<List<MemberVO>>() {});
 
         List<MemberVO> expected = memberService.findMembersContainsKeyword("");
 
