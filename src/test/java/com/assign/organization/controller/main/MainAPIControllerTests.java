@@ -24,6 +24,7 @@ import static org.junit.jupiter.api.Assertions.assertDoesNotThrow;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 @Slf4j
 @SpringBootTest
@@ -75,6 +76,7 @@ class MainAPIControllerTests {
                             .param("csvFilePath", CSV_FILE_SUCCESS)
             )
                     .andDo(print())
+                    .andExpect(status().isOk())
                     .andReturn();
 
             String result = mvcResult.getResponse().getContentAsString();
@@ -93,6 +95,7 @@ class MainAPIControllerTests {
                             .param("csvFilePath", "failedPath.csv")
             )
                     .andDo(print())
+                    .andExpect(status().isBadRequest())
                     .andReturn();
 
             String result = mvcResult.getResponse().getContentAsString();
@@ -111,6 +114,7 @@ class MainAPIControllerTests {
         assertDoesNotThrow(() -> {
             MvcResult mvcResult = mockMvc.perform(get("/read"))
                     .andDo(print())
+                    .andExpect(status().isBadRequest())
                     .andReturn();
 
             String result = mvcResult.getResponse().getContentAsString();
@@ -125,15 +129,19 @@ class MainAPIControllerTests {
     void testReadMemberIdDuplication() {
         assertDoesNotThrow(() -> {
             mockMvc.perform(get("/read")
-                    .param("csvFilePath", CSV_FILE_SUCCESS));
+                    .param("csvFilePath", CSV_FILE_SUCCESS)
+            )
+                    .andExpect(status().isOk());
 
             MvcResult mvcResult = mockMvc.perform(get("/read")
-                    .param("csvFilePath", CSV_FILE_SUCCESS))
+                    .param("csvFilePath", CSV_FILE_SUCCESS)
+            )
+                    .andExpect(status().isBadRequest())
                     .andReturn();
 
             String result = mvcResult.getResponse().getContentAsString();
             CSVSynchronizeResponse response = objectMapper.readValue(result, CSVSynchronizeResponse.class);
-            
+
             String exceptionMessage = response.getMessage();
             exceptionMessage = exceptionMessage.substring(0, exceptionMessage.indexOf("."));
 

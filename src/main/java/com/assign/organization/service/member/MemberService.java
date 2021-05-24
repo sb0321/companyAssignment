@@ -39,6 +39,7 @@ public class MemberService {
                     .cellPhone(member.getCellPhone())
                     .position(member.getPosition())
                     .teamName(team == null ? TEAM_DOES_NOT_EXIST : team.getName())
+                    .enteredDate(member.getEnteredDate())
                     .duty(member.getDuty())
                     .build();
 

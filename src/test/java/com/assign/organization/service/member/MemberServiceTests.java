@@ -4,8 +4,6 @@ import com.assign.organization.domain.member.Member;
 import com.assign.organization.domain.member.MemberVO;
 import com.assign.organization.domain.member.repository.MemberRepository;
 import com.assign.organization.domain.team.Team;
-import com.assign.organization.exception.InvalidCSVFileException;
-import com.assign.organization.service.team.TeamService;
 import lombok.extern.slf4j.Slf4j;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -19,6 +17,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.when;
 
@@ -61,5 +60,23 @@ class MemberServiceTests {
         List<MemberVO> findMembers = memberService.findMembersContainsKeyword(keyword);
 
         assertEquals(member.getName(), findMembers.stream().findAny().get().getName());
+    }
+
+    @Test
+    void testCountNameContains() {
+        String name = "test";
+        when(memberRepository.countNameContains(name)).thenReturn(1L);
+
+        long count = memberService.countNameContains(name);
+        assertEquals(1L, count);
+    }
+
+    @Test
+    void testCheckMemberIdDuplication() {
+        Long memberId = 1L;
+        when(memberRepository.checkMemberIdDuplication(memberId)).thenReturn(true);
+
+        boolean duplicated = memberService.checkMemberIdDuplication(memberId);
+        assertTrue(duplicated);
     }
 }

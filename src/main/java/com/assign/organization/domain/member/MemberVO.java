@@ -2,10 +2,12 @@ package com.assign.organization.domain.member;
 
 import lombok.*;
 
+import java.time.LocalDate;
+
 @Getter
 @Setter
-@ToString
 @Builder
+@ToString
 @EqualsAndHashCode
 @NoArgsConstructor
 @AllArgsConstructor
@@ -18,4 +20,5 @@ public class MemberVO {
     private String businessCall;
     private String position;
     private String duty;
+    private LocalDate enteredDate;
 }

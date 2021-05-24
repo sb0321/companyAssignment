@@ -21,7 +21,7 @@ public class MemberAPIController {
 
     private final MemberService memberService;
 
-    @GetMapping("")
+    @GetMapping
     public ResponseEntity<List<MemberVO>> searchKeywordMemberVOList(
             @RequestParam(value = "keyword", required = false) String keyword) {
         if (keyword == null) {
@@ -31,5 +31,4 @@ public class MemberAPIController {
         List<MemberVO> findMembers = memberService.findMembersContainsKeyword(keyword);
         return ResponseEntity.of(Optional.of(findMembers));
     }
-
 }

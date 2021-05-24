@@ -41,16 +41,7 @@ public class TeamService {
             }
             saveMembersAndTeams(csvMemberVOList);
         }
-        closeCSVReader();
-    }
-
-    private void closeCSVReader() throws InvalidCSVFileException {
-        try {
-            CSVReader.close();
-        } catch (IOException e) {
-            e.printStackTrace();
-            throw new InvalidCSVFileException("CSVReader를 close 하는 도중 오류가 났습니다.");
-        }
+        CSVReader.close();
     }
 
     private void saveMembersAndTeams(List<CSVMemberVO> csvMemberVOList) throws InvalidCSVFileException {
@@ -102,7 +93,7 @@ public class TeamService {
 
     public List<TeamVO> findAllTeamListOrderByTeamNameDesc() {
         List<Team> teamList = teamRepository.findAllTeamsOrderByTeamName();
-        return convertTeamListToTeamVOList(teamList);
+        return Collections.unmodifiableList(convertTeamListToTeamVOList(teamList));
     }
 
     private List<TeamVO> convertTeamListToTeamVOList(List<Team> teamList) {

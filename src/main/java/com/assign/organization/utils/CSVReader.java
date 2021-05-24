@@ -62,9 +62,14 @@ public class CSVReader {
         return csvMemberVOList;
     }
 
-    public static void close() throws IOException {
-        if (bufferedReader != null) {
-            bufferedReader.close();
+    public static void close() {
+        try {
+            if (bufferedReader != null) {
+                bufferedReader.close();
+                bufferedReader = null;
+            }
+        } catch (IOException e) {
+            e.printStackTrace();
             bufferedReader = null;
         }
     }
