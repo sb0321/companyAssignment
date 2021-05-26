@@ -1,5 +1,6 @@
 package com.assign.organization.domain.member;
 
+import com.assign.organization.exception.NullMemberException;
 import lombok.*;
 
 import java.time.LocalDate;
@@ -21,4 +22,22 @@ public class MemberVO {
     private String position;
     private String duty;
     private LocalDate enteredDate;
+
+    public static MemberVO from(Member member) {
+
+        if (member == null) {
+            throw new NullMemberException();
+        }
+
+        return MemberVO
+                .builder()
+                .id(member.getId())
+                .position(member.getPosition())
+                .businessCall(member.getBusinessCall())
+                .cellPhone(member.getCellPhone())
+                .teamName(member.getTeam() != null ? member.getTeam().getName() : null)
+                .duty(member.getDuty())
+                .name(member.getFullName())
+                .build();
+    }
 }

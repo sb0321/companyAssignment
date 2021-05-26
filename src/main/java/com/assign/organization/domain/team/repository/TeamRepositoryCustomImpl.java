@@ -15,7 +15,7 @@ public class TeamRepositoryCustomImpl implements TeamRepositoryCustom {
     private final JPAQueryFactory queryFactory;
 
     @Override
-    public List<Team> findAllTeamsOrderByTeamName() {
+    public List<Team> findAllTeams() {
 
         QTeam team = QTeam.team;
         QMember member = QMember.member;
@@ -40,8 +40,7 @@ public class TeamRepositoryCustomImpl implements TeamRepositoryCustom {
         QTeam team = QTeam.team;
 
         return queryFactory
-                .select(team.name)
-                .from(team)
+                .selectFrom(team)
                 .where(team.name.eq(teamName))
                 .fetchCount();
     }

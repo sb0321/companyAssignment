@@ -5,13 +5,11 @@ import com.assign.organization.service.team.TeamService;
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.extern.slf4j.Slf4j;
-import org.junit.jupiter.api.AfterAll;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.TestInstance;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
-import org.springframework.boot.test.autoconfigure.jdbc.AutoConfigureTestDatabase;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.context.TestPropertySource;
@@ -21,6 +19,7 @@ import org.springframework.test.web.servlet.setup.MockMvcBuilders;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.filter.CharacterEncodingFilter;
 
+import java.io.File;
 import java.util.List;
 import java.util.Objects;
 
@@ -50,16 +49,13 @@ class TeamAPIControllerTests {
     @Autowired
     ObjectMapper objectMapper;
 
-    @Value(value = "${csv.data.success}")
-    String CSV_FILE_PATH;
-
     @BeforeAll
     void init() throws Exception {
         mockMvc = MockMvcBuilders.standaloneSetup(teamAPIController)
                 .addFilters(new CharacterEncodingFilter(CHARSET, true))
                 .build();
 
-        teamService.insertMembersFromCSVFile(CSV_FILE_PATH);
+        teamService.insertTeamsFromDataPath(new File("src/test/resources/data/data.csv").getAbsolutePath());
     }
 
     @Test
@@ -74,7 +70,7 @@ class TeamAPIControllerTests {
                 .readValue(mvcResult.getResponse().getContentAsString(), new TypeReference<List<TeamVO>>() {
                 });
 
-        List<TeamVO> expected = teamService.findAllTeamListOrderByTeamNameDesc();
+        List<TeamVO> expected = teamService.findAllTeamVOList();
 
         assertTrue(Objects.deepEquals(expected, list));
 

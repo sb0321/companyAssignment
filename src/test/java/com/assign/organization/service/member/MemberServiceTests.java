@@ -2,81 +2,94 @@ package com.assign.organization.service.member;
 
 import com.assign.organization.domain.member.Member;
 import com.assign.organization.domain.member.MemberVO;
+import com.assign.organization.domain.member.Nationality;
 import com.assign.organization.domain.member.repository.MemberRepository;
-import com.assign.organization.domain.team.Team;
+import com.assign.organization.exception.*;
 import lombok.extern.slf4j.Slf4j;
+import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
-import org.junit.jupiter.api.extension.ExtendWith;
-import org.mockito.InjectMocks;
-import org.mockito.Mock;
-import org.springframework.beans.factory.annotation.Value;
+import org.junit.jupiter.api.TestInstance;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.context.TestPropertySource;
-import org.springframework.test.context.junit.jupiter.SpringExtension;
 
-import java.util.ArrayList;
+import java.time.LocalDate;
 import java.util.List;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertTrue;
-import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.Mockito.when;
+import static org.junit.jupiter.api.Assertions.*;
 
 @Slf4j
-@ExtendWith(SpringExtension.class)
+@SpringBootTest
+@TestInstance(value = TestInstance.Lifecycle.PER_CLASS)
 @TestPropertySource(value = "classpath:application.properties")
 class MemberServiceTests {
 
-    @Value(value = "${csv.data.success}")
-    String CSV_FILE_PATH;
-
-    @Mock
+    @Autowired
     MemberRepository memberRepository;
 
-    @InjectMocks
+    @Autowired
     MemberService memberService;
 
-    @Test
-    void testFindMembersContainsKeyword() {
-
-        String keyword = "test";
-
+    @BeforeAll
+    void init() {
         Member member = Member
                 .builder()
+                .id(1L)
+                .lastName("lastName")
                 .firstName("firstName")
-                .lastName("test")
-                .duty("")
-                .position("")
-                .cellPhone("")
-                .businessCall("")
+                .businessCall("0000")
+                .cellPhone("010-0000-0000")
+                .duty("duty")
+                .position("position")
+                .enteredDate(LocalDate.now())
+                .nationality(Nationality.KOREA)
                 .build();
 
-        member.setTeam(new Team(""));
-
-        List<Member> result = new ArrayList<>();
-        result.add(member);
-
-        when(memberRepository.findMembersContainsKeyword(any())).thenReturn(result);
-
-        List<MemberVO> findMembers = memberService.findMembersContainsKeyword(keyword);
-
-        assertEquals(member.getName(), findMembers.stream().findAny().get().getName());
+        memberRepository.save(member);
     }
 
     @Test
-    void testCountNameContains() {
-        String name = "test";
-        when(memberRepository.countNameContains(name)).thenReturn(1L);
+    void testFindMembersContainsKeyword() {
+        assertDoesNotThrow(() -> memberService.findMembersContainsKeyword(null));
 
-        long count = memberService.countNameContains(name);
-        assertEquals(1L, count);
+        String findKeyword = "firstName";
+        assertDoesNotThrow(() -> {
+            List<MemberVO> findMemberVOList = memberService.findMembersContainsKeyword(findKeyword);
+            assertFalse(findMemberVOList.isEmpty());
+        });
+
+        String notFindKeyword = "nothing";
+        assertDoesNotThrow(() -> {
+            List<MemberVO> emptyList = memberService.findMembersContainsKeyword(notFindKeyword);
+            assertTrue(emptyList.isEmpty());
+        });
+    }
+
+
+    @Test
+    void testCountFirstNameContains() {
+        assertThrows(NullMemberNameException.class, () -> memberService.countFirstNameContains(null));
+
+        String firstName = "firstName";
+        assertDoesNotThrow(() -> {
+            long count = memberService.countFirstNameContains(firstName);
+            assertEquals(1L, count);
+        });
+
+        String noDuplicatedName = "nothing";
+        assertDoesNotThrow(() -> {});
+        long count = memberService.countFirstNameContains(noDuplicatedName);
+        assertEquals(0L, count);
     }
 
     @Test
     void testCheckMemberIdDuplication() {
-        Long memberId = 1L;
-        when(memberRepository.checkMemberIdDuplication(memberId)).thenReturn(true);
+        assertThrows(NullMemberIdException.class, () -> memberService.checkMemberIdDuplication(null));
 
-        boolean duplicated = memberService.checkMemberIdDuplication(memberId);
-        assertTrue(duplicated);
+        Long duplicatedMemberId = 1L;
+        assertThrows(MemberIdDuplicationException.class, () -> memberService.checkMemberIdDuplication(duplicatedMemberId));
+
+        Long noDuplicatedMemberId = 2L;
+        assertDoesNotThrow(() -> memberService.checkMemberIdDuplication(noDuplicatedMemberId));
     }
 }

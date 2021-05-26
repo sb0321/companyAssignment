@@ -1,11 +1,11 @@
 package com.assign.organization.utils;
 
-import com.assign.organization.exception.InvalidCSVFileException;
+import com.assign.organization.domain.member.Nationality;
+import com.assign.organization.exception.CSVRawDataConvertException;
 import lombok.Getter;
 import lombok.ToString;
 
 import java.time.LocalDate;
-import java.time.format.DateTimeParseException;
 
 @Getter
 @ToString
@@ -15,6 +15,7 @@ public class CSVMemberVO {
     private static final String NAME_SEPARATOR = " ";
 
     private final Long memberId;
+    private final Nationality nationality;
     private final LocalDate enteredDate;
     private final String lastName;
     private final String firstName;
@@ -24,8 +25,10 @@ public class CSVMemberVO {
     private final String duty;
     private final String position;
 
-    private CSVMemberVO(Long memberId, LocalDate enteredDate, String lastName, String firstName, String teamName, String businessCall, String cellPhone, String duty, String position) {
+    public CSVMemberVO(Long memberId, Nationality nationality, LocalDate enteredDate, String lastName,
+                       String firstName, String teamName, String businessCall, String cellPhone, String duty, String position) {
         this.memberId = memberId;
+        this.nationality = nationality;
         this.enteredDate = enteredDate;
         this.lastName = lastName;
         this.firstName = firstName;
@@ -36,7 +39,7 @@ public class CSVMemberVO {
         this.position = position;
     }
 
-    public static CSVMemberVO from(String rawMemberData) throws InvalidCSVFileException {
+    public static CSVMemberVO from(String rawMemberData) {
         try {
             String[] split = rawMemberData.split(CSV_SEPARATOR);
 
@@ -48,77 +51,26 @@ public class CSVMemberVO {
             String teamName = split[6].trim();
             String position = split[7].trim();
             String duty = split[8].trim();
+            Nationality nationality = Enum.valueOf(Nationality.class, split[9].trim());
 
-            if (checkDataValid(memberId, name, enteredDate, businessCall, cellPhone, teamName, position, duty)) {
-                String[] splitName = name.split(" ");
-                String lastName = splitName[0];
-                String firstName = splitName[1];
-                Long id = Long.parseLong(memberId);
-                LocalDate convertedEnteredDate = LocalDate.parse(enteredDate);
-                return new CSVMemberVO(id, convertedEnteredDate, lastName, firstName, teamName, businessCall, cellPhone, duty, position);
+            String firstName, lastName;
+            String[] splitName = name.split(" ");
+            if (nationality.equals(Nationality.ENGLISH)) {
+                firstName = splitName[0];
+                lastName = splitName[1];
+            } else {
+                lastName = splitName[0];
+                firstName = splitName[1];
             }
 
-            throw new InvalidCSVFileException("raw 데이터를 변환하는데 실패했습니다 : " + "사번: " + memberId + ", 이름: " + name);
-        } catch (NullPointerException e) {
-            throw new InvalidCSVFileException("data가 null 입니다.");
-        } catch (ArrayIndexOutOfBoundsException e) {
-            throw new InvalidCSVFileException("data가 형식에 맞지 않습니다.");
+            LocalDate convertEnteredDate = LocalDate.parse(enteredDate);
+
+            return new CSVMemberVO(Long.parseLong(memberId), nationality, convertEnteredDate, lastName,
+                    firstName, teamName, businessCall, cellPhone, duty, position);
+        } catch (RuntimeException e) {
+            throw new CSVRawDataConvertException("Raw Data 변환에 실패했습니다 : " + rawMemberData);
         }
     }
 
-    private static boolean checkDataValid(String memberId,
-                                          String name,
-                                          String enteredDate,
-                                          String businessCall,
-                                          String cellPhone,
-                                          String teamName,
-                                          String position,
-                                          String duty) {
-        return checkMemberIdValid(memberId) &&
-                checkNameValid(name) &&
-                checkEnteredDateValid(enteredDate) &&
-                checkCellPhoneValid(cellPhone) &&
-                checkBusinessCallValid(businessCall) &&
-                checkPositionValid(position) &&
-                checkDutyValid(duty) &&
-                !teamName.isEmpty();
-    }
 
-    private static boolean checkMemberIdValid(String memberId) {
-        try {
-            Long.parseLong(memberId);
-        } catch (NumberFormatException e) {
-            return false;
-        }
-        return true;
-    }
-
-    private static boolean checkEnteredDateValid(String enteredDate) {
-        try {
-            LocalDate.parse(enteredDate);
-        } catch (DateTimeParseException e) {
-            return false;
-        }
-        return true;
-    }
-
-    private static boolean checkNameValid(String name) {
-        return name.matches(Regex.NAME_REGEX);
-    }
-
-    private static boolean checkCellPhoneValid(String cellPhone) {
-        return cellPhone.matches(Regex.CELL_PHONE_REGEX);
-    }
-
-    private static boolean checkBusinessCallValid(String businessCall) {
-        return businessCall.matches(Regex.BUSINESS_CALL_REGEX);
-    }
-
-    private static boolean checkPositionValid(String position) {
-        return position.matches(Regex.POSITION_REGEX);
-    }
-
-    private static boolean checkDutyValid(String duty) {
-        return duty.matches(Regex.DUTY_REGEX);
-    }
 }

@@ -6,10 +6,11 @@ import java.util.List;
 
 public interface MemberRepositoryCustom {
 
-    long countNameContains(String name);
+    long countFirstNameContains(String name);
 
     List<Member> findMembersContainsKeyword(String keyword);
 
     boolean checkMemberIdDuplication(Long memberId);
 
+    boolean checkBusinessCallDuplication(String businessCall);
 }

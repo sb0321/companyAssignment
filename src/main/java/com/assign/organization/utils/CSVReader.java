@@ -1,86 +1,42 @@
 package com.assign.organization.utils;
 
-import com.assign.organization.exception.InvalidCSVFileException;
+import com.assign.organization.exception.CSVFileFormatException;
+import com.assign.organization.exception.InvalidFilePathException;
 import lombok.extern.slf4j.Slf4j;
 
 import java.io.BufferedReader;
+import java.io.File;
 import java.io.IOException;
-import java.nio.ByteBuffer;
-import java.nio.CharBuffer;
 import java.nio.channels.Channels;
 import java.nio.channels.FileChannel;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Paths;
 import java.nio.file.StandardOpenOption;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.LinkedList;
-import java.util.List;
 
 @Slf4j
 public class CSVReader {
 
     private static final String CSV_EXTENSION = "csv";
 
-    private static BufferedReader bufferedReader;
-
-    private CSVReader() {
-    }
-
-    public static void setCSVFile(String csvFilePath) throws InvalidCSVFileException {
+    public BufferedReader getBufferedReaderFromCSVFilePath(String csvFilePath) {
         try {
-            if (!checkFileExtension(csvFilePath)) {
-                throw new InvalidCSVFileException("파일 확장자가 " + CSV_EXTENSION + "이 아닙니다.");
-            }
-
-            FileChannel fileChannel = FileChannel.open(Paths.get(csvFilePath), StandardOpenOption.READ);
-            bufferedReader = new BufferedReader(Channels.newReader(fileChannel, StandardCharsets.UTF_8.name()));
-
+            checkFileExtension(csvFilePath);
+            FileChannel channel = FileChannel.open(Paths.get(csvFilePath), StandardOpenOption.READ);
+            return new BufferedReader(Channels.newReader(channel, StandardCharsets.UTF_8.name()));
         } catch (IOException e) {
-            e.printStackTrace();
-            throw new InvalidCSVFileException("파일 경로가 잘못되어 있습니다. : " + e.getMessage());
-        } catch (InvalidCSVFileException e) {
-            e.printStackTrace();
-            throw e;
+            throw new InvalidFilePathException("파일의 경로가 잘못되었습니다.");
         }
     }
 
-    public static List<CSVMemberVO> readCSVMemberVOList(int capacity) throws InvalidCSVFileException {
-        List<CSVMemberVO> csvMemberVOList = new LinkedList<>();
-        try {
-            for (int i = 0; i < capacity; i++) {
-                String rawMemberData = bufferedReader.readLine();
-
-                if (rawMemberData == null) {
-                    return csvMemberVOList;
-                }
-                csvMemberVOList.add(CSVMemberVO.from(rawMemberData));
-            }
-        } catch (NullPointerException | IOException e) {
-            throw new InvalidCSVFileException("CSVReader를 초기화 하지 않았습니다");
-        }
-        return csvMemberVOList;
-    }
-
-    public static void close() {
-        try {
-            if (bufferedReader != null) {
-                bufferedReader.close();
-                bufferedReader = null;
-            }
-        } catch (IOException e) {
-            e.printStackTrace();
-            bufferedReader = null;
-        }
-    }
-
-    private static boolean checkFileExtension(String csvFilePath) {
+    private static void checkFileExtension(String csvFilePath) {
         int extensionPos = csvFilePath.lastIndexOf(".");
         if (extensionPos == -1) {
-            return false;
+            throw new CSVFileFormatException("파일에 확장자가 없거나 디렉터리입니다.");
         }
 
         String extension = csvFilePath.substring(extensionPos + 1);
-        return extension.equalsIgnoreCase(CSV_EXTENSION);
+        if (!extension.equalsIgnoreCase(CSV_EXTENSION)) {
+            throw new CSVFileFormatException("파일의 포멧이 " + CSV_EXTENSION + "이 아닙니다 : " + extension);
+        }
     }
 }

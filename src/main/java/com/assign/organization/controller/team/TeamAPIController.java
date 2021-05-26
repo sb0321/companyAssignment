@@ -22,7 +22,7 @@ public class TeamAPIController {
 
     @GetMapping
     public ResponseEntity<List<TeamVO>> getTeamsWithMembers() {
-        List<TeamVO> findTeamVOs = teamService.findAllTeamListOrderByTeamNameDesc();
+        List<TeamVO> findTeamVOs = teamService.findAllTeamVOList();
         return ResponseEntity.of(Optional.of(findTeamVOs));
     }
 }

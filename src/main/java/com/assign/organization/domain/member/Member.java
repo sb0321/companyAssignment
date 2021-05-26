@@ -18,15 +18,19 @@ public class Member {
     private Long id;
 
     @Column(nullable = false)
+    private String firstName;
+
+    @Column(nullable = false)
     private String lastName;
 
     @Column(nullable = false)
-    private String firstName;
+    @Enumerated(value = EnumType.STRING)
+    private Nationality nationality = Nationality.KOREA;
 
     @Column(nullable = false)
     private LocalDate enteredDate;
 
-    @ManyToOne(fetch = FetchType.LAZY, optional = false)
+    @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "TEAM_ID")
     private Team team;
 
@@ -43,10 +47,12 @@ public class Member {
     private String duty;
 
     @Builder
-    public Member(Long id, String lastName, String firstName, LocalDate enteredDate, Team team, String businessCall, String cellPhone, String position, String duty) {
+    public Member(Long id, String firstName, String lastName, Nationality nationality,
+                  LocalDate enteredDate, Team team, String businessCall, String cellPhone, String position, String duty) {
         this.id = id;
-        this.lastName = lastName;
         this.firstName = firstName;
+        this.lastName = lastName;
+        this.nationality = nationality;
         this.enteredDate = enteredDate;
         this.team = team;
         this.businessCall = businessCall;
@@ -55,15 +61,18 @@ public class Member {
         this.duty = duty;
     }
 
-    public String getName() {
-        return String.join(" ", lastName, firstName);
-    }
-
     public void setTeam(Team team) {
         if(this.team != null) {
             this.team.getMembers().removeIf(m -> Objects.equals(this, m));
         }
         this.team = team;
         team.getMembers().add(this);
+    }
+
+    public String getFullName() {
+        if(nationality.equals(Nationality.ENGLISH)) {
+            return String.join(" ", firstName, lastName);
+        }
+        return String.join(" ", lastName, firstName);
     }
 }

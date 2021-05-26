@@ -1,113 +1,109 @@
 package com.assign.organization.service.team;
 
 import com.assign.organization.domain.member.Member;
-import com.assign.organization.domain.member.MemberVO;
+import com.assign.organization.domain.member.Nationality;
+import com.assign.organization.domain.member.repository.MemberRepository;
 import com.assign.organization.domain.team.Team;
 import com.assign.organization.domain.team.TeamVO;
 import com.assign.organization.domain.team.repository.TeamRepository;
-import com.assign.organization.service.member.MemberService;
+import com.assign.organization.exception.NullCSVFilePathException;
+import com.assign.organization.utils.CSVReader;
+import com.assign.organization.utils.DuplicateNameGenerator;
 import lombok.extern.slf4j.Slf4j;
+import org.junit.jupiter.api.AfterEach;
+import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.TestInstance;
 import org.junit.jupiter.api.extension.ExtendWith;
-import org.mockito.ArgumentMatchers;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
-import org.mockito.invocation.InvocationOnMock;
 import org.mockito.junit.jupiter.MockitoExtension;
-import org.mockito.stubbing.Answer;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.context.annotation.Bean;
+import org.springframework.context.annotation.Configuration;
 
-import java.util.ArrayList;
+import java.io.BufferedReader;
+import java.io.File;
+import java.time.LocalDate;
 import java.util.LinkedList;
 import java.util.List;
-import java.util.Optional;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertTrue;
-import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.Mockito.*;
+import static org.junit.jupiter.api.Assertions.*;
+import static org.mockito.Mockito.when;
 
 @Slf4j
-@ExtendWith(MockitoExtension.class)
+@SpringBootTest
 class TeamServiceTests {
 
-    @Mock
-    TeamRepository teamRepository;
-
-    @Mock
-    MemberService memberService;
-
-    @InjectMocks
+    @Autowired
     TeamService teamService;
 
-    @Test
-    void testFindAllTeamListOrderByTeamNameDesc() {
+    @Autowired
+    TeamRepository teamRepository;
 
-        List<Team> result = new ArrayList<>();
+    @Autowired
+    MemberRepository memberRepository;
 
-        for (int i = 5; i >= 0; i--) {
-            Team team = new Team("test" + i);
-
-            Member member = Member
-                    .builder()
-                    .firstName("name" + i)
-                    .lastName("last" + i)
-                    .position("pos" + i)
-                    .duty("duty")
-                    .cellPhone("010-0000-000" + i)
-                    .businessCall("100" + i)
-                    .build();
-
-            member.setTeam(team);
-            result.add(team);
-        }
-
-        when(teamRepository.findAllTeamsOrderByTeamName()).thenReturn(result);
-        when(memberService.convertMemberListToMemberVOList(anyList())).thenAnswer((Answer<List<MemberVO>>) invocation -> {
-            List<Member> memberList = invocation.getArgument(0);
-            return convert(memberList);
-        });
-
-        List<TeamVO> findTeamList = teamService.findAllTeamListOrderByTeamNameDesc();
-
-        verify(teamRepository, times(1)).findAllTeamsOrderByTeamName();
-
-        log.info(findTeamList.toString());
+    @AfterEach
+    void purge() {
+        memberRepository.deleteAll();
+        teamRepository.deleteAll();
     }
 
-    List<MemberVO> convert(List<Member> memberList) {
-        List<MemberVO> convert = new LinkedList<>();
+    @Test
+    void testFindAllTeamVOList() {
+        givenTeamsAndMembers();
+        List<TeamVO> teamList = whenFindAllTeamVOList();
+        thenFindAllTeamVOListReturnsList(teamList);
+    }
+
+    void givenTeamsAndMembers() {
+        Team team = new Team("test");
+        List<Member> memberList = makeMembers();
 
         for (Member member : memberList) {
-            MemberVO vo = MemberVO
+            member.setTeam(team);
+        }
+
+        teamRepository.save(team);
+    }
+
+    List<Member> makeMembers() {
+        List<Member> memberList = new LinkedList<>();
+        for (int i = 0; i < 5; i++) {
+            Member member = Member
                     .builder()
-                    .id(member.getId())
-                    .name(member.getName())
-                    .duty(member.getDuty())
-                    .teamName(member.getTeam() == null ? "없음" : member.getTeam().getName())
-                    .cellPhone(member.getCellPhone())
-                    .businessCall(member.getBusinessCall())
-                    .position(member.getPosition())
+                    .id((long) i)
+                    .firstName("firstName" + i)
+                    .lastName("lastName" + i)
+                    .nationality(Nationality.KOREA)
+                    .enteredDate(LocalDate.now())
+                    .position("position")
+                    .businessCall("000" + i)
+                    .cellPhone("010-0000-000" + i)
+                    .duty("duty")
                     .build();
 
-            convert.add(vo);
+            memberList.add(member);
         }
-        return convert;
+
+        return memberList;
+    }
+
+    List<TeamVO> whenFindAllTeamVOList() {
+        return teamService.findAllTeamVOList();
+    }
+
+    void thenFindAllTeamVOListReturnsList(List<TeamVO> teamList) {
+        assertFalse(teamList.isEmpty());
     }
 
     @Test
-    void testFindTeamByTeamName() {
-
-        String teamName = "test";
-
-        Team team = new Team(teamName);
-
-        when(teamRepository.findByTeamName(any())).thenReturn(Optional.of(team));
-
-        Optional<Team> findTeam = teamService.findTeamByTeamName(teamName);
-
-        verify(teamRepository, times(1)).findByTeamName(anyString());
-
-        assertTrue(findTeam.isPresent());
-        assertEquals(teamName, findTeam.get().getName());
+    void testInsertTeamsFromDataPath() {
+        assertThrows(NullCSVFilePathException.class, () -> teamService.insertTeamsFromDataPath(null));
+        assertDoesNotThrow(() -> teamService
+                .insertTeamsFromDataPath(new File("src/test/resources/data/data.csv").getAbsolutePath()));
     }
+
 }

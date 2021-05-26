@@ -1,23 +1,30 @@
 package com.assign.organization.service.team;
 
 import com.assign.organization.domain.member.Member;
-import com.assign.organization.domain.member.MemberVO;
 import com.assign.organization.domain.team.Team;
 import com.assign.organization.domain.team.TeamVO;
 import com.assign.organization.domain.team.repository.TeamRepository;
-import com.assign.organization.exception.InvalidCSVFileException;
+import com.assign.organization.exception.CSVFileReadException;
+import com.assign.organization.exception.InvalidMemberException;
+import com.assign.organization.exception.MemberBusinessCallDuplicationException;
+import com.assign.organization.exception.NullCSVFilePathException;
+import com.assign.organization.service.duplication.DuplicationService;
 import com.assign.organization.service.member.MemberService;
 import com.assign.organization.utils.CSVMemberVO;
 import com.assign.organization.utils.CSVReader;
-import com.assign.organization.utils.NameGenerator;
+import com.assign.organization.utils.DuplicateNameGenerator;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 
 import javax.transaction.Transactional;
+import java.io.BufferedReader;
 import java.io.IOException;
-import java.util.*;
+import java.util.LinkedList;
+import java.util.List;
+import java.util.Optional;
+import java.util.stream.Collectors;
 
 @Slf4j
 @Service
@@ -26,88 +33,97 @@ public class TeamService {
 
     private final TeamRepository teamRepository;
     private final MemberService memberService;
+    private final DuplicationService duplicationService;
+
+    private final CSVReader csvReader;
+    private final DuplicateNameGenerator duplicateNameGenerator;
 
     @Value(value = "${insert.batch.size}")
     private int BATCH_SIZE;
 
     @Transactional
-    public void insertMembersFromCSVFile(String csvFilePath) throws InvalidCSVFileException {
-        CSVReader.setCSVFile(csvFilePath);
-        while (true) {
-            List<CSVMemberVO> csvMemberVOList = CSVReader.readCSVMemberVOList(BATCH_SIZE);
+    public void insertTeamsFromDataPath(String csvFilePath) {
+        if (csvFilePath == null) {
+            throw new NullCSVFilePathException();
+        }
 
-            if (csvMemberVOList.isEmpty()) {
+        BufferedReader csvBufferedReader = csvReader.getBufferedReaderFromCSVFilePath(csvFilePath);
+        saveTeamsAndMembers(csvBufferedReader);
+    }
+
+    private void saveTeamsAndMembers(BufferedReader csvReader) {
+        while (true) {
+            List<String> rawDataList = readDataFromReader(csvReader, BATCH_SIZE);
+
+            if (rawDataList.isEmpty()) {
                 break;
             }
-            saveMembersAndTeams(csvMemberVOList);
+
+            List<CSVMemberVO> csvMemberVOList = convertRawDataListToCSVMemberVOList(rawDataList);
+            saveFromCSVMemberVOList(csvMemberVOList);
         }
-        CSVReader.close();
     }
 
-    private void saveMembersAndTeams(List<CSVMemberVO> csvMemberVOList) throws InvalidCSVFileException {
-        Map<String, Team> teams = new HashMap<>();
+    private void saveFromCSVMemberVOList(List<CSVMemberVO> csvMemberVOList) {
 
         for (CSVMemberVO csvMemberVO : csvMemberVOList) {
+            Team team = findTeamOrMake(csvMemberVO.getTeamName());
+            String firstName = makeNewFirstNameIfDuplicated(csvMemberVO.getFirstName());
 
-            if (memberService.checkMemberIdDuplication(csvMemberVO.getMemberId())) {
-                throw new InvalidCSVFileException("중복되는 사번이 있습니다. 사번:" + csvMemberVO.getMemberId() +
-                        " 이름:" + csvMemberVO.getLastName() + csvMemberVO.getFirstName());
-            }
+            
 
-            teams.putIfAbsent(csvMemberVO.getTeamName(), findTeamOrMakeNewTeam(csvMemberVO.getTeamName()));
+            Member member = Member.builder()
+                    .id(csvMemberVO.getMemberId())
+                    .duty(csvMemberVO.getDuty())
+                    .cellPhone(csvMemberVO.getCellPhone())
+                    .businessCall(csvMemberVO.getBusinessCall())
+                    .position(csvMemberVO.getPosition())
+                    .enteredDate(csvMemberVO.getEnteredDate())
+                    .nationality(csvMemberVO.getNationality())
+                    .lastName(csvMemberVO.getLastName())
+                    .firstName(firstName)
+                    .build();
 
-            Member member = CSVMemberVOToMember(csvMemberVO);
-            member.setTeam(teams.get(csvMemberVO.getTeamName()));
+            member.setTeam(team);
         }
-
-        teamRepository.saveAll(teams.values());
     }
 
-    private Member CSVMemberVOToMember(CSVMemberVO csvMemberVO) {
-
-        String newFirstName = generateNewMemberNameIfDuplicated(csvMemberVO);
-
-        return Member
-                .builder()
-                .id(csvMemberVO.getMemberId())
-                .firstName(newFirstName)
-                .lastName(csvMemberVO.getLastName())
-                .enteredDate(csvMemberVO.getEnteredDate())
-                .position(csvMemberVO.getPosition())
-                .duty(csvMemberVO.getDuty())
-                .businessCall(csvMemberVO.getBusinessCall())
-                .cellPhone(csvMemberVO.getCellPhone())
-                .build();
-    }
-
-    private String generateNewMemberNameIfDuplicated(CSVMemberVO vo) {
-        String name = String.join("", vo.getLastName(), vo.getFirstName());
-        long duplicationCount = memberService.countNameContains(name);
-        return NameGenerator.generateNameWhenDuplication(vo.getFirstName(), duplicationCount);
-    }
-
-    private Team findTeamOrMakeNewTeam(String teamName) {
+    private Team findTeamOrMake(String teamName) {
         Optional<Team> findTeam = teamRepository.findByTeamName(teamName);
-        return findTeam.orElseGet(() -> new Team(teamName));
+        return findTeam.orElseGet(() -> teamRepository.save(new Team(teamName)));
     }
 
-    public List<TeamVO> findAllTeamListOrderByTeamNameDesc() {
-        List<Team> teamList = teamRepository.findAllTeamsOrderByTeamName();
-        return Collections.unmodifiableList(convertTeamListToTeamVOList(teamList));
+    private String makeNewFirstNameIfDuplicated(String firstName) {
+        long count = memberService.countFirstNameContains(firstName);
+        return duplicateNameGenerator.generateNameWhenDuplication(firstName, count);
+    }
+
+    private List<String> readDataFromReader(BufferedReader reader, int batchSize) {
+        List<String> rawDataList = new LinkedList<>();
+        try {
+            for (int i = 0; i < batchSize; i++) {
+                String rawData = reader.readLine();
+                if (rawData == null) {
+                    break;
+                }
+                rawDataList.add(rawData);
+            }
+            return rawDataList;
+        } catch (IOException e) {
+            return rawDataList;
+        }
+    }
+
+    private List<CSVMemberVO> convertRawDataListToCSVMemberVOList(List<String> rawDataList) {
+        return rawDataList.stream().map(CSVMemberVO::from).collect(Collectors.toList());
+    }
+
+    public List<TeamVO> findAllTeamVOList() {
+        List<Team> teamList = teamRepository.findAllTeams();
+        return convertTeamListToTeamVOList(teamList);
     }
 
     private List<TeamVO> convertTeamListToTeamVOList(List<Team> teamList) {
-        List<TeamVO> teamVOList = new ArrayList<>();
-
-        for (Team team : teamList) {
-            List<MemberVO> memberVOList = memberService.convertMemberListToMemberVOList(team.getMembers());
-            TeamVO vo = new TeamVO(team.getId(), team.getName(), memberVOList);
-            teamVOList.add(vo);
-        }
-        return teamVOList;
-    }
-
-    public Optional<Team> findTeamByTeamName(String teamName) {
-        return teamRepository.findByTeamName(teamName);
+        return teamList.stream().map(TeamVO::from).collect(Collectors.toList());
     }
 }

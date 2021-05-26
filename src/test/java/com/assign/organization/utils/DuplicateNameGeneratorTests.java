@@ -8,7 +8,9 @@ import java.util.Arrays;
 import static org.junit.jupiter.api.Assertions.assertArrayEquals;
 
 @Slf4j
-class NameGeneratorTests {
+class DuplicateNameGeneratorTests {
+
+    DuplicateNameGenerator duplicateNameGenerator = new DuplicateNameGenerator();
 
     @Test
     public void testGenerateNameWhenDuplication() {
@@ -21,7 +23,7 @@ class NameGeneratorTests {
 
         String[] changedNames = new String[26];
         for (int i = 0; i < sameNames.length; i++) {
-            changedNames[i] = NameGenerator.generateNameWhenDuplication(sameNames[i], i);
+            changedNames[i] = duplicateNameGenerator.generateNameWhenDuplication(sameNames[i], i);
         }
 
         log.info(Arrays.toString(changedNames));

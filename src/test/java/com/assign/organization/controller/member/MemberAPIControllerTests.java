@@ -3,7 +3,7 @@ package com.assign.organization.controller.member;
 import com.assign.organization.domain.member.MemberVO;
 import com.assign.organization.domain.member.repository.MemberRepository;
 import com.assign.organization.domain.team.repository.TeamRepository;
-import com.assign.organization.exception.InvalidCSVFileException;
+import com.assign.organization.exception.CSVReaderException;
 import com.assign.organization.service.member.MemberService;
 import com.assign.organization.service.team.TeamService;
 import com.fasterxml.jackson.core.type.TypeReference;
@@ -14,7 +14,6 @@ import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.TestInstance;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.EmptySource;
-import org.junit.jupiter.params.provider.NullAndEmptySource;
 import org.junit.jupiter.params.provider.NullSource;
 import org.junit.jupiter.params.provider.ValueSource;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -26,7 +25,7 @@ import org.springframework.test.web.servlet.MvcResult;
 import org.springframework.test.web.servlet.setup.MockMvcBuilders;
 import org.springframework.web.filter.CharacterEncodingFilter;
 
-import java.lang.reflect.Type;
+import java.io.File;
 import java.util.List;
 import java.util.Objects;
 
@@ -64,16 +63,13 @@ class MemberAPIControllerTests {
     @Autowired
     ObjectMapper objectMapper;
 
-    @Value(value = "${csv.data}")
-    String CSV_FILE_PATH;
-
     @BeforeAll
-    void init() throws InvalidCSVFileException {
+    void init() throws CSVReaderException {
         mockMvc = MockMvcBuilders.standaloneSetup(controller)
                 .addFilter(new CharacterEncodingFilter(UTF8_CHARSET, true))
                 .build();
 
-        teamService.insertMembersFromCSVFile(CSV_FILE_PATH);
+        teamService.insertTeamsFromDataPath(new File("src/test/resources/data/data.csv").getAbsolutePath());
     }
 
     @AfterAll
@@ -110,6 +106,7 @@ class MemberAPIControllerTests {
                 .param("keyword", nullKeyword))
                 .andDo(print())
                 .andExpect(status().isOk())
+                .andExpect(jsonPath("$").isArray())
                 .andReturn();
 
         List<MemberVO> memberVOList = objectMapper

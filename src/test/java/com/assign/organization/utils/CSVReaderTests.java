@@ -1,77 +1,70 @@
 package com.assign.organization.utils;
 
-import com.assign.organization.exception.InvalidCSVFileException;
+import com.assign.organization.exception.CSVFileFormatException;
+import com.assign.organization.exception.InvalidFilePathException;
 import lombok.extern.slf4j.Slf4j;
-import org.junit.jupiter.api.*;
-import org.junit.jupiter.api.extension.ExtendWith;
-import org.springframework.beans.factory.annotation.Value;
-import org.springframework.test.context.TestPropertySource;
-import org.springframework.test.context.junit.jupiter.SpringExtension;
+import org.junit.jupiter.api.BeforeAll;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.TestInstance;
 
-import java.io.IOException;
-import java.nio.file.NoSuchFileException;
+import java.io.BufferedReader;
+import java.io.File;
 
 import static org.junit.jupiter.api.Assertions.*;
 
 @Slf4j
-@ExtendWith(SpringExtension.class)
-@TestPropertySource(value = "classpath:application.properties")
+@TestInstance(value = TestInstance.Lifecycle.PER_CLASS)
 class CSVReaderTests {
 
-    @Value(value = "${csv.data.success}")
-    String CSV_FILE_OK_PATH;
+    CSVReader csvReader = new CSVReader();
 
-    @Value(value = "${csv.data.fail}")
-    String CSV_FILE_FAIL_PATH;
+    String csvSuccessPath;
+    String csvFileException;
+    String csvExtensionFailPath;
+    String csvExtensionNotExistPath;
 
-    @Value(value = "${csv.data.invalid.extension}")
-    String INVALID_CSV_FILE_PATH;
-
-    @AfterEach
-    void close() throws IOException {
-        CSVReader.close();
-    }
-
-
-    @Test
-    void testReadCSVFileSuccess() {
-        assertDoesNotThrow(() -> {
-            CSVReader.setCSVFile(CSV_FILE_OK_PATH);
-            CSVReader.readCSVMemberVOList(1000);
-        });
+    @BeforeAll
+    void init() {
+        csvSuccessPath = new File("src/test/resources/data/data.csv").getAbsolutePath();
+        csvFileException = new File("/src/test/resources/thereisnothing.csv").getAbsolutePath();
+        csvExtensionFailPath = new File("src/test/resources/data/data.file").getAbsolutePath();
+        csvExtensionNotExistPath = new File("src/test/resources/data").getAbsolutePath();
     }
 
     @Test
-    void testReadCSVFileFailWithInvalidPath() {
-        assertThrows(InvalidCSVFileException.class, () -> {
-            CSVReader.setCSVFile("failedPath.csv");
-            CSVReader.readCSVMemberVOList(1000);
-        });
+    void testGetBufferedReaderFromCSVFilePath() {
+        BufferedReader bufferedReader = whenGetBufferedReader(csvSuccessPath);
+        thenGetBufferedReaderSuccess(bufferedReader);
+
+        Exception exception = whenGetBufferedReaderThrowsException(csvFileException);
+        thenGetBufferedReaderThrowsInvalidFilePathException(exception);
+
+        exception = whenGetBufferedReaderThrowsException(csvExtensionFailPath);
+        thenGetBufferedReaderThrowsCSVFileFormatException(exception);
+
+        exception = whenGetBufferedReaderThrowsException(csvExtensionNotExistPath);
+        thenGetBufferedReaderThrowsCSVFileFormatException(exception);
+
     }
 
-    @Test
-    void testReadCSVFileFailWithInvalidFile() {
-        InvalidCSVFileException exception =
-                assertThrows(InvalidCSVFileException.class, () -> {
-                    CSVReader.setCSVFile(CSV_FILE_FAIL_PATH);
-                    CSVReader.readCSVMemberVOList(1000);
-                });
-
-        String exceptionMessage = exception.getMessage();
-        exceptionMessage = exceptionMessage.substring(0, exceptionMessage.indexOf(":"));
-        assertEquals("raw 데이터를 변환하는데 실패했습니다", exceptionMessage.trim());
+    BufferedReader whenGetBufferedReader(String csvFilePath) {
+        return csvReader.getBufferedReaderFromCSVFilePath(csvFilePath);
     }
 
-    @Test
-    void testReadCSVFileFailWithInvalidExtension() {
-        assertThrows(InvalidCSVFileException.class, () -> CSVReader.setCSVFile(INVALID_CSV_FILE_PATH));
+    void thenGetBufferedReaderSuccess(BufferedReader bufferedReader) {
+        assertNotNull(bufferedReader);
     }
 
-    @Test
-    void testReadCSVMemberVOListWithoutInitialize() {
-        InvalidCSVFileException exception =
-                assertThrows(InvalidCSVFileException.class, () -> CSVReader.readCSVMemberVOList(100));
-
-        assertEquals("CSVReader를 초기화 하지 않았습니다", exception.getMessage());
+    Exception whenGetBufferedReaderThrowsException(String csvFilePath) {
+        return assertThrows(Exception.class, () -> csvReader.getBufferedReaderFromCSVFilePath(csvFilePath));
     }
+
+    void thenGetBufferedReaderThrowsInvalidFilePathException(Exception e) {
+        assertEquals(InvalidFilePathException.class, e.getClass());
+    }
+
+    void thenGetBufferedReaderThrowsCSVFileFormatException(Exception e) {
+        assertEquals(CSVFileFormatException.class, e.getClass());
+    }
+
 }
